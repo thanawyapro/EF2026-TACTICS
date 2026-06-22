@@ -9,7 +9,9 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
     <script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
@@ -53,6 +55,51 @@
         }
         .card-shift { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .card-shift:hover { transform: translateY(-3px); box-shadow: 0 10px 25px -5px rgba(0, 212, 255, 0.15); }
+
+        /* Playbook Paths Animations */
+        @keyframes b2b-run {
+            0%, 100% { transform: translate(0px, 0px); }
+            50% { transform: translate(0px, -150px); }
+        }
+        @keyframes ifb-run {
+            0%, 100% { transform: translate(0px, 0px); }
+            50% { transform: translate(65px, -50px); }
+        }
+        @keyframes am-run {
+            0%, 100% { transform: translate(0px, 0px); }
+            25% { transform: translate(-18px, 5px); }
+            75% { transform: translate(18px, 5px); }
+        }
+        @keyframes gp-run {
+            0%, 100% { transform: translate(0px, 0px); }
+            30% { transform: translate(-30px, 0px); }
+            65% { transform: translate(15px, -35px); }
+        }
+        @keyframes cp-run {
+            0%, 100% { transform: translate(0px, 0px); }
+            50% { transform: translate(0px, 60px); }
+        }
+        @keyframes otb-run {
+            0%, 100% { transform: translate(0px, 0px); }
+            50% { transform: translate(110px, -30px); }
+        }
+
+        .anim-b2b { animation: b2b-run 4s infinite ease-in-out; }
+        .anim-ifb { animation: ifb-run 4.5s infinite ease-in-out; }
+        .anim-am { animation: am-run 3.5s infinite ease-in-out; }
+        .anim-gp { animation: gp-run 5s infinite ease-in-out; }
+        .anim-cp { animation: cp-run 4s infinite ease-in-out; }
+        .anim-otb { animation: otb-run 4.5s infinite ease-in-out; }
+
+        @keyframes dash-flow {
+            to {
+                stroke-dashoffset: -20;
+            }
+        }
+        .dash-flow-line {
+            stroke-dasharray: 6, 4;
+            animation: dash-flow 1.5s infinite linear;
+        }
     </style>
 </head>
 <body class="bg-navyBg text-gray-100 flex h-screen select-none">
@@ -145,7 +192,22 @@
                 neural_counter: 'Neural Counter Engine',
                 gemini_counter: 'Gemini Counter Analyzer',
                 optimize_squad: 'Optimize Squad Parameters',
-                script_title: 'Scripting & Momentum Diagnostic'
+                script_title: 'Scripting & Momentum Diagnostic',
+                playbook: 'Animated Tactical Playbook',
+                playbook_desc: 'Dynamic movement path simulator for customized eFootball roles',
+                b2b_midfielder: 'Box-to-Box Midfielder',
+                inverted_fullback: 'Inverted Fullback',
+                anchor_man: 'Anchor Man',
+                goal_poacher: 'Goal Poacher',
+                creative_playmaker: 'Creative Playmaker',
+                roaming_winger: 'Roaming Winger',
+                custom_formation: 'Custom Formations',
+                custom_formation_desc: 'Manually drag-and-drop positions to configure custom eFootball layouts',
+                drag_instructions: 'Drag player nodes to relocate them. Select a player to change their role.',
+                save_custom: 'Save Custom Overrides',
+                reset_custom: 'Reset to Factory Defaults',
+                reset_all_custom: 'Reset All Formations',
+                select_formation_to_edit: 'Select Formation to Customize'
             },
             ar: {
                 app_name: 'تكتيكات EF26',
@@ -181,7 +243,22 @@
                 neural_counter: 'محرك الحلول التكتيكية المغايرة العصبية',
                 gemini_counter: '🔮 محلل هجمات مضادة (جميني)',
                 optimize_squad: 'تحسين بارامترات وتشكيل الفريق',
-                script_title: 'فحص وتشخيص خوارزميات تدخل اللعبة (السكريبت)'
+                script_title: 'فحص وتشخيص خوارزميات تدخل اللعبة (السكريبت)',
+                playbook: 'كتيب تكتيكات تفاعلي متحرك',
+                playbook_desc: 'محاكاة ديناميكية لمسارات وأدوار اللاعبين المخصصة في eFootball',
+                b2b_midfielder: 'لاعب وسط من الصندوق إلى الصندوق',
+                inverted_fullback: 'ظهير مقلوب (Inverted)',
+                anchor_man: 'لاعب ارتكاز ثابت (Anchor)',
+                goal_poacher: 'صائد الأهداف (Poacher)',
+                creative_playmaker: 'صانع ألعاب مبتكر',
+                roaming_winger: 'جناح متحرك عابر',
+                custom_formation: 'تشكيلات مخصصة',
+                custom_formation_desc: 'اسحب وأسقط مراكز اللاعبين لإنشاء وتعديل تشكيلات eFootball الخاصة بك',
+                drag_instructions: 'اسحب دوائر اللاعبين لتغيير مواقعهم. اضغط على لاعب لتعديل مركزه.',
+                save_custom: 'حفظ التشكيل المخصص',
+                reset_custom: 'إعادة التعيين الافتراضي',
+                reset_all_custom: 'إعادة ضبط كافة التشكيلات',
+                select_formation_to_edit: 'اختر تشكيلة لتخصيصها'
             },
             es: {
                 app_name: 'TÁCTICAS EF26',
@@ -217,7 +294,22 @@
                 neural_counter: 'Motor Counter Neuronal',
                 gemini_counter: '🔮 Analizador Gemini Counter',
                 optimize_squad: 'Optimizar Parámetros del Escuadrón',
-                script_title: 'Diagnóstico de Scripting e Impulso'
+                script_title: 'Diagnóstico de Scripting e Impulso',
+                playbook: 'Manual Táctico Animado',
+                playbook_desc: 'Simulador de trayectoria dinámico para roles de eFootball específicos',
+                b2b_midfielder: 'Mediocampista Box-to-Box',
+                inverted_fullback: 'Lateral Invertido',
+                anchor_man: 'Mediocentro Protector',
+                goal_poacher: 'Cazador del Área',
+                creative_playmaker: 'Creador de Juego Creativo',
+                roaming_winger: 'Extremo Hacia Adentro',
+                custom_formation: 'Formaciones Personalizadas',
+                custom_formation_desc: 'Arrastra y suelta posiciones para configurar diseños de eFootball personalizados',
+                drag_instructions: 'Arrastra los nodos de los jugadores para reubicarlos. Selecciona un jugador para cambiar su rol.',
+                save_custom: 'Guardar Ajustes Personalizados',
+                reset_custom: 'Restablecer Valores de Fábrica',
+                reset_all_custom: 'Restablecer Todas las Formaciones',
+                select_formation_to_edit: 'Seleccionar Formación a Personalizar'
             },
             ja: {
                 app_name: 'EF26 作戦ボード',
@@ -253,7 +345,22 @@
                 neural_counter: '自動カウンター生成エンジン',
                 gemini_counter: '🔮 Gemini 対抗策エンジン',
                 optimize_squad: '分隊パラメータ最適化',
-                script_title: 'エフェクト補正＆試合推移診断'
+                script_title: 'エフェクト補正＆試合推移診断',
+                playbook: 'アニメーション戦術プレイブック',
+                playbook_desc: 'eFootballの特定ロールに対応する動的ランニングパスのシミュレータ',
+                b2b_midfielder: 'ボックストゥボックス (B2B)',
+                inverted_fullback: 'インバーテッド・サイドバック',
+                anchor_man: 'アンカーマン (AM)',
+                goal_poacher: 'ラインブレイカー (GP)',
+                creative_playmaker: 'チャンスメイカー (CP)',
+                roaming_winger: 'ウイングストライカー (OTB)',
+                custom_formation: 'カスタム配置',
+                custom_formation_desc: 'ポジションをドラッグ＆ドロップして独自の配置を作成・上書きします',
+                drag_instructions: '選手バッジをドラッグして位置を調整します。選手をタップして役割を変更できます。',
+                save_custom: 'カスタム配置を保存',
+                reset_custom: '設定を戻す',
+                reset_all_custom: '全配置リセット',
+                select_formation_to_edit: 'カスタムするフォーメーションを選択'
             }
         };
 
@@ -281,6 +388,15 @@
             const [metaFormation, setMetaFormation] = useState(() => localStorage.getItem('ef26_meta_formation') || '4-2-2-2 LBS');
             const [metaDescription, setMetaDescription] = useState(() => localStorage.getItem('ef26_meta_description') || 'Massive 4-2-2-2 Long Ball Counter / Spam structures are dominating elite Division 1 leagues this week.');
             const [metaLastGrounded, setMetaLastGrounded] = useState(() => localStorage.getItem('ef26_meta_last_grounded') || 'Never Scanned');
+
+            const [customCoords, setCustomCoords] = useState(() => {
+                const stored = localStorage.getItem('ef26_custom_coords');
+                return stored ? JSON.parse(stored) : {};
+            });
+
+            useEffect(() => {
+                window.getCurrentCustomCoords = () => customCoords;
+            }, [customCoords]);
 
             // Modal states
             const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -380,6 +496,7 @@
                                 { id: 'dashboard', icon: '🏠' },
                                 { id: 'match_report', icon: '📊' },
                                 { id: 'tactics_generator', icon: '🤖' },
+                                { id: 'custom_formation', icon: '🎨' },
                                 { id: 'meta_counter', icon: '⚔️' },
                                 { id: 'sub_tactics', icon: '🎯' },
                                 { id: 'quick_profiles', icon: '⚡' },
@@ -456,6 +573,15 @@
                                 setProfiles={setProfiles}
                                 activeProfileId={activeProfileId}
                                 setActiveProfileId={setActiveProfileId}
+                                t={t}
+                                language={language}
+                            />
+                        )}
+                        {currentTab === 'custom_formation' && (
+                            <CustomFormationModule 
+                                customCoords={customCoords}
+                                setCustomCoords={setCustomCoords}
+                                triggerToast={triggerToast}
                                 t={t}
                                 language={language}
                             />
@@ -644,8 +770,11 @@
         }
 
         // ------------------------- REUSABLE PITCH VISUALIZER -------------------------
-        function PitchVisualizer({ formation, mini = false }) {
-            const positions = useMemo(() => COORDS[formation] || COORDS['4-3-3'], [formation]);
+        function PitchVisualizer({ formation, mini = false, customCoords }) {
+            const positions = useMemo(() => {
+                const activeCoords = customCoords || window.getCurrentCustomCoords?.() || {};
+                return activeCoords[formation] || COORDS[formation] || COORDS['4-3-3'];
+            }, [formation, customCoords]);
             
             const getColor = (role) => {
                 const r = role.toLowerCase();
@@ -1607,6 +1736,451 @@
             throw new Error("Invalid response structure from Gemini API");
         }
 
+        // ------------------------- D3 Formation Heatmap component -------------------------
+        function FormationHeatmap({ formation, triggerToast, language }) {
+            const [selectedPos, setSelectedPos] = useState(null);
+            const containerRef = React.useRef(null);
+
+            // Get player coordinates for current formation
+            const coords = useMemo(() => {
+                const custom = window.getCurrentCustomCoords?.() || {};
+                return custom[formation] || COORDS[formation] || COORDS['4-3-3'];
+            }, [formation]);
+
+            // Set default selected position
+            useEffect(() => {
+                if (coords && coords.length > 0) {
+                    setSelectedPos(coords[0].r);
+                }
+            }, [coords]);
+
+            // Heat Zones mapping
+            const heatMaps = {
+                GK: [{ x: 50, y: 88, r: 40, weight: 1.0 }, { x: 50, y: 78, r: 60, weight: 0.4 }, { x: 50, y: 92, r: 25, weight: 0.8 }],
+                CB: [{ x: 50, y: 78, r: 65, weight: 0.9 }, { x: 35, y: 76, r: 50, weight: 0.7 }, { x: 65, y: 76, r: 50, weight: 0.7 }, { x: 50, y: 65, r: 40, weight: 0.4 }],
+                LB: [{ x: 15, y: 65, r: 50, weight: 1.0 }, { x: 15, y: 45, r: 65, weight: 0.7 }, { x: 18, y: 80, r: 40, weight: 0.8 }],
+                RB: [{ x: 85, y: 65, r: 50, weight: 1.0 }, { x: 85, y: 45, r: 65, weight: 0.7 }, { x: 82, y: 80, r: 40, weight: 0.8 }],
+                LWB: [{ x: 14, y: 55, r: 55, weight: 1.0 }, { x: 14, y: 35, r: 50, weight: 0.7 }, { x: 14, y: 75, r: 45, weight: 0.8 }],
+                RWB: [{ x: 86, y: 55, r: 55, weight: 1.0 }, { x: 86, y: 35, r: 50, weight: 0.7 }, { x: 86, y: 75, r: 45, weight: 0.8 }],
+                DMF: [{ x: 50, y: 62, r: 60, weight: 1.0 }, { x: 35, y: 60, r: 45, weight: 0.6 }, { x: 65, y: 60, r: 45, weight: 0.6 }, { x: 50, y: 50, r: 40, weight: 0.5 }],
+                CM: [{ x: 50, y: 50, r: 70, weight: 1.0 }, { x: 30, y: 48, r: 50, weight: 0.7 }, { x: 70, y: 48, r: 50, weight: 0.7 }, { x: 50, y: 35, r: 40, weight: 0.5 }],
+                LCM: [{ x: 32, y: 52, r: 55, weight: 1.0 }, { x: 25, y: 45, r: 45, weight: 0.7 }, { x: 40, y: 52, r: 35, weight: 0.5 }],
+                RCM: [{ x: 68, y: 52, r: 55, weight: 1.0 }, { x: 75, y: 45, r: 45, weight: 0.7 }, { x: 60, y: 52, r: 35, weight: 0.5 }],
+                LM: [{ x: 18, y: 45, r: 55, weight: 1.0 }, { x: 15, y: 25, r: 45, weight: 0.8 }, { x: 22, y: 50, r: 40, weight: 0.6 }],
+                RM: [{ x: 82, y: 45, r: 55, weight: 1.0 }, { x: 85, y: 25, r: 45, weight: 0.8 }, { x: 78, y: 50, r: 40, weight: 0.6 }],
+                LMF: [{ x: 15, y: 48, r: 55, weight: 1.0 }, { x: 18, y: 32, r: 40, weight: 0.8 }, { x: 15, y: 65, r: 40, weight: 0.6 }],
+                RMF: [{ x: 85, y: 48, r: 55, weight: 1.0 }, { x: 82, y: 32, r: 40, weight: 0.8 }, { x: 85, y: 65, r: 40, weight: 0.6 }],
+                AMF: [{ x: 50, y: 38, r: 60, weight: 1.0 }, { x: 35, y: 35, r: 45, weight: 0.7 }, { x: 65, y: 35, r: 45, weight: 0.7 }, { x: 50, y: 22, r: 35, weight: 0.6 }],
+                AMY: [{ x: 25, y: 38, r: 55, weight: 1.0 }, { x: 75, y: 38, r: 55, weight: 1.0 }, { x: 50, y: 35, r: 40, weight: 0.5 }],
+                LW: [{ x: 18, y: 24, r: 55, weight: 1.0 }, { x: 15, y: 15, r: 40, weight: 0.8 }, { x: 32, y: 22, r: 45, weight: 0.7 }],
+                RW: [{ x: 82, y: 24, r: 55, weight: 1.0 }, { x: 85, y: 15, r: 40, weight: 0.8 }, { x: 68, y: 22, r: 45, weight: 0.7 }],
+                CF: [{ x: 50, y: 20, r: 50, weight: 1.0 }, { x: 50, y: 14, r: 35, weight: 0.9 }, { x: 38, y: 22, r: 40, weight: 0.6 }, { x: 62, y: 22, r: 40, weight: 0.6 }]
+            };
+
+            const roleLabels = {
+                en: {
+                    activity: 'Role Activity Heatmap',
+                    coverage: 'Field Coverage Index',
+                    high: 'High',
+                    med: 'Med',
+                    low: 'Low',
+                    click_info: 'Click any player node below to map exact spatial heat',
+                    off_att: 'Offensive Weight',
+                    def_att: 'Defensive Weight',
+                    desc: {
+                        GK: 'Goalkeeper - Confined to primary penalty area with occasional sweeping support.',
+                        CB: 'Center Back - Dense central defensive coverage guarding against vertical channels.',
+                        LB: 'Left Back - High activity along the wide left corridor, supporting overlaps.',
+                        RB: 'Right Back - High activity along the wide right corridor, supporting overlaps.',
+                        LWB: 'Left Wing Back - Aggressive progression up the left flank, bridging defense and attack.',
+                        RWB: 'Right Wing Back - Aggressive progression up the right flank, bridging defense and attack.',
+                        DMF: 'Defensive Midfielder - Sweeps central midfield pockets, breaking lines and anchoring shape.',
+                        CM: 'Central Midfielder - Engine room role, distributes possession globally across midblock.',
+                        LCM: 'Left Central Midfielder - Manages left-half spaces, connecting build-up transitions.',
+                        RCM: 'Right Central Midfielder - Manages right-half spaces, connecting build-up transitions.',
+                        AMF: 'Attacking Midfielder - High density in central pockets behind strikers, playing assist vectors.',
+                        AMY: 'Wide Attacking Midfielder - Drifts inside from wide-half positions to trigger overlaps.',
+                        LW: 'Left Winger - Explores left flank touchlines, cutting inward or playing high crosses.',
+                        RW: 'Right Winger - Explores right flank touchlines, cutting inward or playing high crosses.',
+                        LM: 'Left Midfield - Wide link player with high work-rate across left transitions.',
+                        RM: 'Right Midfield - Wide link player with high work-rate across right transitions.',
+                        LMF: 'Left Midfield Flanker - Operates between middle and final wide blocks.',
+                        RMF: 'Right Midfield Flanker - Operates between middle and final wide blocks.',
+                        CF: 'Center Forward - High intense heat inside the penalty box, clinical finishing focus.'
+                    },
+                    meta_analysis: 'Heat Map & Density Analysis'
+                },
+                ar: {
+                    activity: 'مخطط الحرارة والانتشار التكتيكي',
+                    coverage: 'مؤشر التغطية المكانية',
+                    high: 'مرتفع',
+                    med: 'متوسط',
+                    low: 'منخفض',
+                    click_info: 'انقر على أي لاعب لعرض المساحات النشطة تكتيكياً له',
+                    off_att: 'الوزن الهجومي',
+                    def_att: 'الوزن الدفاعي',
+                    desc: {
+                        GK: 'حارس المرمى - يتواجد تكتيكياً داخل منطقة الجزاء مع مساندة الكرات العالية.',
+                        CB: 'قلب الدفاع - تغطية مركزية قوية لحماية العمق وإحباط مسارات الهجوم.',
+                        LB: 'ظهير أيسر - تغطية كاملة للممر الأيسر عابراً الخط الدفاعي والهجومي.',
+                        RB: 'ظهير أيمن - تغطية كاملة للممر الأيمن عابراً الخط الدفاعي والهجومي.',
+                        LWB: 'ظهير جناح أيسر - حماية هجومية متقدمة لربط العمق بالأطراف اليسرى.',
+                        RWB: 'ظهير جناح أيمن - حماية هجومية متقدمة لربط العمق بالأطراف اليمنى.',
+                        DMF: 'لاعب وسط دفاعي - قطع خطوط التمرير للخصم وتوفير غطاء دفاعي قوي.',
+                        CM: 'لاعب وسط مركزي - محرك الفريق لتوزيع الكرات والربط الأفقي والعمودي.',
+                        LCM: 'لاعب وسط أيسر - إدارة أنصاف المساحات اليسرى وتمرير الكرات البينية.',
+                        RCM: 'لاعب وسط أيمن - إدارة أنصاف المساحات اليمنى وتمرير الكرات البينية.',
+                        AMF: 'صانع ألعاب متقدم - التواجد في المنطقة "14" لإرسال الكرات المفتاحية للمهاجمين.',
+                        AMY: 'صانع ألعاب جناح - يقطع هجومياً للعمق لخلق كثافة عددية مفاجئة.',
+                        LW: 'جناح أيسر - التمركز في أقصى اليسار لتمطيط دفاع الخصم ثم الاختراق السريع.',
+                        RW: 'جناح أيمن - التمركز في أقصى اليمين لتمطيط دفاع الخصم ثم الاختراق السريع.',
+                        LM: 'خط وسط أيسر - لاعب وسط مساند للأطراف بمعدل لياقة وجري عالي.',
+                        RM: 'خط وسط أيمن - لاعب وسط مساند للأطراف بمعدل لياقة وجري عالي.',
+                        LMF: 'لاعب جنب أيسر - يربط بين الدفاع والوسط لتقديم تغطية أطراف مستمرة.',
+                        RMF: 'لاعب جنب أيمن - يربط بين الدفاع والوسط لتقديم تغطية أطراف مستمرة.',
+                        CF: 'مهاجم صريح - يتمركز داخل الـ 18 لاستغلال الكرات والإنهاء الدقيق.'
+                    },
+                    meta_analysis: 'تحليل انتشار وكثافة الحرارة الكروية'
+                },
+                es: {
+                    activity: 'Mapa de Calor de Actividad',
+                    coverage: 'Índice de Cobertura Espacial',
+                    high: 'Alto',
+                    med: 'Medio',
+                    low: 'Bajo',
+                    click_info: 'Haz clic en cualquier jugador para ver su zona de influencia',
+                    off_att: 'Peso Ofensivo',
+                    def_att: 'Peso Defensivo',
+                    desc: {
+                        GK: 'Portero - Limitado al área pequeña y de penalti con apoyo ocasional de líbero.',
+                        CB: 'Defensa Central - Alta concentración en el área defensiva central cortando balones.',
+                        LB: 'Lateral Izquierdo - Recorrido constante por el pasillo izquierdo del campo.',
+                        RB: 'Lateral Derecho - Recorrido constante por el pasillo derecho del campo.',
+                        LWB: 'Carrilero Izquierdo - Carrilero de alto recorrido por izquierda con amplio soporte ofensivo.',
+                        RWB: 'Carrilero Derecho - Carrilero de alto recorrido por derecha con amplio soporte ofensivo.',
+                        DMF: 'Pivote Defensivo - Destruye juego central y resguarda la zona entre defensa y medio.',
+                        CM: 'Mediocentro - Distribuidor global de juego en la medular buscando equilibrio.',
+                        LCM: 'Interior Izquierdo - Conecta las salidas defensivas por el carril interior izquierdo.',
+                        RCM: 'Interior Derecho - Conecta las salidas defensivas por el carril interior derecho.',
+                        AMF: 'Mediapunta - Enlace creativo en tres cuartos de campo para habilitar delanteros.',
+                        AMY: 'Mediapunta Lateralizado - Genera espacios recortando hacia el centro.',
+                        LW: 'Extremo Izquierdo - Amplitud en banda izquierda, ideal para desborde o diagonal.',
+                        RW: 'Extremo Derecho - Amplitud en banda derecha, ideal para desborde o diagonal.',
+                        LM: 'Volante Izquierdo - Soporte de banda en izquierda combinando defensa y ataque.',
+                        RM: 'Volante Derecho - Soporte de banda en derecha combinando defensa y ataque.',
+                        LMF: 'Volante Izquierdo Avanzado - Transición por banda izquierda.',
+                        RMF: 'Volante Derecho Avanzado - Transición por banda derecha.',
+                        CF: 'Delantero Centro - Máxima presencia en zona de finalización para definir jugadas.'
+                    },
+                    meta_analysis: 'Análisis de Densidad de Calor Táctico'
+                },
+                ja: {
+                    activity: '選手ロール活動ヒートマップ',
+                    coverage: '空間カバーインデックス',
+                    high: '高密度',
+                    med: '中密度',
+                    low: '低密度',
+                    click_info: '選手バッジをクリックすると詳細なカバー範囲を表示します',
+                    off_att: '攻撃貢献指数',
+                    def_att: '守備貢献指数',
+                    desc: {
+                        GK: 'ゴールキーパー - ペナルティエリア内を中心にセービングおよびビルドアップを担当。',
+                        CB: 'センターバック - 中央危険エリアを強固にプロテクトし、シュートコースを限定。',
+                        LB: 'レフトバック - 主に左サイドを上下動し、守備と機を見たオーバーラップを行う。',
+                        RB: 'ライトバック - 主に右サイドを上下動し、守備と機を見たオーバーラップを行う。',
+                        LWB: 'レフトウイングバック - 通常のLBより高い位置をとり、積極的なインナーランを駆使。',
+                        RWB: 'ライトウイングバック - 通常のRBより高い位置をとり、積極的なインナーランを駆使。',
+                        DMF: 'ディフェンシブハーフ - 中盤底で相手パスラインを遮断。極めてタフな守備網を構築。',
+                        CM: 'セントラルMF - 攻守のハブとして配給・ボールハントに広く顔を出します。',
+                        LCM: 'インサイドハーフ(左) - ペナルティエリア左側のハーフスペースを主戦場に配給。',
+                        RCM: 'インサイドハーフ(右) - ペナルティエリア右側のハーフスペースを主戦場に配給。',
+                        AMF: 'アタッキングMF - トップ下で決定的なパスやミドルシュートでゴールに直結。',
+                        AMY: 'ワイド攻撃的ハーフ - サイドから中央へ意図的にズレを生み出し連携を図る。',
+                        LW: 'レフトウイング - 左サイド深く張って攻撃に幅を持たせ、カットインを狙う。',
+                        RW: 'ライトウイング - 右サイド深く張って攻撃に幅を持たせ、カットインを狙う。',
+                        LM: '左サイドハーフ - 中盤左でアップダウンを繰り返し、絶妙なリンクを提供。',
+                        RM: '右サイドハーフ - 中盤右でアップダウンを繰り返し、絶妙なリンクを提供。',
+                        LMF: '左サイドMF - ディフェンスとフォワードの中間で安定した供給をサポート。',
+                        RMF: '右サイドMF - ディフェンスとフォワードの中間で安定した供給をサポート。',
+                        CF: 'センターフォワード - 最前線でクサビを受け、ペナルティエリア内で常に得点を意識。'
+                    },
+                    meta_analysis: 'D3による位置データ＆熱量解析'
+                }
+            };
+
+            const langKeys = roleLabels[language] || roleLabels['en'];
+
+            // Calculate score ratings dynamically
+            const getRatings = (role) => {
+                if (['CF', 'LW', 'RW'].includes(role)) return { off: 92, def: 23, cov: 45 };
+                if (['AMF', 'AMY'].includes(role)) return { off: 88, def: 42, cov: 65 };
+                if (['CM', 'LCM', 'RCM', 'LM', 'RM'].includes(role)) return { off: 72, def: 68, cov: 85 };
+                if (['DMF'].includes(role)) return { off: 45, def: 88, cov: 78 };
+                if (['CB'].includes(role)) return { off: 20, def: 95, cov: 61 };
+                if (['LB', 'RB', 'LWB', 'RWB', 'LMF', 'RMF'].includes(role)) return { off: 65, def: 74, cov: 82 };
+                return { off: 10, def: 98, cov: 35 }; // GK
+            };
+
+            const currentRoleRatings = useMemo(() => {
+                return selectedPos ? getRatings(selectedPos) : { off: 50, def: 50, cov: 50 };
+            }, [selectedPos]);
+
+            // D3 Heat Map Rendering Link
+            useEffect(() => {
+                if (!containerRef.current) return;
+
+                // Clear previous svg content
+                d3.select(containerRef.current).selectAll("*").remove();
+
+                const width = 300;
+                const height = 400;
+
+                const svg = d3.select(containerRef.current)
+                    .append("svg")
+                    .attr("viewBox", `0 0 ${width} ${height}`)
+                    .attr("width", "100%")
+                    .attr("height", "100%")
+                    .attr("class", "rounded-xl border border-emerald-500/20 overflow-hidden shadow-2xl select-none");
+
+                // Background Pitch styling
+                svg.append("rect")
+                    .attr("width", width)
+                    .attr("height", height)
+                    .attr("fill", "#051f10");
+
+                // Grass stripes representing typical pitches
+                for (let i = 0; i < 10; i++) {
+                    if (i % 2 === 0) {
+                        svg.append("rect")
+                            .attr("x", 0)
+                            .attr("y", (height / 10) * i)
+                            .attr("width", width)
+                            .attr("height", height / 10)
+                            .attr("fill", "rgba(0, 0, 0, 0.08)");
+                    }
+                }
+
+                // White pitch perimeter lines
+                const margin = 8;
+                svg.append("rect")
+                    .attr("x", margin)
+                    .attr("y", margin)
+                    .attr("width", width - margin * 2)
+                    .attr("height", height - margin * 2)
+                    .attr("fill", "none")
+                    .attr("stroke", "rgba(255,255,255,0.08)")
+                    .attr("stroke-width", 1.5);
+
+                const halfY = height / 2;
+                svg.append("line")
+                    .attr("x1", margin)
+                    .attr("y1", halfY)
+                    .attr("x2", width - margin)
+                    .attr("y2", halfY)
+                    .attr("stroke", "rgba(255,255,255,0.08)")
+                    .attr("stroke-width", 1.5);
+
+                svg.append("circle")
+                    .attr("cx", width / 2)
+                    .attr("cy", halfY)
+                    .attr("r", 35)
+                    .attr("fill", "none")
+                    .attr("stroke", "rgba(255,255,255,0.08)")
+                    .attr("stroke-width", 1.5);
+
+                // Top Goal Area
+                svg.append("rect")
+                    .attr("x", width * 0.25)
+                    .attr("y", margin)
+                    .attr("width", width * 0.5)
+                    .attr("height", 60)
+                    .attr("fill", "none")
+                    .attr("stroke", "rgba(255,255,255,0.07)")
+                    .attr("stroke-width", 1.5);
+
+                // Bottom Goal Area
+                svg.append("rect")
+                    .attr("x", width * 0.25)
+                    .attr("y", height - 60 - margin)
+                    .attr("width", width * 0.5)
+                    .attr("height", 60)
+                    .attr("fill", "none")
+                    .attr("stroke", "rgba(255,255,255,0.07)")
+                    .attr("stroke-width", 1.5);
+
+                // Setup SVG Gradients for high-fidelity heat spreads
+                const defs = svg.append("defs");
+                
+                const gradId = `heatGrad-${selectedPos || 'default'}`;
+                const radialGrad = defs.append("radialGradient")
+                    .attr("id", gradId)
+                    .attr("cx", "50%")
+                    .attr("cy", "50%")
+                    .attr("r", "50%");
+
+                radialGrad.append("stop")
+                    .attr("offset", "0%")
+                    .attr("stop-color", "rgba(239, 68, 68, 0.9)"); // Crimson center heat
+
+                radialGrad.append("stop")
+                    .attr("offset", "35%")
+                    .attr("stop-color", "rgba(245, 158, 11, 0.48)"); // Vibrant Amber
+
+                radialGrad.append("stop")
+                    .attr("offset", "72%")
+                    .attr("stop-color", "rgba(251, 146, 60, 0.18)"); // Smooth peripheral orange
+
+                radialGrad.append("stop")
+                    .attr("offset", "100%")
+                    .attr("stop-color", "rgba(16, 185, 129, 0.0)"); // Dissolves to transparent grass
+
+                // Dynamic map scales translating 0-100 percentage values to pixels
+                const xScale = d3.scaleLinear().domain([0, 100]).range([margin, width - margin]);
+                const yScale = d3.scaleLinear().domain([0, 100]).range([margin, height - margin]);
+
+                // Create heatmap spots based on active selected position
+                const activeRole = selectedPos || 'CF';
+                const spots = heatMaps[activeRole] || [{ x: 50, y: 50, r: 60, weight: 1.0 }];
+
+                // Render heatmap circles with ease expansion transitions
+                const heatmapGroup = svg.append("g").attr("class", "heatmap-density");
+
+                heatmapGroup.selectAll("circle.heat-density")
+                    .data(spots)
+                    .enter()
+                    .append("circle")
+                    .attr("class", "heat-density")
+                    .attr("cx", d => xScale(d.x))
+                    .attr("cy", d => yScale(d.y))
+                    .attr("r", 0) 
+                    .attr("fill", `url(#${gradId})`)
+                    .style("filter", "blur(16px)") 
+                    .transition()
+                    .duration(1100)
+                    .ease(d3.easeCubicOut)
+                    .attr("r", d => d.r * 1.6);
+
+                // Muted gray background representations of other teammate positions
+                svg.append("g")
+                    .attr("class", "teammates-bg")
+                    .selectAll("circle.teammate")
+                    .data(coords.filter(c => c.r !== selectedPos))
+                    .enter()
+                    .append("circle")
+                    .attr("cx", d => xScale(d.x))
+                    .attr("cy", d => yScale(d.y))
+                    .attr("r", 5)
+                    .attr("fill", "rgba(0, 212, 255, 0.18)")
+                    .attr("stroke", "rgba(255, 255, 255, 0.08)")
+                    .attr("stroke-width", 1);
+
+                // Draw clickable player node circles
+                const badgeNodes = svg.append("g")
+                    .attr("class", "interactive-badges")
+                    .selectAll("g.badge-node")
+                    .data(coords)
+                    .enter()
+                    .append("g")
+                    .attr("class", "badge-node")
+                    .style("cursor", "pointer")
+                    .on("click", (event, d) => {
+                        setSelectedPos(d.r);
+                    });
+
+                // Render active marker pulse ring
+                badgeNodes.filter(d => d.r === selectedPos)
+                    .append("circle")
+                    .attr("cx", d => xScale(d.x))
+                    .attr("cy", d => yScale(d.y))
+                    .attr("r", 15)
+                    .attr("fill", "none")
+                    .attr("stroke", "#00d4ff")
+                    .attr("stroke-width", 1.5)
+                    .style("stroke-dasharray", "3, 2")
+                    .style("animation", "dash-flow 2s infinite linear")
+                    .style("transform-origin", d => `${xScale(d.x)}px ${yScale(d.y)}px`);
+
+                // Main player circle Badge 
+                badgeNodes.append("circle")
+                    .attr("cx", d => xScale(d.x))
+                    .attr("cy", d => yScale(d.y))
+                    .attr("r", 11)
+                    .attr("fill", d => d.r === selectedPos ? "#00d4ff" : "#1f2937")
+                    .attr("stroke", d => d.r === selectedPos ? "#ffffff" : "rgba(0, 212, 255, 0.45)")
+                    .attr("stroke-width", 1.8)
+                    .style("filter", "drop-shadow(0px 2px 4px rgba(0,0,0,0.4))");
+
+                // Player node initials (e.g. CF, LWB, CB)
+                badgeNodes.append("text")
+                    .attr("x", d => xScale(d.x))
+                    .attr("y", d => yScale(d.y) + 3)
+                    .attr("text-anchor", "middle")
+                    .attr("fill", d => d.r === selectedPos ? "#0a0e1a" : "#ffffff")
+                    .attr("font-size", "7.5px")
+                    .attr("font-weight", "900")
+                    .attr("font-family", "Orbitron, sans-serif")
+                    .text(d => d.r);
+
+            }, [selectedPos, coords, formation]);
+
+            return (
+                <div class="bg-surface border border-border rounded-xl p-5 space-y-4 shadow-xl">
+                    <div class="flex items-center justify-between border-b border-border/60 pb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-danger animate-pulse"></span>
+                            <span class="text-xs font-black font-orbitron text-white tracking-widest uppercase">{langKeys.activity} ({formation})</span>
+                        </div>
+                        <span class="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[8px] font-black font-orbitron rounded px-2.5 py-0.5 uppercase tracking-wider">D3 Visualization</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
+                        {/* D3 visual pitch frame */}
+                        <div class="md:col-span-5 flex justify-center">
+                            <div ref={containerRef} class="w-full max-w-[200px] aspect-[3/4]"></div>
+                        </div>
+
+                        {/* Interactive metadata display options */}
+                        <div class="md:col-span-7 space-y-4">
+                            <div class="bg-surface2 border border-border/80 p-4 rounded-xl space-y-2 relative overflow-hidden">
+                                <div class="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-xl pointer-events-none"></div>
+                                <span class="text-[9px] uppercase font-black tracking-widest text-primary font-orbitron block">Tactical Distribution Profile</span>
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-8 h-8 rounded-full bg-primary text-navyBg font-black text-xs font-orbitron flex items-center justify-center border border-white/20">
+                                        {selectedPos || 'CF'}
+                                    </div>
+                                    <span class="text-xs font-bold text-white block leading-tight">{selectedPos || 'CF'} Heat Density Description</span>
+                                </div>
+                                <p class="text-xs text-gray-300 leading-relaxed font-semibold select-text mt-1">
+                                    {langKeys.desc[selectedPos] || langKeys.click_info}
+                                </p>
+                            </div>
+
+                            {/* Tactical Contribution Matrices */}
+                            <div class="grid grid-cols-3 gap-2.5 text-center">
+                                <div class="bg-surface2/60 p-2.5 rounded-lg border border-border/50">
+                                    <span class="block text-[8px] text-gray-400 font-bold uppercase mb-0.5">{langKeys.off_att}</span>
+                                    <span class="text-xs font-black text-primary font-orbitron">{currentRoleRatings.off}%</span>
+                                </div>
+                                <div class="bg-surface2/60 p-2.5 rounded-lg border border-border/50">
+                                    <span class="block text-[8px] text-gray-400 font-bold uppercase mb-0.5">{langKeys.def_att}</span>
+                                    <span class="text-xs font-black text-rose-400 font-orbitron">{currentRoleRatings.def}%</span>
+                                </div>
+                                <div class="bg-surface2/60 p-2.5 rounded-lg border border-border/50">
+                                    <span class="block text-[8px] text-gray-400 font-bold uppercase mb-0.5">{langKeys.coverage}</span>
+                                    <span class="text-xs font-black text-amber-400 font-orbitron">{currentRoleRatings.cov}%</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-black/20 px-3 py-2.5 rounded-lg border border-border/30 text-[9.5px] text-gray-400 leading-normal font-semibold flex items-start gap-1.5">
+                                <span>💡</span>
+                                <span>{langKeys.click_info}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
         // ------------------------- MODULE 3: TACTICS GENERATOR -------------------------
         function TacticsGeneratorModule({ triggerToast, isPro, setIsProModalOpen, profiles, setProfiles, activeProfileId, setActiveProfileId, t, language }) {
             const [teamName, setTeamName] = useState('My Custom Squad');
@@ -1984,7 +2558,8 @@ You must respond with a JSON object. Ensure the format is strictly valid JSON. D
                     ctx.strokeRect(pitchX + pitchWidth / 2 - 70, pitchY + pitchHeight - 80, 140, 65);
 
                     // Placement of players based on selected COORDS dictionary
-                    const positionsList = COORDS[outputTactic.formation] || COORDS['4-3-3'];
+                    const customCoords = window.getCurrentCustomCoords?.() || {};
+                    const positionsList = customCoords[outputTactic.formation] || COORDS[outputTactic.formation] || COORDS['4-3-3'];
                     positionsList.forEach(pos => {
                         const worldX = pitchX + 15 + (pos.x / 100) * (pitchWidth - 30);
                         const worldY = pitchY + 15 + (pos.y / 100) * (pitchHeight - 30);
@@ -2204,152 +2779,163 @@ You must respond with a JSON object. Ensure the format is strictly valid JSON. D
                                     <p class="font-bold font-orbitron text-purple-400 text-md animate-pulse">INTEGRATING SYSTEM COGNITION...</p>
                                     <p class="text-[10px] text-gray-400 mt-2 font-mono uppercase tracking-widest">Scanning active meta-game loops & weak areas...</p>
                                 </div>
-                            ) : geminiResult ? (
-                                <div class="bg-surface border-2 border-purple-500/40 rounded-xl p-5 space-y-4 shadow-[0_0_25px_rgba(147,51,234,0.15)] relative overflow-hidden">
-                                    
-                                    {/* Premium visual tag */}
-                                    <div class="absolute top-0 right-0 bg-gradient-to-l from-purple-600 to-indigo-600 text-white font-orbitron text-[8px] font-black px-3 py-1.5 uppercase rounded-bl-lg tracking-widest leading-none">
-                                        NEURAL GEMINI PREDICTION
-                                    </div>
-
-                                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3">
-                                        <div>
-                                            <h3 class="text-lg font-black font-orbitron text-white tracking-wide">
-                                                Best-Fit: <span class="text-purple-400 font-extrabold">{geminiResult.bestFormation}</span>
-                                            </h3>
-                                            <p class="text-[10px] text-gray-400 uppercase tracking-widest font-mono">Cognitive Strategy Suggestion</p>
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            <button onClick={saveGeminiTactic} class="bg-purple-600 hover:bg-purple-500 text-white font-bold font-orbitron text-[10px] px-3.5 py-1.5 rounded-lg transition-all shadow-[0_0_10px_rgba(147,51,234,0.3)] border border-purple-400/20 cursor-pointer">
-                                                💾 DEPLOY PROFILE
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div class="space-y-4">
-                                            {/* Tactical analysis */}
-                                            <div class="space-y-2">
-                                                <h4 class="font-bold text-purple-400 text-xs uppercase tracking-wider font-orbitron flex items-center gap-1.5">
-                                                    <span>🧠 Gemini Intelligence Response</span>
-                                                </h4>
-                                                <p class="text-xs text-gray-300 leading-relaxed bg-surface2 border border-border/80 p-3 rounded-lg font-medium">
-                                                    {geminiResult.analysis}
-                                                </p>
+                            ) : (
+                                <div class="space-y-6">
+                                    {geminiResult ? (
+                                        <div class="bg-surface border-2 border-purple-500/40 rounded-xl p-5 space-y-4 shadow-[0_0_25px_rgba(147,51,234,0.15)] relative overflow-hidden">
+                                            
+                                            {/* Premium visual tag */}
+                                            <div class="absolute top-0 right-0 bg-gradient-to-l from-purple-600 to-indigo-600 text-white font-orbitron text-[8px] font-black px-3 py-1.5 uppercase rounded-bl-lg tracking-widest leading-none">
+                                                NEURAL GEMINI PREDICTION
                                             </div>
 
-                                            {/* Key Indicators */}
-                                            <div class="grid grid-cols-2 gap-2 text-[10px] font-semibold text-gray-400 font-mono">
-                                                <div class="bg-surface2 p-2 rounded border border-border/60">
-                                                    <span class="block text-gray-500 uppercase">WEAK COVERS</span>
-                                                    <span class="text-green-400 font-bold">{weakAreas.join(' & ')}</span>
+                                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3">
+                                                <div>
+                                                    <h3 class="text-lg font-black font-orbitron text-white tracking-wide">
+                                                        Best-Fit: <span class="text-purple-400 font-extrabold">{geminiResult.bestFormation}</span>
+                                                    </h3>
+                                                    <p class="text-[10px] text-gray-400 uppercase tracking-widest font-mono">Cognitive Strategy Suggestion</p>
                                                 </div>
-                                                <div class="bg-surface2 p-2 rounded border border-border/60">
-                                                    <span class="block text-gray-500 uppercase">META TARGETS</span>
-                                                    <span class="text-purple-300 font-bold">Anti-LongBall/Loop</span>
+                                                <div class="flex items-center gap-2">
+                                                    <button onClick={saveGeminiTactic} class="bg-purple-600 hover:bg-purple-500 text-white font-bold font-orbitron text-[10px] px-3.5 py-1.5 rounded-lg transition-all shadow-[0_0_10px_rgba(147,51,234,0.3)] border border-purple-400/20 cursor-pointer">
+                                                        💾 DEPLOY PROFILE
+                                                    </button>
                                                 </div>
                                             </div>
-                                        </div>
 
-                                        {/* Pitch preview of suggested formation */}
-                                        <div>
-                                            <p class="text-xs font-bold text-gray-400 mb-2 uppercase font-orbitron flex items-center gap-1">
-                                                <span>📋 Suggested Defensive Pitch Layout</span>
-                                            </p>
-                                            <div class="h-44 border border-border/60 rounded-xl overflow-hidden shadow-inner">
-                                                <PitchVisualizer formation={geminiResult.bestFormation} mini={true}/>
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div class="space-y-4">
+                                                    {/* Tactical analysis */}
+                                                    <div class="space-y-2">
+                                                        <h4 class="font-bold text-purple-400 text-xs uppercase tracking-wider font-orbitron flex items-center gap-1.5">
+                                                            <span>🧠 Gemini Intelligence Response</span>
+                                                        </h4>
+                                                        <p class="text-xs text-gray-300 leading-relaxed bg-surface2 border border-border/80 p-3 rounded-lg font-medium">
+                                                            {geminiResult.analysis}
+                                                        </p>
+                                                    </div>
+
+                                                    {/* Key Indicators */}
+                                                    <div class="grid grid-cols-2 gap-2 text-[10px] font-semibold text-gray-400 font-mono">
+                                                        <div class="bg-surface2 p-2 rounded border border-border/60">
+                                                            <span class="block text-gray-500 uppercase">WEAK COVERS</span>
+                                                            <span class="text-green-400 font-bold">{weakAreas.join(' & ')}</span>
+                                                        </div>
+                                                        <div class="bg-surface2 p-2 rounded border border-border/60">
+                                                            <span class="block text-gray-500 uppercase">META TARGETS</span>
+                                                            <span class="text-purple-300 font-bold">Anti-LongBall/Loop</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Pitch preview of suggested formation */}
+                                                <div>
+                                                    <p class="text-xs font-bold text-gray-400 mb-2 uppercase font-orbitron flex items-center gap-1">
+                                                        <span>📋 Suggested Defensive Pitch Layout</span>
+                                                    </p>
+                                                    <div class="h-44 border border-border/60 rounded-xl overflow-hidden shadow-inner">
+                                                        <PitchVisualizer formation={geminiResult.bestFormation} mini={true}/>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Pre match & In Game Setups */}
+                                            <div class="space-y-3.5 pt-2 border-t border-border/65">
+                                                <div class="p-3 bg-surface2 border border-purple-500/10 rounded-lg text-xs leading-relaxed">
+                                                    <p class="font-bold text-purple-300 flex items-center gap-1.5 mb-1 font-orbitron text-[10px] uppercase">⚙️ Pre-match Spatial Anchors</p>
+                                                    <p class="text-gray-300 font-medium">{geminiResult.preMatchSetup}</p>
+                                                </div>
+                                                <div class="p-3 bg-surface2 border border-indigo-500/10 rounded-lg text-xs leading-relaxed">
+                                                    <p class="font-bold text-indigo-300 flex items-center gap-1.5 mb-1 font-orbitron text-[10px] uppercase">🎮 In-game Tactical Adjustments</p>
+                                                    <p class="text-gray-300 font-medium">{geminiResult.inGameAdjustment}</p>
+                                                </div>
+                                            </div>
+
+                                            {/* License Note when Simulated */}
+                                            {geminiResult.isSimulated && (
+                                                <div class="mt-2 bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-2.5 text-[10px] leading-relaxed text-yellow-400/90 flex items-start gap-2">
+                                                    <span>⚠️</span>
+                                                    <p><strong>License Notice:</strong> This counter-strategy was simulated from cognitive caches. Set your personal Gemini SDK key in AI Studio Secrets to switch to the Live API.</p>
+                                                </div>
+                                            )}
+
+                                        </div>
+                                    ) : outputTactic ? (
+                                        <div class="bg-surface rounded-xl border border-border p-5 space-y-4">
+                                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3">
+                                                <div>
+                                                    <h3 class="text-lg font-black font-orbitron text-white">{outputTactic.teamName}</h3>
+                                                    <p class="text-[10px] text-gray-400 uppercase tracking-widest">{outputTactic.playstyle} blueprint</p>
+                                                </div>
+                                                <div class="flex items-center gap-1.5 flex-wrap">
+                                                    <button onClick={() => {
+                                                        const saved = JSON.parse(localStorage.getItem('ef26_generated_tactics') || '[]');
+                                                        localStorage.setItem('ef26_generated_tactics', JSON.stringify([outputTactic, ...saved]));
+                                                        triggerToast('Tactic saved to localStorage!', 'success');
+                                                    }} class="bg-primary/10 hover:bg-primary text-primary hover:text-navyBg font-bold font-orbitron text-[10px] border border-primary/30 px-3 py-1.5 rounded transition cursor-pointer">
+                                                        SAVE
+                                                    </button>
+                                                    <button onClick={exportAsJSON} class="bg-surface2 hover:bg-surface border border-border text-gray-300 hover:text-white font-bold font-orbitron text-[10px] px-3 py-1.5 rounded transition cursor-pointer" title="Download blueprint JSON file">
+                                                        📋 JSON
+                                                    </button>
+                                                    <button onClick={exportAsImage} class="bg-accent/20 hover:bg-accent text-accent hover:text-navyBg font-bold font-orbitron text-[10px] border border-accent/20 px-3 py-1.5 rounded transition cursor-pointer" title="Export tactical pitch graphic card">
+                                                        🖼️ EXPORT IMAGE
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div class="space-y-4">
+                                                    {/* Attacking params */}
+                                                    <div class="space-y-1.5 text-xs">
+                                                        <h4 class="font-bold text-primary uppercase tracking-wider font-orbitron">⚔️ Offensive Settings</h4>
+                                                        <p class="flex justify-between text-gray-300"><span>Build Up:</span> <span class="font-bold text-white">{outputTactic.attacking.buildUp}</span></p>
+                                                        <p class="flex justify-between text-gray-300"><span>Attacking Area:</span> <span class="font-bold text-white">{outputTactic.attacking.area}</span></p>
+                                                        <p class="flex justify-between text-gray-300"><span>Support Range:</span> <span class="font-bold text-primary">{outputTactic.attacking.support}/10</span></p>
+                                                        <p class="flex justify-between text-gray-300"><span>Positioning:</span> <span class="font-bold text-white">{outputTactic.attacking.positioning}</span></p>
+                                                    </div>
+
+                                                    {/* Defensive params */}
+                                                    <div class="space-y-1.5 text-xs">
+                                                        <h4 class="font-bold text-secondary uppercase tracking-wider font-orbitron">🛡️ Defensive Settings</h4>
+                                                        <p class="flex justify-between text-gray-300"><span>Defensive Line:</span> <span class="font-bold text-white">{outputTactic.defensive.line}/10</span></p>
+                                                        <p class="flex justify-between text-gray-300"><span>Compactness:</span> <span class="font-bold text-white">{outputTactic.defensive.compactness}/10</span></p>
+                                                        <p class="flex justify-between text-gray-300"><span>Press Intensity:</span> <span class="font-bold text-secondary">{outputTactic.defensive.intensity}/10</span></p>
+                                                        <p class="flex justify-between text-gray-300"><span>Containment:</span> <span class="font-bold text-white">{outputTactic.defensive.containment}</span></p>
+                                                    </div>
+                                                </div>
+
+                                                {/* Pitch preview in simple format */}
+                                                <div>
+                                                    <p class="text-xs font-bold text-gray-400 mb-2 uppercase font-orbitron">Pitch Position Map ({outputTactic.formation})</p>
+                                                    <div class="h-44">
+                                                        <PitchVisualizer formation={outputTactic.formation} mini={true}/>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Detailed text warnings */}
+                                            <div class="p-3 bg-surface2 border border-border rounded-lg text-xs leading-relaxed">
+                                                <p class="font-bold text-success mb-1"> Why This Works</p>
+                                                <p class="text-gray-300 mb-3">{outputTactic.why}</p>
+                                                <p class="font-bold text-danger mb-1">⚠️ Defeat vulnerability</p>
+                                                <p class="text-gray-300">{outputTactic.counterWeakness}</p>
                                             </div>
                                         </div>
-                                    </div>
-
-                                    {/* Pre match & In Game Setups */}
-                                    <div class="space-y-3.5 pt-2 border-t border-border/65">
-                                        <div class="p-3 bg-surface2 border border-purple-500/10 rounded-lg text-xs leading-relaxed">
-                                            <p class="font-bold text-purple-300 flex items-center gap-1.5 mb-1 font-orbitron text-[10px] uppercase">⚙️ Pre-match Spatial Anchors</p>
-                                            <p class="text-gray-300 font-medium">{geminiResult.preMatchSetup}</p>
-                                        </div>
-                                        <div class="p-3 bg-surface2 border border-indigo-500/10 rounded-lg text-xs leading-relaxed">
-                                            <p class="font-bold text-indigo-300 flex items-center gap-1.5 mb-1 font-orbitron text-[10px] uppercase">🎮 In-game Tactical Adjustments</p>
-                                            <p class="text-gray-300 font-medium">{geminiResult.inGameAdjustment}</p>
-                                        </div>
-                                    </div>
-
-                                    {/* License Note when Simulated */}
-                                    {geminiResult.isSimulated && (
-                                        <div class="mt-2 bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-2.5 text-[10px] leading-relaxed text-yellow-400/90 flex items-start gap-2">
-                                            <span>⚠️</span>
-                                            <p><strong>License Notice:</strong> This counter-strategy was simulated from cognitive caches. Set your personal Gemini SDK key in AI Studio Secrets to switch to the Live API.</p>
+                                    ) : (
+                                        <div class="bg-surface rounded-xl border border-border p-8 text-center text-gray-500 flex flex-col items-center justify-center min-h-[160px]">
+                                            <span class="text-5xl mb-2">🤖</span>
+                                            <h4 class="font-bold text-white mb-1">Optimize Parameters</h4>
+                                            <p class="text-xs max-w-sm">Use the parameters panel on the left to deploy custom AI blueprints matching your eFootball playstyle preference.</p>
                                         </div>
                                     )}
 
-                                </div>
-                            ) : outputTactic ? (
-                                <div class="bg-surface rounded-xl border border-border p-5 space-y-4">
-                                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3">
-                                        <div>
-                                            <h3 class="text-lg font-black font-orbitron text-white">{outputTactic.teamName}</h3>
-                                            <p class="text-[10px] text-gray-400 uppercase tracking-widest">{outputTactic.playstyle} blueprint</p>
-                                        </div>
-                                        <div class="flex items-center gap-1.5 flex-wrap">
-                                            <button onClick={() => {
-                                                const saved = JSON.parse(localStorage.getItem('ef26_generated_tactics') || '[]');
-                                                localStorage.setItem('ef26_generated_tactics', JSON.stringify([outputTactic, ...saved]));
-                                                triggerToast('Tactic saved to localStorage!', 'success');
-                                            }} class="bg-primary/10 hover:bg-primary text-primary hover:text-navyBg font-bold font-orbitron text-[10px] border border-primary/30 px-3 py-1.5 rounded transition cursor-pointer">
-                                                SAVE
-                                            </button>
-                                            <button onClick={exportAsJSON} class="bg-surface2 hover:bg-surface border border-border text-gray-300 hover:text-white font-bold font-orbitron text-[10px] px-3 py-1.5 rounded transition cursor-pointer" title="Download blueprint JSON file">
-                                                📋 JSON
-                                            </button>
-                                            <button onClick={exportAsImage} class="bg-accent/20 hover:bg-accent text-accent hover:text-navyBg font-bold font-orbitron text-[10px] border border-accent/20 px-3 py-1.5 rounded transition cursor-pointer" title="Export tactical pitch graphic card">
-                                                🖼️ EXPORT IMAGE
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div class="space-y-4">
-                                            {/* Attacking params */}
-                                            <div class="space-y-1.5 text-xs">
-                                                <h4 class="font-bold text-primary uppercase tracking-wider font-orbitron">⚔️ Offensive Settings</h4>
-                                                <p class="flex justify-between text-gray-300"><span>Build Up:</span> <span class="font-bold text-white">{outputTactic.attacking.buildUp}</span></p>
-                                                <p class="flex justify-between text-gray-300"><span>Attacking Area:</span> <span class="font-bold text-white">{outputTactic.attacking.area}</span></p>
-                                                <p class="flex justify-between text-gray-300"><span>Support Range:</span> <span class="font-bold text-primary">{outputTactic.attacking.support}/10</span></p>
-                                                <p class="flex justify-between text-gray-300"><span>Positioning:</span> <span class="font-bold text-white">{outputTactic.attacking.positioning}</span></p>
-                                            </div>
-
-                                            {/* Defensive params */}
-                                            <div class="space-y-1.5 text-xs">
-                                                <h4 class="font-bold text-secondary uppercase tracking-wider font-orbitron">🛡️ Defensive Settings</h4>
-                                                <p class="flex justify-between text-gray-300"><span>Defensive Line:</span> <span class="font-bold text-white">{outputTactic.defensive.line}/10</span></p>
-                                                <p class="flex justify-between text-gray-300"><span>Compactness:</span> <span class="font-bold text-white">{outputTactic.defensive.compactness}/10</span></p>
-                                                <p class="flex justify-between text-gray-300"><span>Press Intensity:</span> <span class="font-bold text-secondary">{outputTactic.defensive.intensity}/10</span></p>
-                                                <p class="flex justify-between text-gray-300"><span>Containment:</span> <span class="font-bold text-white">{outputTactic.defensive.containment}</span></p>
-                                            </div>
-                                        </div>
-
-                                        {/* Pitch preview in simple format */}
-                                        <div>
-                                            <p class="text-xs font-bold text-gray-400 mb-2 uppercase font-orbitron">Pitch Position Map ({outputTactic.formation})</p>
-                                            <div class="h-44">
-                                                <PitchVisualizer formation={outputTactic.formation} mini={true}/>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Detailed text warnings */}
-                                    <div class="p-3 bg-surface2 border border-border rounded-lg text-xs leading-relaxed">
-                                        <p class="font-bold text-success mb-1"> Why This Works</p>
-                                        <p class="text-gray-300 mb-3">{outputTactic.why}</p>
-                                        <p class="font-bold text-danger mb-1">⚠️ Defeat vulnerability</p>
-                                        <p class="text-gray-300">{outputTactic.counterWeakness}</p>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div class="bg-surface rounded-xl border border-border p-8 text-center text-gray-500 h-full flex flex-col items-center justify-center min-h-[300px]">
-                                    <span class="text-5xl mb-2">🤖</span>
-                                    <h4 class="font-bold text-white mb-1">Optimize Parameters</h4>
-                                    <p class="text-xs max-w-sm">Use the parameters panel on the left to deploy custom AI blueprints matching your eFootball playstyle preference.</p>
+                                    {/* D3 Interactive Spatial Heatmap */}
+                                    <FormationHeatmap 
+                                        formation={geminiResult ? geminiResult.bestFormation : (outputTactic ? outputTactic.formation : formation)}
+                                        triggerToast={triggerToast}
+                                        language={language}
+                                    />
                                 </div>
                             )}
                         </div>
@@ -2464,6 +3050,7 @@ You must respond with a JSON object. Ensure the format is strictly valid JSON. D
             const [myFormation, setMyFormation] = useState('4-3-3');
             const [playstyle, setPlaystyle] = useState('Possession');
             const [situation, setSituation] = useState('Drawing');
+            const [activePlaybookRole, setActivePlaybookRole] = useState('b2b');
 
             const [subTactics, setSubTactics] = useState({
                 counterTarget: false, earlyCross: false, longBall: false,
@@ -2562,6 +3149,224 @@ You must respond with a JSON object. Ensure the format is strictly valid JSON. D
                             </div>
                         </div>
                     </div>
+
+                    {/* Animated Tactical Playbook Component */}
+                    {(() => {
+                        const playbookRoles = [
+                            {
+                                id: 'b2b',
+                                name: t('b2b_midfielder'),
+                                abbr: 'B2B',
+                                description: language === 'ar' ? 'لاعب من الصندوق إلى الصندوق يركض باستمرار لربط اللعب والمساندة الهجومية.' : (language === 'ja' ? 'ペナルティエリアからペナルティエリアまで激しく動き回り、攻守に絶大な貢献を与えます。' : 'Covers immense ground. transition-loops from deep defensive support straight into high-intensity attacking runs.'),
+                                tacticalTip: language === 'ar' ? 'مناسب للاعبين ذوي طاقة عالية ومعدل مجهود مرتفع.' : (language === 'ja' ? '高スタミナ＆攻守バランスの良いMFに最適です。' : 'Perfect for high-stamina players with balanced defending, passing, and long-range shooting attributes.'),
+                                start: { x: 50, y: 55 },
+                                animationClass: 'anim-b2b',
+                                pathSvg: <path d="M 150,220 L 150,70" fill="none" stroke="#10b981" stroke-width="2.5" class="dash-flow-line" stroke-linecap="round" />,
+                                markerSvg: <polygon points="150,70 144,82 156,82" fill="#10b981" />
+                            },
+                            {
+                                id: 'ifb',
+                                name: t('inverted_fullback'),
+                                abbr: 'I-FB',
+                                description: language === 'ar' ? 'ينتقل من المركز الدفاعي المعتاد للجناح إلى عمق خط الوسط لتعزيز السيطرة الدفاعية.' : (language === 'ja' ? 'オーバーラップせず、内側に絞って守備のブロックを強化します。' : 'Rather than overlapping wide, drifts inward during possession to function as central defensive cover.'),
+                                tacticalTip: language === 'ar' ? 'يساعد في تأمين الخط الخلفي عند تقدم الجناح الآخر.' : (language === 'ja' ? 'もう片方のサイドバックが超攻撃的な場合に、守備のバランスを完璧にします。' : 'Saves your central shape when other fullback joins attacking runs. Brilliant for stopping central spam counters.'),
+                                start: { x: 18, y: 72 },
+                                animationClass: 'anim-ifb',
+                                pathSvg: <path d="M 54,288 L 120,238" fill="none" stroke="#00d4ff" stroke-width="2.5" class="dash-flow-line" stroke-linecap="round" />,
+                                markerSvg: <polygon points="120,238 110,244 116,252" fill="#00d4ff" />
+                            },
+                            {
+                                id: 'am',
+                                name: t('anchor_man'),
+                                abbr: 'AM',
+                                description: language === 'ar' ? 'لاعب ارتكاز يتمركز عميقاً ويمتنع عن الهجوم لتأمين عمق الدفاع الخلفي.' : (language === 'ja' ? 'ディフェンスラインの直前にどっしりと構え、相手の縦パスを遮断します。' : 'Focuses completely on defensive holding. Stays stationary right over defenders to choke vertical options.'),
+                                tacticalTip: language === 'ar' ? 'مثالي للاعبي DMF ذوي طاقات فيزيائية جيدة.' : (language === 'ja' ? '屈強なフィジカルを持つDMFに持たせることで完璧な盾になります。' : 'Assign to high-physicality DMFs. Does not get baited out by passing triangles, maintaining solid low positions.'),
+                                start: { x: 50, y: 72 },
+                                animationClass: 'anim-am',
+                                pathSvg: <path d="M 120,288 L 180,288" fill="none" stroke="#f59e0b" stroke-width="2.5" class="dash-flow-line" stroke-linecap="round" />,
+                                markerSvg: <circle cx="150" cy="288" r="4" fill="#f59e0b" />
+                            },
+                            {
+                                id: 'gp',
+                                name: t('goal_poacher'),
+                                abbr: 'GP',
+                                description: language === 'ar' ? 'ينطلق باستمرار خلف خطوط دفاع الخصم عند لحظات الهجوم مستهدفاً المرمى.' : (language === 'ja' ? 'ディフェンスラインの裏を一瞬の隙を突いてゴール裏へ抜け出します。' : 'Lurks on the shoulder of opposition backlines, sliding laterally before sprinting clean behind blind spots.'),
+                                tacticalTip: language === 'ar' ? 'يتطلب مهاجمين بإنهاء وسرعة ممتازين.' : (language === 'ja' ? '決定力とスピードを持つストライカーに持たせるとスルーパスから得点増。' : 'Feed with high-velocity stunner passes or manual through loops. Essential for fast counter structures.'),
+                                start: { x: 50, y: 18 },
+                                animationClass: 'anim-gp',
+                                pathSvg: <path d="M 150,72 L 120,72 L 180,35" fill="none" stroke="#ef4444" stroke-width="2.5" class="dash-flow-line" stroke-linecap="round" />,
+                                markerSvg: <polygon points="180,35 170,38 174,46" fill="#ef4444" />
+                            },
+                            {
+                                id: 'cp',
+                                name: t('creative_playmaker'),
+                                abbr: 'CP',
+                                description: language === 'ar' ? 'يتراجع لطلب الكرة ثم يوزع الكرات البينية المبدعة للمهاجمين.' : (language === 'ja' ? 'ポジションを一つ落とし、攻撃の配給・ラストパスの演出を行います。' : 'Drops backward into central midfield pockets to demand the ball, creating space and playing killer assist passes.'),
+                                tacticalTip: language === 'ar' ? 'يفضل مع لاعبي الوسط المبتكرين ذوي دقة تمرير عالية.' : (language === 'ja' ? 'パススキルやボールコントロールの高いAMF選手に最適。' : 'Requires high passing, vision, and ball-retention metrics. Ideal for fluid triangle possession styles.'),
+                                start: { x: 50, y: 38 },
+                                animationClass: 'anim-cp',
+                                pathSvg: <path d="M 150,152 L 150,230" fill="none" stroke="#a78bfa" stroke-width="2.5" class="dash-flow-line" stroke-linecap="round" />,
+                                markerSvg: <polygon points="150,230 145,220 155,220" fill="#a78bfa" />
+                            },
+                            {
+                                id: 'otb',
+                                name: t('roaming_winger'),
+                                abbr: 'OTB',
+                                description: language === 'ar' ? 'يبدأ على الجناح للتوسيع ثم يقطع داخل منطقة الجزاء لإنهاء الكرات.' : (language === 'ja' ? '外側のウイングから中央斜めに向かって鋭くカットインしシュートを狙います。' : 'Stays wide out of possession to stretch lines, then triggers deep diagonal cuts inside central attacking zones.'),
+                                tacticalTip: language === 'ar' ? 'ممتاز عند تفضيل الجري والانعطاف باتجاه المرمى.' : (language === 'ja' ? '決定力とカーブ・スピードが高い選手に推奨されます。' : 'Perfect for wingers with high speed and curve statistics who can execute deadly corner finesse shots.'),
+                                start: { x: 15, y: 24 },
+                                animationClass: 'anim-otb',
+                                pathSvg: <path d="M 45,96 L 175,56" fill="none" stroke="#ec4899" stroke-width="2.5" class="dash-flow-line" stroke-linecap="round" />,
+                                markerSvg: <polygon points="175,56 165,58 169,66" fill="#ec4899" />
+                            }
+                        ];
+
+                        const getPlaybookRoleColor = (id) => {
+                            if (id === 'gp') return '#ef4444';
+                            if (id === 'ifb') return '#00d4ff';
+                            if (id === 'b2b') return '#10b981';
+                            if (id === 'am') return '#f59e0b';
+                            if (id === 'cp') return '#a78bfa';
+                            return '#ec4899';
+                        };
+
+                        const selectedRole = playbookRoles.find(r => r.id === activePlaybookRole) || playbookRoles[0];
+                        const roleColor = getPlaybookRoleColor(selectedRole.id);
+
+                        return (
+                            <div class="bg-surface rounded-xl border border-border p-6 mt-6 space-y-6">
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
+                                    <div>
+                                        <h3 class="text-xl font-bold font-orbitron text-white tracking-wide uppercase flex items-center gap-2">
+                                            <span>📘 {t('playbook')}</span>
+                                        </h3>
+                                        <p class="text-xs text-gray-400 font-medium">{t('playbook_desc')}</p>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                                    {/* Playbook Left: Selector and Details */}
+                                    <div class="lg:col-span-5 space-y-4">
+                                        <div class="bg-surface2 p-4 rounded-xl border border-border">
+                                            <h4 class="text-xs font-bold font-orbitron text-gray-400 uppercase tracking-wider mb-2">Select Tactical Role</h4>
+                                            <div class="grid grid-cols-2 gap-2">
+                                                {playbookRoles.map(role => (
+                                                    <button 
+                                                        key={role.id} 
+                                                        onClick={() => {
+                                                            setActivePlaybookRole(role.id);
+                                                            triggerToast(`${role.name} Selected!`, 'info');
+                                                        }}
+                                                        class={`px-3 py-2.5 rounded-lg border text-left text-xs font-semibold flex flex-col justify-between transition-all ${
+                                                            activePlaybookRole === role.id 
+                                                                ? 'bg-primary/20 border-primary text-white shadow-md' 
+                                                                : 'bg-surface border-border/80 text-gray-400 hover:text-white hover:border-gray-700'
+                                                        }`}
+                                                    >
+                                                        <div class="flex items-center justify-between w-full mb-1">
+                                                            <span class="truncate font-bold">{role.name}</span>
+                                                            <span class="text-[8px] font-black font-orbitron rounded px-1 py-0.2 bg-black/30 border border-white/10">{role.abbr}</span>
+                                                        </div>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div class="bg-surface2 p-5 rounded-xl border border-border space-y-4 relative overflow-hidden">
+                                            <div class="absolute top-0 right-0 w-32 h-32 opacity-10 pointer-events-none rounded-full blur-2xl" style={{ backgroundColor: roleColor }}></div>
+                                            
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-10 h-10 rounded-full flex items-center justify-center font-black text-navyBg text-xs font-orbitron shadow-inner" style={{ backgroundColor: roleColor }}>
+                                                    {selectedRole.abbr}
+                                                </div>
+                                                <div>
+                                                    <span class="text-[10px] uppercase font-bold text-gray-400 font-orbitron tracking-widest block">Role Profile</span>
+                                                    <span class="text-md font-bold text-white block leading-tight">{selectedRole.name}</span>
+                                                </div>
+                                            </div>
+
+                                            <div class="space-y-2.5 pt-2">
+                                                <div>
+                                                    <span class="block text-[10px] uppercase font-bold text-gray-400 mb-0.5">Role Behavior:</span>
+                                                    <p class="text-xs text-white/90 leading-relaxed font-medium bg-surface/50 p-2.5 rounded-lg border border-border/40">{selectedRole.description}</p>
+                                                </div>
+                                                <div>
+                                                    <span class="block text-[10px] uppercase font-bold text-gray-400 mb-0.5">Tactical Deployment:</span>
+                                                    <p class="text-xs text-primary/95 leading-relaxed font-semibold bg-primary/5 p-2.5 rounded-lg border border-primary/20">{selectedRole.tacticalTip}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Playbook Right: Living Pitch */}
+                                    <div class="lg:col-span-7 flex flex-col items-center justify-center p-4 bg-surface2 rounded-xl border border-border relative">
+                                        <div class="absolute top-4 left-4 flex items-center gap-1.5 z-20 bg-background/80 px-2.5 py-1 rounded-full border border-border backdrop-blur-sm shadow-md">
+                                            <span class="w-2 h-2 rounded-full bg-success animate-ping"></span>
+                                            <span class="text-[9px] uppercase font-bold tracking-wider text-success font-orbitron">Live Movement Simulator</span>
+                                        </div>
+
+                                        <div class="relative w-full max-w-[325px] aspect-[3/4] bg-[#0c2415] rounded-xl border-2 border-green-500/25 overflow-hidden shadow-2xl p-2 select-none">
+                                            {/* Pitch Grass Stripe Patterns */}
+                                            <div class="absolute inset-0 flex flex-col">
+                                                {[...Array(8)].map((_, i) => (
+                                                    <div key={i} class={`flex-1 ${i % 2 === 0 ? 'bg-black/15' : 'bg-transparent'}`}></div>
+                                                ))}
+                                            </div>
+                                            
+                                            {/* White Lines Layer */}
+                                            <div class="absolute inset-0 border-2 border-white/8 m-1 pointer-events-none rounded-lg z-0">
+                                                {/* Halfway Line */}
+                                                <div class="absolute top-[50%] left-0 right-0 h-[1.5px] bg-white/8"></div>
+                                                {/* Center Circle */}
+                                                <div class="absolute top-[50%] left-[50%] w-[24%] h-[18%] border-[1.5px] border-white/8 rounded-full translate-x-[-50%] translate-y-[-50%]"></div>
+                                                {/* Goal Box Top */}
+                                                <div class="absolute top-0 left-[25%] right-[25%] h-[18%] border-b-[1.5px] border-x-[1.5px] border-white/8"></div>
+                                                <div class="absolute top-0 left-[35%] right-[35%] h-[6%] border-b-[1.5px] border-x-[1.5px] border-white/8"></div>
+                                                {/* Goal Box Bottom */}
+                                                <div class="absolute bottom-0 left-[25%] right-[25%] h-[18%] border-t-[1.5px] border-x-[1.5px] border-white/8"></div>
+                                                <div class="absolute bottom-0 left-[35%] right-[35%] h-[6%] border-t-[1.5px] border-x-[1.5px] border-white/8"></div>
+                                            </div>
+
+                                            {/* Static teammates and opponents */}
+                                            <div class="absolute left-[38%] top-[78%] -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-primary/20 border border-primary text-primary flex items-center justify-center font-black text-[9px] z-10 shadow-lg">CB</div>
+                                            <div class="absolute left-[62%] top-[78%] -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-primary/20 border border-primary text-primary flex items-center justify-center font-black text-[9px] z-10 shadow-lg">CB</div>
+                                            <div class="absolute left-[50%] top-[90%] -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-yellow-500/20 border border-yellow-500 text-yellow-500 flex items-center justify-center font-black text-[9px] z-10 shadow-lg">GK</div>
+                                            <div class="absolute left-[80%] top-[35%] -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-primary/20 border border-primary text-primary flex items-center justify-center font-black text-[9px] z-10 shadow-lg font-orbitron">RMF</div>
+                                            <div class="absolute left-[50%] top-[14%] -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-primary/20 border border-primary text-primary flex items-center justify-center font-black text-[9px] z-10 shadow-lg font-orbitron">CF</div>
+
+                                            <div class="absolute left-[35%] top-[25%] -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-red-600/30 border border-red-500 text-red-100 flex items-center justify-center font-black text-[9px] z-10 shadow-lg animate-pulse">🛡️</div>
+                                            <div class="absolute left-[65%] top-[25%] -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-red-600/30 border border-red-500 text-red-100 flex items-center justify-center font-black text-[9px] z-10 shadow-lg animate-pulse">🛡️</div>
+
+                                            {/* SVG vector path */}
+                                            <svg class="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 300 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                {selectedRole.pathSvg}
+                                                {selectedRole.markerSvg}
+                                            </svg>
+
+                                            {/* Dynamic Animated Player Circle */}
+                                            <div style={{ left: `${selectedRole.start.x}%`, top: `${selectedRole.start.y}%` }}
+                                                 class={`absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-20 ${selectedRole.animationClass}`}>
+                                                <div style={{ backgroundColor: roleColor }} 
+                                                     class="w-9 h-9 rounded-full flex items-center justify-center font-black text-navyBg shadow-2xl border-2 border-white text-xs tracking-tighter">
+                                                    {selectedRole.abbr}
+                                                </div>
+                                                <span class="bg-black/80 text-[8px] font-bold text-white px-1 py-0.5 rounded border border-border/40 mt-1 shadow whitespace-nowrap">
+                                                    RUNNING
+                                                </span>
+                                            </div>
+
+                                            {/* Base Outline */}
+                                            <div style={{ left: `${selectedRole.start.x}%`, top: `${selectedRole.start.y}%` }}
+                                                 class="absolute -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full border-2 border-dashed border-white/20 flex items-center justify-center pointer-events-none">
+                                                <span class="text-[7px] text-white/40 font-bold uppercase tracking-tighter leading-none">START</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })()}
+
                 </div>
             );
         }
@@ -2573,6 +3378,10 @@ You must respond with a JSON object. Ensure the format is strictly valid JSON. D
             const [newProfForm, setNewProfForm] = useState('4-3-3');
             const [newProfPS, setNewProfPS] = useState('Possession');
             const [newProfDetails, setNewProfDetails] = useState('');
+
+            // Retrieve Framer Motion's motion component dynamically with fail-safe fallbacks
+            const motion = window.Motion?.motion || window.FramerMotion?.motion || window.Motion || window.FramerMotion;
+            const MotionDiv = motion ? motion.div : 'div';
 
             const handleCreate = (e) => {
                 e.preventDefault();
@@ -2616,10 +3425,19 @@ You must respond with a JSON object. Ensure the format is strictly valid JSON. D
                         {profiles.map(p => {
                             const isSelected = activeProfileId === p.id;
                             return (
-                                <div key={p.id} onClick={() => { setActiveProfileId(p.id); triggerToast(`${p.name} activated!`, 'success'); }}
-                                    class={`bg-surface p-4.5 rounded-xl border flex flex-col justify-between card-shift cursor-pointer h-52 relative overflow-hidden ${
+                                <MotionDiv 
+                                    key={p.id} 
+                                    onClick={() => { setActiveProfileId(p.id); triggerToast(`${p.name} activated!`, 'success'); }}
+                                    whileHover={{ 
+                                        scale: 1.04, 
+                                        boxShadow: "0 0 20px rgba(0, 212, 255, 0.45)",
+                                        borderColor: "rgba(0, 212, 255, 0.75)"
+                                    }}
+                                    transition={{ type: "spring", stiffness: 350, damping: 20 }}
+                                    className={`bg-surface p-4.5 rounded-xl border flex flex-col justify-between card-shift cursor-pointer h-52 relative overflow-hidden ${
                                         isSelected ? 'glow-active border-primary/60 scale-[1.01]' : 'border-border'
-                                    }`}>
+                                    }`}
+                                >
                                     {isSelected && <span class="absolute top-3 right-3 bg-primary text-navyBg font-black font-orbitron text-[9px] px-1.5 py-0.5 rounded leading-none shadow-md">ACTIVE</span>}
                                     
                                     <div class="space-y-1.5">
@@ -2640,7 +3458,7 @@ You must respond with a JSON object. Ensure the format is strictly valid JSON. D
                                             </button>
                                         )}
                                     </div>
-                                </div>
+                                </MotionDiv>
                             );
                         })}
                     </div>
@@ -2684,6 +3502,710 @@ You must respond with a JSON object. Ensure the format is strictly valid JSON. D
                                     </button>
                                 </div>
                             </form>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // ------------------------- MODULE: CUSTOM FORMATIONS CREATOR -------------------------
+        function CustomFormationModule({ customCoords, setCustomCoords, triggerToast, t, language }) {
+            // Retrieve Framer Motion's motion component dynamically with fail-safe fallbacks
+            const motion = window.Motion?.motion || window.FramerMotion?.motion || window.Motion || window.FramerMotion;
+            const MotionDiv = motion ? motion.div : 'div';
+
+            const [selectedFormation, setSelectedFormation] = useState('4-3-3');
+            const [activePlayerIdx, setActivePlayerIdx] = useState(null);
+            const [localPlayers, setLocalPlayers] = useState([]);
+            const [selectedPlayerIdx, setSelectedPlayerIdx] = useState(null);
+            
+            const [history, setHistory] = useState([]);
+            const dragStartRef = useRef(null);
+            const hasDraggedRef = useRef(false);
+
+            const pitchRef = useRef(null);
+
+            const pushToHistory = (stateToPush = localPlayers) => {
+                setHistory(prev => [...prev.slice(-19), JSON.parse(JSON.stringify(stateToPush))]);
+            };
+
+            const handleUndo = () => {
+                if (history.length === 0) return;
+                const previousState = history[history.length - 1];
+                setLocalPlayers(previousState);
+                setHistory(prev => prev.slice(0, -1));
+                triggerToast("Reverted last configuration change", "info");
+            };
+
+            // Sync with parent customCoords or fallback to original when formation changes
+            useEffect(() => {
+                const baseCoords = customCoords[selectedFormation] || COORDS[selectedFormation] || COORDS['4-3-3'];
+                // Deep copy so that changes in the drawing board are staged before clicking save
+                setLocalPlayers(JSON.parse(JSON.stringify(baseCoords)));
+                setSelectedPlayerIdx(null);
+                setHistory([]); // clear undo stack on layout changes
+            }, [selectedFormation, customCoords]);
+
+            const handlePointerDown = (idx, e) => {
+                e.preventDefault();
+                setActivePlayerIdx(idx);
+                setSelectedPlayerIdx(idx);
+                // Save current state as potential drag start snapshot before any mutation
+                dragStartRef.current = JSON.parse(JSON.stringify(localPlayers));
+                hasDraggedRef.current = false;
+                // Set pointer capture to handle drags outside boundaries smoothly
+                try {
+                    e.target.setPointerCapture(e.pointerId);
+                } catch (err) {}
+            };
+
+            const handlePointerMove = (idx, e) => {
+                if (activePlayerIdx !== idx || !pitchRef.current) return;
+                const rect = pitchRef.current.getBoundingClientRect();
+                
+                // standard pointer coordinates
+                const xVal = ((e.clientX - rect.left) / rect.width) * 100;
+                const yVal = ((e.clientY - rect.top) / rect.height) * 100;
+
+                // Restrict coords between 2% and 98% for clean visual spacing inside the container
+                const clampedX = Math.round(Math.max(2, Math.min(98, xVal)));
+                const clampedY = Math.round(Math.max(2, Math.min(98, yVal)));
+
+                hasDraggedRef.current = true;
+
+                setLocalPlayers(prev => {
+                    const cloned = [...prev];
+                    cloned[idx] = { ...cloned[idx], x: clampedX, y: clampedY };
+                    return cloned;
+                });
+            };
+
+            const handlePointerUp = (idx, e) => {
+                if (activePlayerIdx === idx) {
+                    setActivePlayerIdx(null);
+                    try {
+                        e.target.releasePointerCapture(e.pointerId);
+                    } catch (err) {}
+
+                    if (hasDraggedRef.current && dragStartRef.current) {
+                        pushToHistory(dragStartRef.current);
+                    }
+                    dragStartRef.current = null;
+                    hasDraggedRef.current = false;
+                }
+            };
+
+            const handleRoleChange = (idx, newRole) => {
+                pushToHistory(); // Push current state before role modifications
+                setLocalPlayers(prev => {
+                    const cloned = [...prev];
+                    cloned[idx] = { ...cloned[idx], r: newRole };
+                    return cloned;
+                });
+            };
+
+            const revertSelectedPlayerPosition = () => {
+                if (selectedPlayerIdx === null) return;
+                const defaultSuite = COORDS[selectedFormation] || COORDS['4-3-3'];
+                const defaultPt = defaultSuite[selectedPlayerIdx];
+                if (defaultPt) {
+                    pushToHistory(); // Push current state before revert
+                    setLocalPlayers(prev => {
+                        const cloned = [...prev];
+                        cloned[selectedPlayerIdx] = { 
+                            ...cloned[selectedPlayerIdx], 
+                            x: defaultPt.x, 
+                            y: defaultPt.y 
+                        };
+                        return cloned;
+                    });
+                    triggerToast(`Player #${selectedPlayerIdx + 1} position reverted to default preset`, 'info');
+                }
+            };
+
+            // Save overrides to dynamic states and local storage
+            const saveOverride = () => {
+                const updated = { ...customCoords, [selectedFormation]: localPlayers };
+                setCustomCoords(updated);
+                localStorage.setItem('ef26_custom_coords', JSON.stringify(updated));
+                triggerToast(`${selectedFormation} customized configuration saved!`, 'success');
+            };
+
+            // Reset specific formation to presets
+            const resetCurrent = () => {
+                const updated = { ...customCoords };
+                delete updated[selectedFormation];
+                setCustomCoords(updated);
+                localStorage.setItem('ef26_custom_coords', JSON.stringify(updated));
+                triggerToast(`${selectedFormation} coordinates reset to factory standards`, 'info');
+            };
+
+            // Reset all formations to factory default
+            const resetAll = () => {
+                if (confirm(t('confirm_reset_all_format') || 'Are you sure you want to reset all customized coordinates?')) {
+                    setCustomCoords({});
+                    localStorage.removeItem('ef26_custom_coords');
+                    triggerToast('All custom coordinates completely restored to factory presets', 'warning');
+                }
+            };
+
+            const getColor = (role) => {
+                const r = role.toLowerCase();
+                if (r === 'gk') return '#f59e0b';
+                if (r === 'lb' || r === 'rb' || r === 'cb' || r === 'lwb' || r === 'rwb') return '#00d4ff';
+                if (r === 'cf' || r === 'ss' || r === 'lw' || r === 'rw' || r === 'lcf' || r === 'rcf' || r === 'rwf' || r === 'lwf') return '#ef4444';
+                return '#10b981';
+            };
+
+            // standard soccer positions/roles
+            const rolesList = [
+                'GK', 'CB', 'LB', 'RB', 'LWB', 'RWB', 
+                'DMF', 'CM', 'LCM', 'RCM', 'LM', 'RM', 
+                'AMF', 'AMY', 'LW', 'RW', 'SS', 'CF'
+            ];
+
+            return (
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-xl md:text-2xl font-black font-orbitron tracking-tight text-white flex items-center gap-2">
+                                <span>🎨 {t('custom_formation')}</span>
+                                <span class="bg-primary/20 text-primary text-[10px] uppercase px-2 py-0.5 rounded border border-primary/30">Workshop</span>
+                            </h2>
+                            <p class="text-xs text-gray-400 mt-1">{t('custom_formation_desc')}</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        
+                        {/* Control Panel: Left Area */}
+                        <div class="lg:col-span-4 space-y-5">
+                            {/* Formation Picker */}
+                            <div class="bg-surface border border-border p-5 rounded-xl space-y-4 shadow-xl">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 font-black tracking-wider uppercase mb-1.5">{t('select_formation_to_edit')}</label>
+                                    <div class="relative">
+                                        <select 
+                                            value={selectedFormation} 
+                                            onChange={e => setSelectedFormation(e.target.value)}
+                                            class="w-full bg-surface2 border border-border/80 text-white rounded-lg px-4 py-2.5 outline-none font-orbitron font-bold text-sm focus:border-primary appearance-none cursor-pointer"
+                                        >
+                                            {FORMATIONS.map(f => (
+                                                <option key={f} value={f}>{f} {customCoords[f] ? '● (Custom)' : ''}</option>
+                                            ))}
+                                        </select>
+                                        <span class="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-xs">▼</span>
+                                    </div>
+                                </div>
+
+                                <div class="p-3.5 bg-black/20 rounded-lg border border-border/40 text-[11px] text-gray-300 leading-normal font-semibold space-y-2">
+                                    <p class="text-xs font-bold text-primary flex items-center gap-1.5">
+                                        <span>⚙️</span>
+                                        <span>How it Works</span>
+                                    </p>
+                                    <p class="text-gray-400 leading-relaxed">
+                                        {t('drag_instructions')} Adjustments are automatically staged. Once satisfied, save your layout to apply it globally across all simulators and reports.
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Active Point Selector & Role Editor */}
+                            <div class="bg-surface border border-border/80 p-5 rounded-xl space-y-4 shadow-xl">
+                                <div>
+                                    <h4 class="text-xs font-black tracking-wider uppercase text-white font-orbitron mb-1.5">Selected Player Detail</h4>
+                                    {selectedPlayerIdx !== null ? (
+                                        <div class="space-y-4">
+                                            <div class="flex items-center gap-3 bg-surface2 p-3 rounded-lg border border-border/80">
+                                                <div 
+                                                    style={{ backgroundColor: getColor(localPlayers[selectedPlayerIdx].r) }} 
+                                                    class="w-10 h-10 rounded-full flex items-center justify-center font-black text-navyBg border border-white/20 select-none font-orbitron shadow-md"
+                                                >
+                                                    {localPlayers[selectedPlayerIdx].r}
+                                                </div>
+                                                <div class="flex-1">
+                                                    <p class="text-xs font-bold text-white uppercase">Player Marker #{selectedPlayerIdx + 1}</p>
+                                                    <div class="flex gap-4 text-[10px] font-mono text-gray-400 mt-0.5">
+                                                        <span>X Axis: <b class="text-primary">{localPlayers[selectedPlayerIdx].x}%</b></span>
+                                                        <span>Y Axis: <b class="text-secondary">{localPlayers[selectedPlayerIdx].y}%</b></span>
+                                                    </div>
+                                                </div>
+                                                <button 
+                                                    onClick={revertSelectedPlayerPosition}
+                                                    title="Revert player coordinates to preset layout standards"
+                                                    class="p-2 bg-surface hover:bg-red-500/10 border border-border/80 hover:border-red-500/25 text-red-400 hover:text-white rounded-lg text-xs font-bold font-orbitron transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+                                                >
+                                                    <span>🔄</span>
+                                                    <span>Reset Position</span>
+                                                </button>
+                                            </div>
+
+                                            <div>
+                                                <label class="block text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Modify Field Role</label>
+                                                <div class="grid grid-cols-4 gap-1">
+                                                    {rolesList.map(role => (
+                                                        <button 
+                                                            key={role} 
+                                                            onClick={() => handleRoleChange(selectedPlayerIdx, role)}
+                                                            class={`py-1 rounded text-[10px] font-bold font-orbitron transition-all border ${
+                                                                localPlayers[selectedPlayerIdx].r === role 
+                                                                    ? 'bg-primary text-navyBg border-primary font-black shadow-md' 
+                                                                    : 'bg-surface2 text-gray-300 border-border/60 hover:border-gray-500'
+                                                            }`}
+                                                        >
+                                                            {role}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div class="text-center p-8 border border-dashed border-border/40 rounded-xl text-xs text-gray-500">
+                                            <span class="text-2xl block mb-2">⚽</span>
+                                            <span>Select any player dot on the pitch to start editing their position details or field role.</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Persistence Actions */}
+                            <div class="flex flex-col gap-2">
+                                <button 
+                                    onClick={handleUndo}
+                                    disabled={history.length === 0}
+                                    class={`w-full font-black font-orbitron py-2.5 rounded-xl transition-all uppercase text-[11px] tracking-wider flex items-center justify-center gap-2 border cursor-pointer ${
+                                        history.length > 0
+                                            ? 'bg-amber-500/15 hover:bg-amber-500/25 text-amber-400 border-amber-500/35 shadow-[0_0_8px_rgba(245,158,11,0.15)]'
+                                            : 'bg-surface/30 text-gray-500 border-border/30 cursor-not-allowed opacity-50'
+                                    }`}
+                                >
+                                    <span>⏮️</span>
+                                    <span>Undo Last Change {history.length > 0 ? `(${history.length})` : ''}</span>
+                                </button>
+                                <button 
+                                    onClick={saveOverride} 
+                                    class="w-full bg-primary hover:bg-primary/95 text-navyBg font-black font-orbitron py-3 rounded-xl transition-all shadow-[0_0_12px_rgba(0,212,255,0.2)] uppercase text-xs tracking-wider border border-white/20 flex items-center justify-center gap-2 cursor-pointer"
+                                >
+                                    <span>💾</span>
+                                    <span>{t('save_custom')}</span>
+                                </button>
+                                <button 
+                                    onClick={resetCurrent} 
+                                    class="w-full bg-surface hover:bg-surface/80 border border-border text-xs font-bold font-orbitron py-2.5 rounded-xl transition-all hover:text-white uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
+                                >
+                                    <span>🔄</span>
+                                    <span>{t('reset_custom')}</span>
+                                </button>
+                                <button 
+                                    onClick={resetAll} 
+                                    class="w-full bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/25 text-xs font-bold font-orbitron py-2.5 rounded-xl transition-all uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
+                                >
+                                    <span>🛑</span>
+                                    <span>{t('reset_all_custom')}</span>
+                                </button>
+                            </div>
+
+                        </div>
+
+                        {/* Interactive Drawing Board: Right Area */}
+                        <div class="lg:col-span-8 flex flex-col items-center w-full">
+                            <div class="w-full max-w-[500px] space-y-3">
+                                {/* Scrollable Quick Formations Switcher Bar */}
+                                <div class="bg-surface border border-border p-3.5 rounded-xl shadow-lg space-y-2 w-full">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-[10px] font-black font-orbitron text-gray-400 uppercase tracking-widest">⚡ QUICK SWITCH FORMATION</span>
+                                        <span class="text-[9px] text-[#00d4ff] bg-[#00d4ff]/10 px-2 py-0.5 rounded font-black font-mono">DRAG & DROP ACTIVE</span>
+                                    </div>
+                                    <div class="flex items-center gap-1.5 overflow-x-auto pb-1 w-full select-none" style={{ scrollbarWidth: 'thin' }}>
+                                        {FORMATIONS.map(f => {
+                                            const isSelected = selectedFormation === f;
+                                            const isCustom = !!customCoords[f];
+                                            return (
+                                                <button
+                                                    key={f}
+                                                    onClick={() => {
+                                                        setSelectedFormation(f);
+                                                        triggerToast(`Workspace layout shifted to ${f}`, 'info');
+                                                    }}
+                                                    class={`px-3 py-1.5 rounded-lg text-xs font-bold font-orbitron whitespace-nowrap transition-all border shrink-0 flex items-center gap-1.5 cursor-pointer ${
+                                                        isSelected 
+                                                            ? 'bg-primary text-navyBg border-primary shadow-[0_0_10px_rgba(0,212,255,0.35)] font-extrabold'
+                                                            : 'bg-surface2 hover:bg-zinc-800 text-gray-400 hover:text-gray-200 border-border/80'
+                                                    }`}
+                                                >
+                                                    <span>{f}</span>
+                                                    {isCustom && (
+                                                        <span class="w-1.5 h-1.5 rounded-full bg-[#10b981] shadow-[0_0_6px_#10b981]"></span>
+                                                    )}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                <div class="bg-surface border border-border p-3 rounded-t-xl text-center text-xs font-black font-orbitron text-gray-300 border-b-0 font-bold uppercase tracking-wider flex items-center justify-between">
+                                    <span>🟢 TACTICAL CANVAS</span>
+                                    <span class="text-[10px] bg-surface2 px-2 py-0.5 rounded border border-border text-primary font-mono font-bold">{selectedFormation}</span>
+                                </div>
+                                <div 
+                                    ref={pitchRef}
+                                    class="relative w-full aspect-[3/4] bg-[#091b0f] rounded-b-xl border border-green-500/20 overflow-hidden shadow-2xl flex flex-col justify-between p-2 select-none touch-none"
+                                >
+                                    {/* Grass Striping Pattern */}
+                                    <div class="absolute inset-0 flex flex-col pointer-events-none">
+                                        {[...Array(10)].map((_, i) => (
+                                            <div key={i} class={`flex-1 ${i % 2 === 0 ? 'bg-black/12' : 'bg-transparent'}`}></div>
+                                        ))}
+                                    </div>
+                                    {/* White Pitch Lines */}
+                                    <div class="absolute inset-0 border-2 border-white/8 m-1 pointer-events-none rounded-lg">
+                                        {/* Halfway Line */}
+                                        <div class="absolute top-[50%] left-0 right-0 h-[1.5px] bg-white/8"></div>
+                                        {/* Center Circle */}
+                                        <div class="absolute top-[50%] left-[50%] w-[24%] h-[18%] border-2 border-white/8 rounded-full translate-x-[-50%] translate-y-[-50%]"></div>
+                                        {/* Penalty Areas */}
+                                        <div class="absolute top-0 left-[22%] right-[22%] h-[16%] border-b-2 border-x-2 border-white/8"></div>
+                                        <div class="absolute bottom-0 left-[22%] right-[22%] h-[16%] border-t-2 border-x-2 border-white/8"></div>
+                                    </div>
+
+                                    {/* Interactive Players Circles layer */}
+                                    <div class="absolute inset-0">
+                                        {localPlayers.map((pos, idx) => {
+                                            const isDragging = activePlayerIdx === idx;
+                                            // During active dragging, use zero transition latency to follow pointer instantly.
+                                            // For formation sweeps or other players, use high-fidelity, organic springs!
+                                            const itemTransition = isDragging
+                                                ? { type: 'tween', duration: 0 }
+                                                : { type: 'spring', stiffness: 140, damping: 16, mass: 0.9 };
+
+                                            return (
+                                                <MotionDiv 
+                                                    key={idx} 
+                                                    animate={{ 
+                                                        left: `${pos.x}%`, 
+                                                        top: `${pos.y}%`,
+                                                        scale: isDragging ? 1.3 : (selectedPlayerIdx === idx ? 1.15 : 1.0),
+                                                        zIndex: isDragging ? 50 : 20,
+                                                        filter: isDragging ? "brightness(1.15) drop-shadow(0px 0px 14px rgba(6, 182, 212, 0.85))" : "brightness(1) drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.35))"
+                                                    }}
+                                                    transition={itemTransition}
+                                                    className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center cursor-move"
+                                                    onPointerDown={(e) => handlePointerDown(idx, e)}
+                                                    onPointerMove={(e) => handlePointerMove(idx, e)}
+                                                    onPointerUp={(e) => handlePointerUp(idx, e)}
+                                                >
+                                                    <div 
+                                                        style={{ backgroundColor: getColor(pos.r) }} 
+                                                        className={`rounded-full flex items-center justify-center font-black text-navyBg shadow-xl border-2 transition-all p-1 ${
+                                                            isDragging
+                                                                ? 'w-10 h-10 text-xs border-cyan-400 ring-4 ring-cyan-500/50'
+                                                                : selectedPlayerIdx === idx 
+                                                                    ? 'w-10 h-10 text-xs border-white ring-4 ring-primary/40' 
+                                                                    : 'w-8 h-8 text-[11px] border-white/30 hover:scale-105 hover:border-white/50'
+                                                        }`}
+                                                    >
+                                                        {pos.r}
+                                                    </div>
+                                                    <span className="bg-navyBg/90 text-[8px] text-white px-1.5 py-0.5 rounded-md mt-1 border border-border/50 font-bold tracking-tight">
+                                                        P{idx + 1}
+                                                    </span>
+                                                </MotionDiv>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            );
+        }
+
+        // ------------------------- D3 REUSABLE CHART: WIN-RATE GROWTH TRAJECTORY -------------------------
+        function D3WinRateGrowthChart({ matches, t, language }) {
+            const svgRef = React.useRef(null);
+            const [windowSize, setWindowSize] = useState('cumulative'); // 'cumulative' | 5 | 10
+            const [hoveredPoint, setHoveredPoint] = useState(null);
+
+            const chronoMatches = useMemo(() => {
+                return matches.slice().reverse(); // Oldest match to newest match
+            }, [matches]);
+
+            // Calculate moving average values
+            const chartData = useMemo(() => {
+                if (chronoMatches.length === 0) return [];
+                return chronoMatches.map((m, idx) => {
+                    let winRate = 0;
+                    if (windowSize === 'cumulative') {
+                        const wins = chronoMatches.slice(0, idx + 1).filter(x => x.result === 'W').length;
+                        winRate = Math.round((wins / (idx + 1)) * 100);
+                    } else {
+                        const size = parseInt(windowSize);
+                        const start = Math.max(0, idx - size + 1);
+                        const subset = chronoMatches.slice(start, idx + 1);
+                        const wins = subset.filter(x => x.result === 'W').length;
+                        winRate = Math.round((wins / subset.length) * 100);
+                    }
+                    return {
+                        index: idx + 1,
+                        match: m,
+                        winRate: winRate,
+                        result: m.result,
+                        score: `${m.myGoals}-${m.opponentGoals}`,
+                        oppForm: m.opponentFormation,
+                        myForm: m.myFormation,
+                        date: m.date
+                    };
+                });
+            }, [chronoMatches, windowSize]);
+
+            useEffect(() => {
+                if (!svgRef.current) return;
+                const svgElement = d3.select(svgRef.current);
+                svgElement.selectAll("*").remove();
+
+                if (chartData.length === 0) return;
+
+                // Margins & responsive setup
+                const margin = { top: 15, right: 25, bottom: 25, left: 35 };
+                const svgWidth = svgRef.current.clientWidth || 500;
+                const svgHeight = 160;
+
+                svgElement.attr("viewBox", `0 0 ${svgWidth} ${svgHeight}`);
+
+                const chartWidth = svgWidth - margin.left - margin.right;
+                const chartHeight = svgHeight - margin.top - margin.bottom;
+
+                const g = svgElement.append("g")
+                    .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+                // Scales
+                const xScale = d3.scaleLinear()
+                    .domain([1, Math.max(2, chartData.length)])
+                    .range([0, chartWidth]);
+
+                const yScale = d3.scaleLinear()
+                    .domain([0, 100])
+                    .range([chartHeight, 0]);
+
+                // Grid lines (y-axis helper lines)
+                g.append("g")
+                    .attr("class", "grid")
+                    .attr("stroke", "#1e293b")
+                    .attr("stroke-width", 1)
+                    .attr("stroke-opacity", 0.4)
+                    .call(d3.axisLeft(yScale)
+                        .ticks(5)
+                        .tickSize(-chartWidth)
+                        .tickFormat("")
+                    );
+
+                // X-axis mapping
+                const xAxis = d3.axisBottom(xScale)
+                    .ticks(Math.min(chartData.length, 12))
+                    .tickFormat(d => `G${d}`);
+
+                g.append("g")
+                    .attr("transform", `translate(0, ${chartHeight})`)
+                    .attr("class", "x-axis")
+                    .call(xAxis)
+                    .call(g => g.select(".domain").attr("stroke", "#334155"))
+                    .call(g => g.selectAll(".tick line").attr("stroke", "#334155"))
+                    .call(g => g.selectAll(".tick text")
+                        .attr("fill", "#94a3b8")
+                        .attr("font-family", "Orbitron")
+                        .attr("font-size", "8px")
+                    );
+
+                // Y-axis mapping
+                const yAxis = d3.axisLeft(yScale)
+                    .ticks(4)
+                    .tickFormat(d => `${d}%`);
+
+                g.append("g")
+                    .attr("class", "y-axis")
+                    .call(yAxis)
+                    .call(g => g.select(".domain").attr("stroke", "#334155"))
+                    .call(g => g.selectAll(".tick line").attr("stroke", "#334155"))
+                    .call(g => g.selectAll(".tick text")
+                        .attr("fill", "#94a3b8")
+                        .attr("font-family", "Orbitron")
+                        .attr("font-size", "8px")
+                    );
+
+                // Area under the trajectory line
+                const areaGenerator = d3.area()
+                    .x(d => xScale(d.index))
+                    .y0(chartHeight)
+                    .y1(d => yScale(d.winRate))
+                    .curve(d3.curveMonotoneX);
+
+                // Gradient setup
+                const defs = svgElement.append("defs");
+                const grad = defs.append("linearGradient")
+                    .attr("id", "d3-winrate-area-grad")
+                    .attr("x1", "0%")
+                    .attr("y1", "0%")
+                    .attr("x2", "0%")
+                    .attr("y2", "100%");
+
+                grad.append("stop")
+                    .attr("offset", "0%")
+                    .attr("stop-color", "#10b981")
+                    .attr("stop-opacity", 0.35);
+
+                grad.append("stop")
+                    .attr("offset", "100%")
+                    .attr("stop-color", "#10b981")
+                    .attr("stop-opacity", 0.0);
+
+                g.append("path")
+                    .datum(chartData)
+                    .attr("fill", "url(#d3-winrate-area-grad)")
+                    .attr("d", areaGenerator);
+
+                // Core line plotting selection
+                const lineGenerator = d3.line()
+                    .x(d => xScale(d.index))
+                    .y(d => yScale(d.winRate))
+                    .curve(d3.curveMonotoneX);
+
+                g.append("path")
+                    .datum(chartData)
+                    .attr("fill", "none")
+                    .attr("stroke", "#10b981")
+                    .attr("stroke-width", 2.5)
+                    .attr("stroke-linecap", "round")
+                    .attr("d", lineGenerator);
+
+                // Invisible Overlay capture for interactive tracking
+                const overlay = g.append("rect")
+                    .attr("width", chartWidth)
+                    .attr("height", chartHeight)
+                    .attr("fill", "transparent")
+                    .style("pointer-events", "all");
+
+                const hoverLine = g.append("line")
+                    .attr("stroke", "#38bdf8")
+                    .attr("stroke-width", 1.5)
+                    .attr("stroke-dasharray", "3 3")
+                    .style("display", "none");
+
+                const hoverPointCircle = g.append("circle")
+                    .attr("r", 5)
+                    .attr("fill", "#38bdf8")
+                    .attr("stroke", "#0a0e1a")
+                    .attr("stroke-width", 2)
+                    .style("display", "none");
+
+                // Pointer events
+                overlay.on("pointermove mousemove", function(e) {
+                    const [mx] = d3.pointer(e);
+                    const gameNum = Math.round(xScale.invert(mx));
+                    const currentPoint = chartData.find(d => d.index === gameNum);
+
+                    if (currentPoint) {
+                        const cx = xScale(currentPoint.index);
+                        const cy = yScale(currentPoint.winRate);
+
+                        hoverLine
+                            .attr("x1", cx)
+                            .attr("y1", 0)
+                            .attr("x2", cx)
+                            .attr("y2", chartHeight)
+                            .style("display", "initial");
+
+                        hoverPointCircle
+                            .attr("cx", cx)
+                            .attr("cy", cy)
+                            .style("display", "initial");
+
+                        setHoveredPoint(currentPoint);
+                    }
+                });
+
+                overlay.on("pointerleave mouseleave", function() {
+                    hoverLine.style("display", "none");
+                    hoverPointCircle.style("display", "none");
+                    setHoveredPoint(null);
+                });
+
+            }, [chartData]);
+
+            return (
+                <div class="bg-surface rounded-xl border border-border p-5 flex flex-col justify-between space-y-4 shadow-xl">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div>
+                            <h3 class="text-md font-bold font-orbitron text-white flex items-center gap-1.5">
+                                <span>📈 Long-Term Win-Rate Trajectory</span>
+                                <span class="bg-[#10b981]/15 text-[#10b981] text-[9px] uppercase px-2 py-0.5 rounded border border-[#10b981]/30 font-bold font-mono">D3 Engine</span>
+                            </h3>
+                            <p class="text-[10px] text-gray-400">Moving average of victory ratio plotted against chronological match sequence </p>
+                        </div>
+                        
+                        {/* Control Pills */}
+                        <div class="flex items-center gap-1 bg-surface2 p-1 rounded-lg border border-border/60 self-start sm:self-center bg-zinc-900">
+                            <button 
+                                onClick={() => setWindowSize('cumulative')}
+                                class={`px-2 py-0.5 text-[9px] font-bold font-orbitron uppercase rounded transition-all ${
+                                    windowSize === 'cumulative' 
+                                        ? 'bg-[#10b981] text-navyBg shadow font-black' 
+                                        : 'text-gray-400 hover:text-white'
+                                }`}
+                            >
+                                Cumulative
+                            </button>
+                            <button 
+                                onClick={() => setWindowSize(5)}
+                                class={`px-2 py-0.5 text-[9px] font-bold font-orbitron uppercase rounded transition-all ${
+                                    windowSize === 5 
+                                        ? 'bg-[#10b981] text-navyBg shadow font-black' 
+                                        : 'text-gray-400 hover:text-white'
+                                }`}
+                            >
+                                5-Match
+                            </button>
+                            <button 
+                                onClick={() => setWindowSize(10)}
+                                class={`px-2 py-0.5 text-[9px] font-bold font-orbitron uppercase rounded transition-all ${
+                                    windowSize === 10 
+                                        ? 'bg-[#10b981] text-navyBg shadow font-black' 
+                                        : 'text-gray-400 hover:text-white'
+                                }`}
+                            >
+                                10-Match
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="relative w-full bg-navyBg/40 rounded-xl p-2.5 border border-border/40 select-none">
+                        {matches.length === 0 ? (
+                            <p class="text-xs text-gray-500 w-full text-center py-12">Submit manual logged records on the left to see your dynamic growth curve...</p>
+                        ) : (
+                            <svg ref={svgRef} class="w-full h-auto overflow-visible"></svg>
+                        )}
+                    </div>
+
+                    {/* Integrated Rich Tooltip display zone to handle hover metadata */}
+                    {hoveredPoint && (
+                        <div class="bg-surface2/60 border border-border/80 p-3 rounded-lg flex items-center justify-between transition-all animate-fadeIn">
+                            <div class="space-y-1">
+                                <p class="text-[10px] font-bold font-orbitron text-gray-400 uppercase">Match #{hoveredPoint.index} | <span class="text-white">{hoveredPoint.date}</span></p>
+                                <p class="text-[11px] font-semibold text-gray-200">
+                                    Squad: <span class="text-primary">{hoveredPoint.myForm}</span> vs <span class="text-gray-400">{hoveredPoint.oppForm}</span>
+                                </p>
+                            </div>
+                            <div class="text-right space-y-0.5">
+                                <div class="text-xs font-black text-white">Score: <span class="bg-black/40 px-1.5 py-0.5 rounded text-[10px] text-accent font-orbitron font-semibold">{hoveredPoint.score}</span></div>
+                                <div class="text-xs font-black font-orbitron text-[#10b981]">
+                                    Win Rate: <span class="text-white text-sm">{hoveredPoint.winRate}%</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    {!hoveredPoint && matches.length > 0 && (
+                        <div class="bg-transparent border border-dashed border-border/30 p-3 rounded-lg text-center text-[10px] text-gray-500 font-semibold uppercase tracking-wider">
+                            💡 Hover/Drag across the trajectory path to analyze detail checkpoints
                         </div>
                     )}
                 </div>
@@ -2871,70 +4393,77 @@ You must respond with a JSON object. Ensure the format is strictly valid JSON. D
                         </div>
 
                         {/* Interactive custom line chart */}
-                        <div class="lg:col-span-8 bg-surface rounded-xl border border-border p-5 flex flex-col justify-between">
-                            <div class="flex items-center justify-between mb-3">
-                                <h3 class="text-md font-bold font-orbitron text-white">📉 Win/Loss Performance Trend</h3>
-                                <span class="text-[9px] font-semibold text-gray-400 bg-surface2 px-2 py-0.5 rounded border border-border/80 uppercase tracking-wider font-mono">Last 10 Games</span>
-                            </div>
+                        <div class="lg:col-span-8 space-y-6">
                             
-                            <div class="w-full h-44 bg-navyBg/40 rounded-xl p-2 border border-border/40 flex items-center justify-center">
-                                {matches.length === 0 ? (
-                                    <p class="text-xs text-gray-500 w-full text-center py-12">Submit manual logged records on the left to display historical charts...</p>
-                                ) : (window.Recharts ? (
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <LineChart data={chartData} margin={{ top: 15, right: 15, left: -25, bottom: 5 }}>
-                                            <defs>
-                                                <linearGradient id="colorPoints" x1="0" y1="0" x2="1" y2="0">
-                                                    <stop offset="0%" stopColor="#7c3aed" />
-                                                    <stop offset="100%" stopColor="#00d4ff" />
-                                                </linearGradient>
-                                            </defs>
-                                            <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
-                                            <XAxis 
-                                                dataKey="shortLabel" 
-                                                stroke="#4b5563" 
-                                                tick={{ fill: '#9ca3af', fontSize: 9, fontFamily: 'Orbitron' }}
-                                                tickLine={false}
-                                            />
-                                            <YAxis 
-                                                domain={[0, 3]} 
-                                                ticks={[0, 1, 3]} 
-                                                tickFormatter={(v) => v === 3 ? 'W' : v === 1 ? 'D' : 'L'} 
-                                                stroke="#4b5563"
-                                                tick={{ fill: '#9ca3af', fontSize: 9, fontFamily: 'Orbitron', fontWeight: 'bold' }}
-                                                tickLine={false}
-                                            />
-                                            <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#00d4ff', strokeWidth: 1, strokeDasharray: '4 4' }} />
-                                            <Line 
-                                                type="monotone" 
-                                                dataKey="points" 
-                                                stroke="url(#colorPoints)" 
-                                                strokeWidth={3} 
-                                                dot={(props) => {
-                                                    const { cx, cy, payload } = props;
-                                                    let color = '#ef4444'; // Loss
-                                                    if (payload.result === 'W') color = '#10b981'; // Win
-                                                    else if (payload.result === 'D') color = '#f59e0b'; // Draw
-                                                    return (
-                                                        <circle 
-                                                            cx={cx} 
-                                                            cy={cy} 
-                                                            r={5} 
-                                                            fill={color} 
-                                                            stroke="#0a0e1a" 
-                                                            strokeWidth={1.5} 
-                                                            key={`dot-${cx}-${cy}`} 
-                                                        />
-                                                    );
-                                                }}
-                                                activeDot={{ r: 7, strokeWidth: 1 }}
-                                            />
-                                        </LineChart>
-                                    </ResponsiveContainer>
-                                ) : (
-                                    <p class="text-xs text-secondary animate-pulse">Initializing Recharts graphing framework...</p>
-                                ))}
+                            <div class="bg-surface rounded-xl border border-border p-5 flex flex-col justify-between">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-md font-bold font-orbitron text-white">📉 Win/Loss Performance Trend</h3>
+                                    <span class="text-[9px] font-semibold text-gray-400 bg-surface2 px-2 py-0.5 rounded border border-border/80 uppercase tracking-wider font-mono">Last 10 Games</span>
+                                </div>
+                                
+                                <div class="w-full h-44 bg-navyBg/40 rounded-xl p-2 border border-border/40 flex items-center justify-center">
+                                    {matches.length === 0 ? (
+                                        <p class="text-xs text-gray-500 w-full text-center py-12">Submit manual logged records on the left to display historical charts...</p>
+                                    ) : (window.Recharts ? (
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <LineChart data={chartData} margin={{ top: 15, right: 15, left: -25, bottom: 5 }}>
+                                                <defs>
+                                                    <linearGradient id="colorPoints" x1="0" y1="0" x2="1" y2="0">
+                                                        <stop offset="0%" stopColor="#7c3aed" />
+                                                        <stop offset="100%" stopColor="#00d4ff" />
+                                                    </linearGradient>
+                                                </defs>
+                                                <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+                                                <XAxis 
+                                                    dataKey="shortLabel" 
+                                                    stroke="#4b5563" 
+                                                    tick={{ fill: '#9ca3af', fontSize: 9, fontFamily: 'Orbitron' }}
+                                                    tickLine={false}
+                                                />
+                                                <YAxis 
+                                                    domain={[0, 3]} 
+                                                    ticks={[0, 1, 3]} 
+                                                    tickFormatter={(v) => v === 3 ? 'W' : v === 1 ? 'D' : 'L'} 
+                                                    stroke="#4b5563"
+                                                    tick={{ fill: '#9ca3af', fontSize: 9, fontFamily: 'Orbitron', fontWeight: 'bold' }}
+                                                    tickLine={false}
+                                                />
+                                                <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#00d4ff', strokeWidth: 1, strokeDasharray: '4 4' }} />
+                                                <Line 
+                                                    type="monotone" 
+                                                    dataKey="points" 
+                                                    stroke="url(#colorPoints)" 
+                                                    strokeWidth={3} 
+                                                    dot={(props) => {
+                                                        const { cx, cy, payload } = props;
+                                                        let color = '#ef4444'; // Loss
+                                                        if (payload.result === 'W') color = '#10b981'; // Win
+                                                        else if (payload.result === 'D') color = '#f59e0b'; // Draw
+                                                        return (
+                                                            <circle 
+                                                                cx={cx} 
+                                                                cy={cy} 
+                                                                r={5} 
+                                                                fill={color} 
+                                                                stroke="#0a0e1a" 
+                                                                strokeWidth={1.5} 
+                                                                key={`dot-${cx}-${cy}`} 
+                                                            />
+                                                        );
+                                                    }}
+                                                    activeDot={{ r: 7, strokeWidth: 1 }}
+                                                />
+                                            </LineChart>
+                                        </ResponsiveContainer>
+                                    ) : (
+                                        <p class="text-xs text-secondary animate-pulse">Initializing Recharts graphing framework...</p>
+                                    ))}
+                                </div>
                             </div>
+
+                            {/* Secondary D3 Chart component */}
+                            <D3WinRateGrowthChart matches={matches} t={t} language={language} />
+
                         </div>
 
                     </div>
