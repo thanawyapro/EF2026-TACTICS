@@ -1,343 +1,481 @@
 // src/components/tactics/MetaCounterTab.tsx
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Zap, AlertTriangle, ShieldCheck, RefreshCw, CheckCircle, RefreshCcw } from 'lucide-react';
+import { Zap, AlertTriangle, ShieldCheck, RefreshCw, Check, ArrowRight, ArrowLeft } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
-import { FORMATIONS, TRANSLATIONS } from '../../lib/tactics';
-import { teamPlaystyles } from '../../data/efootballDNA';
-
-interface CounterTacticDetails {
-  counterFormation: string;
-  instructionsEn: string[];
-  instructionsAr: string[];
-  whatToAvoidEn: string;
-  whatToAvoidAr: string;
-  bestPlayerRolesEn: string[];
-  bestPlayerRolesAr: string[];
-}
-
-const localCounterRules: Record<string, CounterTacticDetails> = {
-  '4-3-3': {
-    counterFormation: '4-2-2-2',
-    instructionsEn: [
-      'Set fullbacks to Defensive to block fast wide-wing runs.',
-      'Instruct LMF/RMF to drop deep and support fullbacks.'
-    ],
-    instructionsAr: [
-      'قم بتعيين الأظهرة كدفاعي (Defensive) للحد من انطلاقات الأجنحة السريعة.',
-      'توجيه لاعبي LMF/RMF للتراجع ومساندة الأظهرة في الحالة الدفاعية.'
-    ],
-    whatToAvoidEn: 'Avoid pressing high blindly, as wingers will easily exploit the space behind.',
-    whatToAvoidAr: 'تجنب الضغط العالي العشوائي لحماية المساحة الشاغرة خلف أظهرة الجنب.',
-    bestPlayerRolesEn: ['Defensive Fullback', 'Anchor Man', 'Box-to-Box'],
-    bestPlayerRolesAr: ['ظهير دفاعي', 'ارتكاز ثابت (Anchor Man)', 'لاعب وسط نشط (Box-to-Box)']
-  },
-  '4-2-1-3': {
-    counterFormation: '5-3-2',
-    instructionsEn: [
-      'Deploy double Anchor Man pivots to choke the central AMF channel.',
-      'Use wingbacks to match up on external wingers.'
-    ],
-    instructionsAr: [
-      'اعتمد على ثنائي ارتكاز حديدي لشل حركة صانع ألعاب الخصم (AMF).',
-      'وظف الأظهرة كأجنحة دفاعية لمتابعة حركة واختراقات مهاجمي الأطراف.'
-    ],
-    whatToAvoidEn: 'Do not play a high defensive line without offside trap active.',
-    whatToAvoidAr: 'تجنب رفع الخط الدفاعي عالياً لتفادي كسر مصيدة التسلل بمرتدات سريعة.',
-    bestPlayerRolesEn: ['Anchor Man', 'Defensive Wingback', 'Goal Poacher'],
-    bestPlayerRolesAr: ['لاعب ارتكاز', 'ظهير دفاعي مرتد', 'مهاجم قناص السبرينت']
-  },
-  '4-2-2-2': {
-    counterFormation: '4-1-2-3',
-    instructionsEn: [
-      'Use vertical AMF triangles to overwhelm their double pivot block.',
-      'Assign Counter Target to your main CF to force their CBs deep.'
-    ],
-    instructionsAr: [
-      'استخدم مثلثات التمرير العمودية لصناع اللعب للاختراق بين ثنائي الارتكاز.',
-      'ضع تعليمات هدف المرتدة لـ CF لإجبار قلوب دفاعهم على التراجع اللصيق.'
-    ],
-    whatToAvoidEn: 'Avoid slow horizontal passing sequences in midfield, which they easily intercept.',
-    whatToAvoidAr: 'تجنب التمرير العرضي البطيء بمنتصف الملعب لسهولة قطعه بمحور الضغط الخاص بهم.',
-    bestPlayerRolesEn: ['Hole Player AMF', 'Creative Playmaker LWF', 'Orchestrator'],
-    bestPlayerRolesAr: ['لاعب ثغرات (Hole Player)', 'صانع ألعاب إبداعي للأطراف (LWF)', 'منظم اللعب (Orchestrator)']
-  },
-  '4-4-2': {
-    counterFormation: '4-2-1-3',
-    instructionsEn: [
-      'Utilize a creative AMF to exploit the space between their defensive line and flat midfield.',
-      'Overload wide channels with advancing fullbacks.'
-    ],
-    instructionsAr: [
-      'وظف صانع ألعاب متقدم (AMF) للتحرك بحرية في المساحة خلف وسطهم المسطح.',
-      'قم بزيادة عددية ممتازة على أطراف الملعب بصعود مدروس للأظهرة.'
-    ],
-    whatToAvoidEn: 'Avoid leaving central CBs alone to deal with their two persistent center-forwards.',
-    whatToAvoidAr: 'تجنب ترك قلبي الدفاع معزولين في مواجهة ثنائي الهجوم الصريح للخصم دون تراجع محور الارتكاز.',
-    bestPlayerRolesEn: ['Classic No. 10 AMF', 'Offensive Fullback', 'Goal Poacher CF'],
-    bestPlayerRolesAr: ['صانع كلاسيكي متمركز', 'ظهير هجومي سريع', 'مهاجم قناص مرتد']
-  },
-  '3-2-4-1': {
-    counterFormation: '4-3-3',
-    instructionsEn: [
-      'Exploit the wide open flanks where their wingbacks are forced high.',
-      'Transition quickly into wide lateral areas on interception.'
-    ],
-    instructionsAr: [
-      'استغل المساحات الشاغرة الشاسعة خلف أظهرتهم المتقدمة هجومياً.',
-      'انقل اللعب بسرعة فائقة نحو الأطراف بمجرد قطع الكرة.'
-    ],
-    whatToAvoidEn: 'Avoid crowding the central bottleneck where they hold a numerical advantage.',
-    whatToAvoidAr: 'تجنب حشو وتكديس التمريرات في العمق المزدحم بخمسة من لاعبيهم.',
-    bestPlayerRolesEn: ['Proving Winger LWF', 'Goal Poacher CF', 'Box-to-Box'],
-    bestPlayerRolesAr: ['جناح صريح سريع', 'مهاجم قناص متحرك', 'لاعب وسط مكافح']
-  },
-  '3-4-3': {
-    counterFormation: '5-3-2',
-    instructionsEn: [
-      'Drown their wide wingers in a flat 5-man defense setup.',
-      'Deploy physical central defenders with high aerial ratings.'
-    ],
-    instructionsAr: [
-      'قم بمحاصرة وغمر أجنحتهم المتقدمة بالكامل بخط دفاع خماسي مسطح.',
-      'اعتمد على مدافعين بخصائص بدنية عالية وارتقاء ممتاز لمنع العرضيات.'
-    ],
-    whatToAvoidEn: 'Avoid single-pivot setups that leave the half-spaces unprotected.',
-    whatToAvoidAr: 'تجنب اللعب بمحور ارتكاز منفرد يترك ثغرات بالمسافات النصفية.',
-    bestPlayerRolesEn: ['Defensive Fullback', 'Build-up CB', 'Goal Poacher'],
-    bestPlayerRolesAr: ['ظهير دفاعي صلد', 'مدافع بناء لعب', 'رأس حربة سريع']
-  },
-  '5-3-2': {
-    counterFormation: '4-2-1-3',
-    instructionsEn: [
-      'Exploit their low-tempo mid block using high pressing verticality.',
-      'Keep wingers high and wide to pull their back three apart.'
-    ],
-    instructionsAr: [
-      'اضغط بقوة في الثلث الدفاعي لكسر وتفكيك بناء اللعب منخفض السرعة لديهم.',
-      'أبقِ الأجنحة على التماس لتشتيت ثلاثي قلوب الدفاع وفتح ثغرات للمرور.'
-    ],
-    whatToAvoidEn: 'Avoid mindless crossing toward their packed three tall CBs; play low vertical slices instead.',
-    whatToAvoidAr: 'تجنب الكرات العرضية العالية العشوائية المشتتة بسهولة؛ ابتكِر باختراقات بينية أرضية.',
-    bestPlayerRolesEn: ['Hole Player AMF', 'Roaming Flank LWF', 'Creative Playmaker'],
-    bestPlayerRolesAr: ['لاعب ثغرات (Hole Player)', 'جناح متحرك (Roaming Flank)', 'صانع ألعاب إبداعي']
-  },
-  '5-2-1-2': {
-    counterFormation: '3-2-4-1',
-    instructionsEn: [
-      'Overwhelm their defensive pivot line using an overloaded five-midfield core.',
-      'Keep possession ticking to draw out their rigid backline.'
-    ],
-    instructionsAr: [
-      'اضغط بنمط خماسي في الوسط لتفوق عددي يسحب محاور ارتكازهم.',
-      'دوّر الكرة بتمريرات هادئة وصبورة لإجبار قلبي الدفاع لديهم على الخروج من تمركزهم.'
-    ],
-    whatToAvoidEn: 'Do not trace long balls forward towards physical, isolated target runs.',
-    whatToAvoidAr: 'تجنب الكرات الطويلة المباشرة العالية السهلة لثلاثي قلوب دفاعهم الصلب.',
-    bestPlayerRolesEn: ['Orchestrator CMF', 'Hole Player AMF', 'Anchor Man'],
-    bestPlayerRolesAr: ['منظم اللعب (Orchestrator)', 'صانع ألعاب متسلل', 'لاعب ارتكاز صلب']
-  }
-};
-
-const defaultTacticDetails: CounterTacticDetails = {
-  counterFormation: '4-1-4-1',
-  instructionsEn: [
-    'Set fullbacks to Defensive target to neutralize wing overload.',
-    'Deploy an Anchor Man DMF to secure central gaps.'
-  ],
-  instructionsAr: [
-    'قم بتعيين الأظهرة كدفاعي (Defensive) للحد من هجمات الأجنحة.',
-    'اعتمد على لاعب خط وسط مدافع (Anchor Man) لتأمين العمق.'
-  ],
-  whatToAvoidEn: 'Avoid giving away possession in midfield with risk-prone pass angles.',
-  whatToAvoidAr: 'تجنب قطع الكرة وتمريرها المباشر في العمق المعقد؛ اعتمد على تمريرات سحب الضغط.',
-  bestPlayerRolesEn: ['Anchor Man', 'Defensive Fullback', 'Goal Poacher'],
-  bestPlayerRolesAr: ['لاعب ارتكاز (Anchor Man)', 'ظهير دفاعي', 'مهاجم قناص (Goal Poacher)']
-};
 
 export default function MetaCounterTab() {
   const language = useAppStore(state => state.language);
   const themeAccent = useAppStore(state => state.themeAccent);
 
-  // Form states of Counter opponent matching simple requirements
-  const [oppFormation, setOppFormation] = useState('4-2-2-2');
-  const [oppPlaystyle, setOppPlaystyle] = useState('Quick Counter');
-  const [hasCalculated, setHasCalculated] = useState(false);
+  const [step, setStep] = useState<number>(1);
+  const [oppFormation, setOppFormation] = useState<string>('');
+  const [oppStyle, setOppStyle] = useState<string>('');
+  const [userProblem, setUserProblem] = useState<string>('');
 
-  const handleCalculate = (e: React.FormEvent) => {
-    e.preventDefault();
-    setHasCalculated(true);
+  // Localization Dictionary
+  const dict = {
+    step1Title: {
+      ar: "أشهر تشكيلات الخصم",
+      en: "Opponent Base Formation",
+      fr: "Alineación de l'adversaire",
+      es: "Formación del rival"
+    },
+    step2Title: {
+      ar: "أسلوب الخصم",
+      en: "Opponent Style",
+      fr: "Style de jeu adverse",
+      es: "Estilo de juego rival"
+    },
+    step3Title: {
+      ar: "إيه مشكلتك معاه؟",
+      en: "What is your main issue against him?",
+      fr: "Quel est votre problème avec lui ?",
+      es: "¿Cuál es tu problema con él?"
+    },
+    outputTitle: {
+      ar: "السلاح المضاد لتدمير الخصم",
+      en: "Antidote Counter Blueprint",
+      fr: "Plan tactique anti-rival",
+      es: "Plan táctico anti-rival"
+    },
+    bestCounter: {
+      ar: "أفضل تشكيل مضاد",
+      en: "Best Counter Formation",
+      fr: "Meilleure tactique miroir",
+      es: "Mejor alineación espejo"
+    },
+    defLabel: {
+      ar: "طريقة إيقافه دفاعياً",
+      en: "Defensive Counter Instruction",
+      fr: "Comment le bloquer en défense",
+      es: "Cómo frenarlo en defensa"
+    },
+    offLabel: {
+      ar: "طريقة ضربه هجومياً",
+      en: "Offensive Breakout Instruction",
+      fr: "Comment le battre en attaque",
+      es: "Cómo golpearlo en ataque"
+    },
+    instLabel: {
+      ar: "التعليمات الفردية الفورية",
+      en: "Proposed Individual Instructions",
+      fr: "Instructions individuelles",
+      es: "Instrucciones individuales"
+    },
+    warningLabel: {
+      ar: "تحذير الكابتن",
+      en: "Captain's Warning",
+      fr: "Avertissement du capitaine",
+      es: "Advertencia del capitán"
+    },
+    btnRestart: {
+      ar: "جرب مع خصم تاني",
+      en: "Counter Another Team",
+      fr: "Contrer une autre équipe",
+      es: "Probar con otro rival"
+    }
+  };
+
+  const getTranslation = (key: keyof typeof dict) => {
+    return dict[key][language as 'en' | 'ar' | 'fr' | 'es'] || dict[key]['ar'];
+  };
+
+  // Predefined Button Choices
+  const formations = ['4-3-3', '4-2-1-3', '4-3-1-2', '5-3-2'];
+
+  const styles = [
+    { id: 'fast_direct', ar: 'سريع ومباشر', en: 'Fast & Direct' },
+    { id: 'slow_build', ar: 'بيبني على الهادي', en: 'Slow Build Archetype' },
+    { id: 'wing_play', ar: 'بيطير الأطراف', en: 'Wing Overlapper' },
+    { id: 'park_bus', ar: 'دفاع باص أتوبيس', en: 'Rigid Low Block (Bus)' }
+  ];
+
+  const problems = [
+    { id: 'cant_defend', ar: 'مش عارف أدافع ضده', en: 'Cannot handle their sudden rushes' },
+    { id: 'cant_penetrate', ar: 'مش عارف أوصل لمرماه', en: 'Cannot break down their block' },
+    { id: 'flanks_open', ar: 'الأطراف مستباحة', en: 'Flanks are completely exposed' },
+    { id: 'central_locked', ar: 'بيقفل العمق كلياً', en: 'Central spacing feels congested' }
+  ];
+
+  const handleNext = () => {
+    setStep(prev => prev + 1);
+  };
+
+  const handleBack = () => {
+    setStep(prev => prev - 1);
   };
 
   const handleReset = () => {
-    setOppFormation('4-2-2-2');
-    setOppPlaystyle('Quick Counter');
-    setHasCalculated(false);
+    setOppFormation('');
+    setOppStyle('');
+    setUserProblem('');
+    setStep(1);
   };
 
-  // Safe and type-hardened lookup
-  const rules = localCounterRules[oppFormation] || defaultTacticDetails;
-  const playstyleObj = teamPlaystyles.find(p => p.id === oppPlaystyle) || teamPlaystyles[0];
+  // Compile specific static advice based on the 3 parameters
+  const generateCounterAdvice = () => {
+    let bestCounterFormation = '4-2-2-2';
+    let defensiveInstruction = 'قم فورا بتثبيت قلبي الدفاع من دون صعود، وراقب فجوات الارتداد.';
+    let offensiveInstruction = 'دوّر اللعب بالتمرير من لمسة واحدة متقنة للتسلل بين صفوف الخصم.';
+    const individualInstructions: string[] = ['دفاعي ( على الارتكاز )'];
+    let warning = 'احذر الاستعجال بالاندفاع الجماعي أمام المهاجمين ذوي السبرينت الناري.';
+
+    // 1. Formation dependent advice
+    if (oppFormation === '4-3-3') {
+      bestCounterFormation = '4-2-2-2';
+      defensiveInstruction = 'العب بوسط ملعب مائل للتضييق، واضبط قلبي دفاعك في تراجع ثابت لمنع انطلاقات الأجنحة.';
+      offensiveInstruction = 'مرر بالتناوب السريع بين ثنائي الهجوم لإجبار مدافعه الوسطي على ارتكاب الأخطاء الموضعية.';
+      individualInstructions.push('دفاعي (Defensive) على أحد الأظهرة للحد من انطلاقاتهم.');
+      warning = 'تجنب تطبيق الضغط العالي المفتوح كلياً حتى لا يكسر خلف أظهرتك بسهولة.';
+    } else if (oppFormation === '4-2-1-3') {
+      bestCounterFormation = '5-3-2';
+      defensiveInstruction = 'ثبّت ثنائي الارتكاز (Double Pivot) لمنع صانع ألعابه (AMF) من تمرير أي كرة لثلاثي الهجوم السريع.';
+      offensiveInstruction = 'استغل ضعف أطرافهم عن طريق تمريرات الأجنحة العريضة لقلب دفاع سلحفاة لديهم.';
+      individualInstructions.push('دفاعي (Defensive) لكلا لاعبي الارتكاز لمنع التفوق العددي بالعمق.');
+      warning = 'احذر سحب قلبي الدفاع للتغطية المتقدمة التلقائية لأن مرتداتها خاطفة وصامتة.';
+    } else if (oppFormation === '4-3-1-2') {
+      bestCounterFormation = '4-2-2-2';
+      defensiveInstruction = 'اغلق عمق الملعب تماما، وعين تكتيك وسط متسلل لمقاومة ريتم تمرير ميكانكس خطتهم الشهيرة.';
+      offensiveInstruction = 'طير قلبي الجناحين (LMF/RMF) لبناء كرات عرضية هوائية سريعة تضرب عمقهم الضيق المتراص.';
+      individualInstructions.push('التزام خط التماس (Hug the Sideline) على الجناحين لتوسيع رقعة الملعب.');
+      warning = 'تجنب التمرير الأرضي المستعجل بالعمق المزدحم بمحاور ثلاثي الارتكاز للخصم.';
+    } else if (oppFormation === '5-3-2') {
+      bestCounterFormation = '4-2-1-3';
+      defensiveInstruction = 'العق حذراً هادئاً ولا تتسرع باسترداد الحيازة بضغط بدائي؛ اعتمد على تماسك الميدبلوك لدفاعك.';
+      offensiveInstruction = 'اعتمد على صانع ألعاب من ميزة لاعب ثغرات (Hole Player) لضرب المساحات النصفية الكبيرة في دفاعهم الخماسي.';
+      individualInstructions.push('هدف مرتدة كلي (Counter Target) على صانع ألعابك المتقدم.');
+      warning = 'العرضيات العالية ممتازة للخصم للتشتيت لتوافر ثلاثة قلوب دفاع ممتازين بالطول في صندوقهم.';
+    }
+
+    // 2. Adjustments based on style
+    if (oppStyle === 'fast_direct') {
+      defensiveInstruction += ' الخصم يلعب باندفاع هجومي سريع ومباشر؛ اضبط دفاعك على خط منخفض فورياً.';
+    } else if (oppStyle === 'slow_build') {
+      defensiveInstruction += ' الخصم صبور بالحيازة؛ لا تركض خلف الكرة وصمم على إيقاف البناء عند حافة الـ 18.';
+    } else if (oppStyle === 'wing_play') {
+      defensiveInstruction += ' عطل الأجنحة بنمط تغطية ثنائية مشتركة من الأظهرة والأجنحة الدفاعية المتراجعة.';
+    } else if (oppStyle === 'park_bus') {
+      defensiveInstruction += ' الخصم متكتل؛ حافظ على تنظيم دفاعي احتياطي لمنع المرتدة الخاطفة المعاكسة الوحيدة.';
+      warning = 'تجنب تسديد كرات عشوائية مصطدمة بالأكوام البشرية المتكتلة لديهم.';
+    }
+
+    // 3. Adjustments based on problem
+    if (userProblem === 'cant_defend') {
+      defensiveInstruction += ' أغلق قلبي الدفاع كلياً وعين تعليمات دفاعية صارمة للأظهرة.';
+    } else if (userProblem === 'cant_penetrate') {
+      offensiveInstruction += ' اعتمد على التمرير السريع من لمسة واحدة (One-Two) مع صانعي اللعب للتسديد الحر.';
+    } else if (userProblem === 'flanks_open') {
+      defensiveInstruction += ' ثبت الأظهرة دفاعياً ومنع صعودهم للأمام لإحباط تحركات أجنحتهم السريعة.';
+    } else if (userProblem === 'central_locked') {
+      offensiveInstruction += ' العب كلياً عبر تفعيل الخطوط العريضة لخطوط التماس وتجنب عنق الزجاجة.';
+    }
+
+    return {
+      bestCounterFormation,
+      defensiveInstruction,
+      offensiveInstruction,
+      individualInstructions,
+      warning
+    };
+  };
+
+  const advice = step === 4 ? generateCounterAdvice() : null;
 
   return (
-    <div className="space-y-6 select-none font-sans" data-testid="counter-opponent-tab">
-      <div className="border-b border-border pb-4 flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-black font-orbitron text-white leading-tight">
-            ⚔️ {language === 'en' ? 'Counter Opponent' : 'خطة ضد خصم'}
-          </h2>
-          <p className="text-xs text-gray-400 mt-1">
-            {language === 'en'
-              ? 'Select opponent parameters to see the optimized anti-meta counter plan.'
-              : 'اختار تشكيلة وأسلوب لعب الخصم عشان تاخد الخطة والسلاح التكتيكي المضاد.'}
-          </p>
+    <div className="font-sans space-y-6 max-w-xl mx-auto py-2" data-testid="counter-opponent-wizard">
+      {/* Step header progress bar */}
+      {step < 4 && (
+        <div className="flex justify-between items-center bg-slate-900/60 p-4 rounded-2xl border border-border/80">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-full bg-cyan-400/20 text-cyan-400 border border-cyan-400/50 flex items-center justify-center text-[10px] font-black">
+              {step}
+            </div>
+            <span className="text-xs font-bold text-gray-300">
+              {step === 1 ? getTranslation('step1Title') : step === 2 ? getTranslation('step2Title') : getTranslation('step3Title')}
+            </span>
+          </div>
+          <span className="text-[10px] font-mono font-bold text-gray-500">
+            {step} / 3
+          </span>
         </div>
-      </div>
+      )}
 
       <AnimatePresence mode="wait">
-        {!hasCalculated ? (
-          <motion.form 
-            key="input-form"
-            onSubmit={handleCalculate}
-            className="bg-slate-950/40 border border-border/80 p-5 rounded-3xl shadow-xl max-w-xl mx-auto space-y-5"
-          >
-            <div className="border-b border-border/40 pb-2">
-              <span className="text-[10px] uppercase font-black text-gray-450 tracking-wider font-orbitron">⚔️ OPPONENT SQUAD DETAILS</span>
-            </div>
-
-            {/* Formation Selector */}
-            <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-gray-350">
-                {language === 'en' ? 'Opponent Base Formation' : 'تشكيل الخصم الأساسي'}
-              </label>
-              <select 
-                value={oppFormation}
-                onChange={e => setOppFormation(e.target.value)}
-                className="w-full bg-slate-900 border border-border/70 text-xs px-3.5 py-3 rounded-xl text-white outline-none focus:border-cyan-400 font-orbitron font-bold cursor-pointer"
-              >
-                {FORMATIONS.map(f => <option key={f} value={f}>{f}</option>)}
-              </select>
-              <span className="text-[10px] text-gray-450 block px-1">
-                {language === 'en' 
-                  ? '🔍 Example: 4-2-2-2 is highly popular in online divisions.' 
-                  : '🔍 مثال: تشكيلة 2-2-2-4 الشائعة جداً في مباريات الأونلاين.'}
-              </span>
-            </div>
-
-            {/* Playstyle Selector */}
-            <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-gray-350">
-                {language === 'en' ? 'Opponent Team Playstyle' : 'أسلوب لعب الخصم'}
-              </label>
-              <select 
-                value={oppPlaystyle}
-                onChange={e => setOppPlaystyle(e.target.value)}
-                className="w-full bg-slate-900 border border-border/70 text-xs px-3.5 py-3 rounded-xl text-white outline-none focus:border-cyan-400 font-bold cursor-pointer"
-              >
-                {teamPlaystyles.map(style => (
-                  <option key={style.id} value={style.id}>
-                    {language === 'en' ? style.nameEn : style.nameAr}
-                  </option>
-                ))}
-              </select>
-              <span className="text-[10px] text-gray-450 block px-1">
-                {language === 'en' 
-                  ? '🔍 Example: Quick Counter is extremely fast' 
-                  : '🔍 مثال: مرتدات سريعة لمدربين مثل زايتسلر.'}
-              </span>
-            </div>
-
-            {/* Main CTA Action block */}
-            <button
-              type="submit"
-              className="w-full p-4 rounded-xl text-navyBg font-black font-orbitron text-xs tracking-wider uppercase transition hover:brightness-110 active:scale-98 cursor-pointer flex items-center justify-center gap-2 shadow-lg"
-              style={{ backgroundColor: themeAccent }}
-            >
-              <Zap className="w-4 h-4 fill-navyBg" />
-              <span>{language === 'en' ? 'GENERATE DEFENSIVE COUNTER' : 'صمم السلاح المضاد'}</span>
-            </button>
-          </motion.form>
-        ) : (
+        {step === 1 && (
           <motion.div
-            key="counter-output"
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="space-y-5 select-text"
+            key="step1"
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -10 }}
+            className="space-y-4"
           >
-            {/* The primary counter blueprint card */}
-            <div className="bg-[#0b101f] border border-[#1d2d54] p-5 sm:p-6 rounded-3xl shadow-2xl space-y-5">
-              <div className="flex items-center justify-between border-b border-border/40 pb-3">
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-5.5 h-5.5 text-emerald-400" />
-                  <h3 className="text-base sm:text-lg font-black font-orbitron tracking-wider text-white uppercase">
-                    {language === 'en' ? 'OPPONENT DEACTIVATION BLUEPRINT' : 'خطة كسر وتفكيك الخصم'}
-                  </h3>
-                </div>
-                
-                <span className="text-[10px] font-black text-gray-500 font-mono tracking-wider">
-                  ANTIDOTE v1.0
+            <h2 className="text-xl font-bold text-center text-white font-orbitron py-1">
+              {getTranslation('step1Title')}
+            </h2>
+
+            <div className="grid grid-cols-2 gap-3">
+              {formations.map((fName) => {
+                const isSelected = oppFormation === fName;
+                return (
+                  <button
+                    key={fName}
+                    onClick={() => {
+                      setOppFormation(fName);
+                      setTimeout(() => {
+                        setStep(2);
+                      }, 180);
+                    }}
+                    className={`py-4 px-5 rounded-2xl border text-center transition-all duration-300 h-16 flex items-center justify-center relative cursor-pointer font-black text-base font-orbitron ${
+                      isSelected
+                        ? 'bg-slate-900 text-cyan-400 shadow-md font-black'
+                        : 'bg-slate-950/40 hover:bg-slate-900/50 border-border/50 text-gray-100'
+                    }`}
+                    style={isSelected ? { borderColor: themeAccent, color: themeAccent } : {}}
+                  >
+                    <span>{fName}</span>
+                    {isSelected && (
+                      <div className="absolute right-3 w-5 h-5 rounded-full flex items-center justify-center bg-cyan-400 text-slate-950">
+                        <Check className="w-3.5 h-3.5 stroke-[3.5px]" />
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="flex justify-end pt-4">
+              <button
+                onClick={handleNext}
+                disabled={!oppFormation}
+                className="px-6 py-3.5 rounded-2xl font-black font-orbitron text-xs uppercase transition-all duration-300 disabled:opacity-30 cursor-pointer flex items-center gap-2 shadow-lg"
+                style={{ backgroundColor: oppFormation ? themeAccent : '#3b82f640', color: oppFormation ? '#000' : '#888' }}
+              >
+                <span>{language === 'ar' ? 'التالي' : 'Next'}</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {step === 2 && (
+          <motion.div
+            key="step2"
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -10 }}
+            className="space-y-4"
+          >
+            <h2 className="text-xl font-bold text-center text-white font-orbitron py-1">
+              {getTranslation('step2Title')}
+            </h2>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {styles.map((style) => {
+                const isSelected = oppStyle === style.id;
+                return (
+                  <button
+                    key={style.id}
+                    onClick={() => {
+                      setOppStyle(style.id);
+                      setTimeout(() => {
+                        setStep(3);
+                      }, 180);
+                    }}
+                    className={`py-4 px-5 rounded-2xl border text-center transition-all duration-300 h-16 flex items-center justify-center relative cursor-pointer font-bold text-sm ${
+                      isSelected
+                        ? 'bg-slate-900 text-cyan-400 shadow-md'
+                        : 'bg-slate-950/40 hover:bg-slate-900/50 border-border/50 text-gray-100'
+                    }`}
+                    style={isSelected ? { borderColor: themeAccent, color: themeAccent } : {}}
+                  >
+                    <span>{language === 'ar' || language === undefined ? style.ar : style.en}</span>
+                    {isSelected && (
+                      <div className="absolute right-3 w-5 h-5 rounded-full flex items-center justify-center bg-cyan-400 text-slate-950">
+                        <Check className="w-3.5 h-3.5 stroke-[3.5px]" />
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="flex justify-between pt-4">
+              <button
+                onClick={handleBack}
+                className="px-5 py-3.5 rounded-2xl border border-border/60 text-white text-xs font-black font-orbitron uppercase transition hover:bg-slate-900 cursor-pointer flex items-center gap-1.5"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>{language === 'ar' ? 'السابق' : 'Back'}</span>
+              </button>
+
+              <button
+                onClick={handleNext}
+                disabled={!oppStyle}
+                className="px-6 py-3.5 rounded-2xl font-black font-orbitron text-xs uppercase transition-all duration-300 disabled:opacity-30 cursor-pointer flex items-center gap-2 shadow-lg"
+                style={{ backgroundColor: oppStyle ? themeAccent : '#3b82f640', color: oppStyle ? '#000' : '#888' }}
+              >
+                <span>{language === 'ar' ? 'التالي' : 'Next'}</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {step === 3 && (
+          <motion.div
+            key="step3"
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -10 }}
+            className="space-y-4"
+          >
+            <h2 className="text-xl font-bold text-center text-white font-orbitron py-1">
+              {getTranslation('step3Title')}
+            </h2>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {problems.map((prob) => {
+                const isSelected = userProblem === prob.id;
+                return (
+                  <button
+                    key={prob.id}
+                    onClick={() => {
+                      setUserProblem(prob.id);
+                      setTimeout(() => {
+                        setStep(4);
+                      }, 180);
+                    }}
+                    className={`py-4 px-5 rounded-2xl border text-center transition-all duration-300 h-16 flex items-center justify-center relative cursor-pointer font-bold text-sm ${
+                      isSelected
+                        ? 'bg-slate-900 text-cyan-400 shadow-md'
+                        : 'bg-slate-950/40 hover:bg-slate-900/50 border-border/50 text-gray-100'
+                    }`}
+                    style={isSelected ? { borderColor: themeAccent, color: themeAccent } : {}}
+                  >
+                    <span>{language === 'ar' || language === undefined ? prob.ar : prob.en}</span>
+                    {isSelected && (
+                      <div className="absolute right-3 w-5 h-5 rounded-full flex items-center justify-center bg-cyan-400 text-slate-950">
+                        <Check className="w-3.5 h-3.5 stroke-[3.5px]" />
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="flex justify-between pt-4">
+              <button
+                onClick={handleBack}
+                className="px-5 py-3.5 rounded-2xl border border-border/60 text-white text-xs font-black font-orbitron uppercase transition hover:bg-slate-900 cursor-pointer flex items-center gap-1.5"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>{language === 'ar' ? 'السابق' : 'Back'}</span>
+              </button>
+
+              <button
+                onClick={handleNext}
+                disabled={!userProblem}
+                className="px-6 py-3.5 rounded-2xl font-black font-orbitron text-xs uppercase transition-all duration-300 disabled:opacity-30 cursor-pointer flex items-center gap-2 shadow-lg"
+                style={{ backgroundColor: userProblem ? themeAccent : '#3b82f640', color: userProblem ? '#000' : '#888' }}
+              >
+                <span>{language === 'ar' ? 'السلاح المضاد' : 'Generate'}</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {step === 4 && advice && (
+          <motion.div
+            key="step4"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-5"
+          >
+            <div className="text-center py-1">
+              <Zap className="w-7 h-7 text-amber-400 mx-auto animate-bounce mb-1.5" />
+              <h2 className="text-lg font-black font-orbitron text-white uppercase tracking-wider">
+                {getTranslation('outputTitle')}
+              </h2>
+            </div>
+
+            {/* Custom structural cards for the counter instructions */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-slate-900/80 border border-border/70 p-4.5 rounded-2xl space-y-1 md:col-span-1 text-center flex flex-col justify-center">
+                <span className="block text-[10px] font-black uppercase text-cyan-400 font-orbitron tracking-widest">
+                  📊 {getTranslation('bestCounter')}
                 </span>
-              </div>
-
-              {/* Grid counter cards display */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-slate-950/60 p-4 rounded-2xl border border-border/40 text-center flex flex-col justify-center">
-                  <span className="text-[10px] text-zinc-500 font-black tracking-wider uppercase block">{language === 'en' ? 'TARGET COUNTER FORMATION' : 'التشكيل المضاد الأمثل'}</span>
-                  <span className="text-2xl font-black text-cyan-400 font-orbitron mt-1 block">{rules.counterFormation}</span>
-                </div>
-
-                <div className="bg-slate-950/60 p-4 rounded-2xl border border-border/40 text-center flex flex-col justify-center">
-                  <span className="text-[10px] text-zinc-500 font-black tracking-wider uppercase block">{language === 'en' ? 'OPPONENT THREAT METHOD' : 'أسلوب تهديد الخصم'}</span>
-                  <p className="text-xs font-bold text-rose-350 mt-1.5 leading-relaxed font-semibold">
-                    {language === 'en' ? playstyleObj.descriptionEn : playstyleObj.descriptionAr}
-                  </p>
+                <div className="text-3xl font-black font-orbitron text-white py-1">
+                  {advice.bestCounterFormation}
                 </div>
               </div>
 
-              {/* Custom actions guidelines list */}
-              <div className="space-y-2">
-                <span className="text-[10px] text-emerald-400 font-black tracking-widest block uppercase">✓ {language === 'en' ? 'TACTICAL COUNTER INSTRUCTIONS' : 'التعليمات الفردية وتغيير التمركز:'}</span>
-                <div className="space-y-1.5">
-                  {(language === 'en' ? rules.instructionsEn : rules.instructionsAr).map((inst: string, idx: number) => (
-                    <div key={idx} className="bg-slate-950/40 p-3 rounded-xl border border-emerald-500/10 text-xs text-gray-300 font-semibold leading-normal">
-                      🛡️ {inst}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Best Player Roles */}
-              <div className="space-y-2">
-                <span className="text-[10px] text-amber-500 font-black tracking-widest block uppercase">✓ {language === 'en' ? 'BEST PLAYER ROLES FOR THIS MATCHUP' : 'أدوار اللاعبين الأنسب لضرب الخصم:'}</span>
-                <div className="flex flex-wrap gap-2 pt-0.5">
-                  {(language === 'en' ? rules.bestPlayerRolesEn : rules.bestPlayerRolesAr).map((role: string, idx: number) => (
-                    <span key={idx} className="bg-slate-950 border border-amber-500/20 text-xs font-black text-amber-300 px-3 py-1.5 rounded-lg font-orbitron">
-                      {role}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Avoid panel warnings */}
-              <div className="bg-rose-500/5 border border-rose-500/15 p-4 rounded-xl space-y-1">
-                <span className="text-[9px] text-[#f87171] font-black uppercase tracking-widest flex items-center gap-1.5">
-                  <AlertTriangle className="w-3.5 h-3.5" />
-                  <span>🚧 {language === 'en' ? 'CRITICAL ERROR TO AVOID' : 'تراجع تكتيكي فادح يجب تجنبه:'}</span>
+              <div className="bg-slate-900/80 border border-border/70 p-4 rounded-2xl md:col-span-2 space-y-1">
+                <span className="block text-[11px] font-black uppercase text-secondary font-orbitron tracking-widest text-[#a855f7]">
+                  ⚔️ {language === 'ar' ? 'معلومات الخصم الحالي' : 'Opponent Details'}
                 </span>
-                <p className="text-xs text-rose-300 leading-normal font-semibold">
-                  {language === 'en' ? rules.whatToAvoidEn : rules.whatToAvoidAr}
-                </p>
+                <div className="text-xs text-gray-300 font-semibold leading-relaxed space-y-0.5 mt-1">
+                  <p>• {language === 'ar' ? 'تشكيلة الخصم صانع المشاكل:' : 'Opponent Formation:'} <span className="text-white font-black font-orbitron">{oppFormation}</span></p>
+                  <p>• {language === 'ar' ? 'أسلوب لعبه التخريبي:' : 'Opponent Style:'} <span className="text-white font-bold">{language === 'ar' ? styles.find(s => s.id === oppStyle)?.ar : styles.find(s => s.id === oppStyle)?.en}</span></p>
+                  <p>• {language === 'ar' ? 'المشكلة الأساسية التي تؤرقك:' : 'Your direct obstacle:'} <span className="text-white font-bold">{language === 'ar' ? problems.find(p => p.id === userProblem)?.ar : problems.find(p => p.id === userProblem)?.en}</span></p>
+                </div>
               </div>
             </div>
 
-            {/* Action buttons */}
-            <div className="flex justify-start">
+            {/* طريقة إيقافه دفاعياً */}
+            <div className="bg-slate-900/80 border border-border/70 p-5 rounded-2xl space-y-2">
+              <span className="block text-[10px] font-black uppercase text-[#ef4444] font-orbitron tracking-widest border-b border-border/30 pb-1.5">
+                🛡️ {getTranslation('defLabel')}
+              </span>
+              <p className="text-xs text-gray-300 font-semibold leading-relaxed">
+                {advice.defensiveInstruction}
+              </p>
+            </div>
+
+            {/* طريقة ضربه هجومياً */}
+            <div className="bg-slate-900/80 border border-border/70 p-5 rounded-2xl space-y-2">
+              <span className="block text-[10px] font-black uppercase text-[#10b981] font-orbitron tracking-widest border-b border-border/30 pb-1.5">
+                ⚔️ {getTranslation('offLabel')}
+              </span>
+              <p className="text-xs text-gray-300 font-semibold leading-relaxed">
+                {advice.offensiveInstruction}
+              </p>
+            </div>
+
+            {/* التعليمات الفردية */}
+            <div className="bg-slate-900/80 border border-border/70 p-5 rounded-2xl space-y-2.5">
+              <span className="block text-[10px] font-black uppercase text-cyan-400 font-orbitron tracking-widest border-b border-border/30 pb-1.5">
+                ⚙️ {getTranslation('instLabel')}
+              </span>
+              <div className="flex flex-wrap gap-2 pt-0.5">
+                {advice.individualInstructions.map((inst, index) => (
+                  <span key={index} className="bg-slate-950 border border-cyan-500/20 text-xs font-bold text-cyan-300 px-3 py-1.5 rounded-lg">
+                    🛡️ {inst}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* تحذير الكابتن */}
+            <div className="bg-rose-500/5 border border-rose-500/15 p-4.5 rounded-2xl space-y-1.5">
+              <span className="text-[10px] text-rose-400 font-black uppercase tracking-widest flex items-center gap-1.5">
+                <AlertTriangle className="w-4 h-4 text-rose-450" />
+                <span>🚧 {getTranslation('warningLabel')}</span>
+              </span>
+              <p className="text-xs text-rose-200 leading-relaxed font-semibold">
+                {advice.warning}
+              </p>
+            </div>
+
+            {/* Restart Button */}
+            <div className="pt-2">
               <button
                 onClick={handleReset}
-                className="px-5 py-3 rounded-xl border border-border text-white text-xs font-black font-orbitron tracking-wider uppercase transition hover:bg-slate-900 cursor-pointer flex items-center gap-1.5 shadow-md animate-fadeIn"
+                className="w-full p-4 rounded-2xl border border-border/80 hover:bg-slate-900 transition-all font-bold text-xs font-orbitron uppercase text-white flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                <RefreshCcw className="w-4 h-4" />
-                <span>{language === 'en' ? 'COUNTER NEW TEAM' : 'جرب مع خصم تاني'}</span>
+                <RefreshCw className="w-4 h-4 animate-spin-slow" />
+                <span>{getTranslation('btnRestart')}</span>
               </button>
             </div>
           </motion.div>

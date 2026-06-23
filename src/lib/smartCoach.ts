@@ -24,71 +24,25 @@ export const getDeterministicCoachResponse = (question: string): SmartCoachRespo
   const q = question?.trim();
   if (!q) return null;
 
-  if (q.includes('بخسر من تشكيل معين') || q.includes('تشكيل معين') || q.includes('formation') || q.includes('تشكيلة معينة')) {
+  if (q.includes('4-3-1-2') || q.includes('بخسر من 4-3-1-2')) {
     return {
-      problem: 'الخسارة ضد تشكيلات دفاعية أو هجومية معينة للخصوم.',
-      likelyReason: 'عدم تغيير أسلوب تدوير الكرة أو غياب التعديل المضاد (Counter Formation) لإبطال نقاط قوتهم.',
-      coachDecision: 'تغيير التشكيل لضرب ثغرات تشكيل الخصم مباشرة.',
+      problem: 'الخصم يلعب بالعمق المتراص (4-3-1-2) ويكسب معركة خط الوسط بالتمرير القصير السريع.',
+      likelyReason: 'الاعتماد على تكتيل العمق من الخصم مع غياب أجنحة عريضة لديك لتوسيع انتشار دفاعه.',
+      coachDecision: 'شغل أسلوب "لعب على الأطراف" (Out Wide) بـ 4-2-2-2 لتجدهم عاجزين عن التغطية العرضية.',
       recommendedChanges: [
-        'إذا كان الخصم يلعب 4-3-3: جرب 4-2-2-2 لقطع خطوط تمرير الأجنحة بوسط ملعب متقارب.',
-        'إذا كان يلعب 4-2-1-3: جرب 5-3-2 لشل حركة صانع الألعاب وعزل الثلاثي الهجومي.'
+        'غيّر التشكيل لـ 4-2-2-2 أو 4-2-1-3 بنظام أجنحة عريضة.',
+        'ضع صانع ألعاب يمرر كرات قطرية دقيقة للأطراف.'
       ],
       individualInstructions: [
-        'هدف المرتدة الكلي (Counter Target) على رأس الحربة لتجنب إجهاده البدني.',
-        'دفاعي (Defensive) على أحد الأظهرة للحد من صعود أجنحة الخصم.'
+        'التزام خط التماس (Hug the Sideline) على الجناح الأيمن لمنع تكتلهم الدفاعي.',
+        'دفاعي (Defensive) على الجناح المقابل لتفتيت تركيز وسطهم.'
       ],
-      warning: 'لا تندفع بالضغط العشوائي لمدربي الخصم المستحوذين.',
+      warning: 'احذر التمرير في العمق كليا لأن الخصم يملك 3 لاعبي ارتكاز جاهزون باستمرار لقطع الكرات.',
       saveablePlan: {
-        name: 'Anti-Tactics Block',
+        name: 'Anti-4312 Wing Force',
         formation: '4-2-2-2',
-        playstyle: 'Long Ball Counter',
-        notes: 'خطة مضادة مخصصة للتعامل مع تشكيلات خصوم الاستحواذ والأجنحة السريعة.'
-      }
-    };
-  }
-
-  if (q.includes('مش عارف أختار أسلوب لعب') || q.includes('أسلوب لعب') || q.includes('playstyle')) {
-    return {
-      problem: 'الحيرة في اختيار أسلوب اللعب الأنسب للمباراة.',
-      likelyReason: 'عدم تماشي أسلوب المدرب واللعب مع رغبتك بالتحكم أو السرعة.',
-      coachDecision: 'البدء بـ مرتدات سريعة (Quick Counter) للمبتدئين، أو استحواذ (Possession Game) لتمريرات آمنة.',
-      recommendedChanges: [
-        'جرّب أسلوب "مرتدات سريعة" إذا كنت تحب الهجوم العمودي التلقائي والضغط العالي.',
-        'جرّب "دفاع ثم هجمة" إذا كنت تترك التحكم التكتيكي للكمبيوتر وتفضل تماسك الدفاع.',
-        'جرّب "استحواذ" إذا كنت تبني اللعب بهدوء وتفضل الأمان البطيء.'
-      ],
-      individualInstructions: [
-        'دفاعي (Defensive) على الارتكاز لحماية قلبي الدفاع.',
-        'تثبيت موقعي (Anchoring) على صانع الألعاب ليظل حلقة وصل ثابتة.'
-      ],
-      warning: 'تغيير أسلوب اللعب يتطلب مدرباً متوافقاً لتجنب غياب الانسجام بالفريق.',
-      saveablePlan: {
-        name: 'Balanced Balanced DNA',
-        formation: '4-4-2',
-        playstyle: 'Quick Counter',
-        notes: 'خطة متوازنة تماماً تمنحك الأفضلية في معظم المباريات بمجهود بدني معقول.'
-      }
-    };
-  }
-
-  if (q.includes('الخطة بتتكسر في الشوط الثاني') || q.includes('الشوط الثاني') || q.includes('الشوط الثاني بتتراجع')) {
-    return {
-      problem: 'انهيار دفاعي وتباعد خطوط الفريق في الشوط الثاني.',
-      likelyReason: 'نفاد طاقة اللياقة البدنية (Stamina) للاعبي خط الوسط بسبب الركض الدائم والضغط العالي.',
-      coachDecision: 'إجراء 3 تغييرات فورية في خط الوسط والأجنحة عند الدقيقة 60 لإدخال طاقة وميزة Super-Sub.',
-      recommendedChanges: [
-        'أدخل لاعبي وسط يمتلكون ميزة "Super-sub" في الهجوم والوسط.',
-        'حول التكتيك إلى Sub-Tactic "دفاع ثم هجمة" لتهدئة ريتم الضغط وحفظ اللياقة.'
-      ],
-      individualInstructions: [
-        'هدف المرتدة (Counter Target) على الجناحين لمنع استنزاف طاقتهما الدفاعية.'
-      ],
-      warning: 'إبقاء لاعب بلياقة حمراء فارغة يجعله ثغرة دفاعية وممراً سهلاً لخصومك.',
-      saveablePlan: {
-        name: 'Second Half Shield',
-        formation: '5-3-2',
-        playstyle: 'Long Ball Counter',
-        notes: 'الخطة البديلة للشوط الثاني لإيقاف هجمات الخصم بمجرد التقدم بالنتيجة.'
+        playstyle: 'Out Wide',
+        notes: 'الخطة المضادة المثالية لتفكيك التكتل العميق لـ 4-3-1-2 الشهيرة عن طريق اللعب العريض وفتح الجبهات.'
       }
     };
   }
@@ -115,7 +69,7 @@ export const getDeterministicCoachResponse = (question: string): SmartCoachRespo
     };
   }
 
-  if (q.includes('الخصم بيضغط عليا') || q.includes('الخصم يضغط') || q.includes('الضغط العالي') || q.includes('ضغط عالي')) {
+  if (q.includes('الخصم بيضغط عليا') || q.includes('الخصم يضغط') || q.includes('الضغط عليا') || q.includes('ضغط عليا')) {
     return {
       problem: 'عدم القدرة على الخروج بالكرة واستمرار خسارتها تحت الضغط العالي للخصم.',
       likelyReason: 'الاحتفاظ المفرط بالكرة بالدفاع وضعف خيارات التمرير الفوري القريب.',
@@ -125,7 +79,7 @@ export const getDeterministicCoachResponse = (question: string): SmartCoachRespo
         'مرر الكرة للظهير مباشرة أو شتتها طولياً للمهاجم المحطة.'
       ],
       individualInstructions: [
-        'خط دفاعي عميق (Deep Line) على لاعب وسط متراجع لتأمين الحيازة الحرة.'
+        'خط دفاعي عميق (Deep Line) على لاعب وسط لتأمين الارتداد المنظم.'
       ],
       warning: 'التمرير بالعرض أمام منطقتك بمثابة انتحار تكتيكي ضد خصوم الضغط المتمرسين.',
       saveablePlan: {
@@ -137,7 +91,30 @@ export const getDeterministicCoachResponse = (question: string): SmartCoachRespo
     };
   }
 
-  if (q.includes('الخصم بيكسب العمق') || q.includes('يكسب العمق') || q.includes('العمق مخترق') || q.includes('مخترق من العمق')) {
+  if (q.includes('بستقبل مرتدات') || q.includes('مرتدات') || q.includes('concede counters') || q.includes('بستقبل مرتدات')) {
+    return {
+      problem: 'دفاعك يتلقى أهدافاً خاطفة وسريعة بمجرد خسارة الكرة بالهجوم.',
+      likelyReason: 'اندفاع أظهرة الجنب لديك (LB/RB) بشكل متزامن هجومياً وتراخي قلبي الدفاع.',
+      coachDecision: 'فرض التأمين الدفاعي على الأظهرة وتفعيل أسلوب "دفاع ثم هجمة" (Long Ball Counter) ليبقى الخط الخلفي ثابتاً في دفاع منخفض.',
+      recommendedChanges: [
+        'حوّل أسلوب اللعب لـ Long Ball Counter لمنع الدفاع من الاندفاع المتقدم.',
+        'استخدم مدافعاً بأسلوب تكتيكي Build Up CB لتأمين التحركات.'
+      ],
+      individualInstructions: [
+        'دفاعي (Defensive) على الظهير الأيمن RB لمنع المساندة العشوائية.',
+        'دفاعي (Defensive) على الظهير الأيسر LB لتثبيت قلبي الدفاع.'
+      ],
+      warning: 'لا تستخدم الضغط العالي الجماعي المتواصل في الثلث الأخير إذا كانت سرعات مدافعيك منخفضة.',
+      saveablePlan: {
+        name: 'Impenetrable Box Force',
+        formation: '5-3-2',
+        playstyle: 'Long Ball Counter',
+        notes: 'الحل النهائي للتصدي لمرتدات الخصوم الخاطفة.'
+      }
+    };
+  }
+
+  if (q.includes('بخسر الوسط') || q.includes('خسارة الوسط') || q.includes('lose midfield') || q.includes('بخسر الوسط')) {
     return {
       problem: 'الخصم يستغل المساحة الفارغة بين دفاعك ووسطك لاختراق العمق بسهولة.',
       likelyReason: 'اللعب بـ DMF مغامر يترك مركزه ويصعد لخصومك بشكل فارغ.',
@@ -159,30 +136,7 @@ export const getDeterministicCoachResponse = (question: string): SmartCoachRespo
     };
   }
 
-  if (q.includes('الأطراف عندي ضعيفة') || q.includes('الأطراف ضعيفة') || q.includes('ضعف الأطراف') || q.includes('أطرافي')) {
-    return {
-      problem: 'اختراقات الخصم الخطيرة المستمرة من أطراف الملعب وعرضياته الهوائية الصعبة.',
-      likelyReason: 'صعود أظهرة الجنب لديك الدائم للمساندة الهجومية تاركين الجناحين مستباحين بالكامل.',
-      coachDecision: 'إيقاف صعود الأظهرة فورياً أو حماية الخط الخلفي بثلاثة مدافعين مع قلبي دفاع متطرفين.',
-      recommendedChanges: [
-        'حوّل أظهرتك من هجومية سريعة إلى أظهرة دفاعية مميزة.',
-        'شغل التعليمات الدفاعية لمنع التقدم.'
-      ],
-      individualInstructions: [
-        'دفاعي (Defensive) لظهير الجنب الأيمن والأيسر معاً لحصانة تامة للأطراف.'
-      ],
-      warning: 'اللعب بأظهرة هجومية في أسلوب "مرتدات سريعة" يتطلب أجنحة سريعة تجيد الارتداد التموضعي للتغطية.',
-      saveablePlan: {
-        name: 'Wing Fortress Control',
-        formation: '5-3-2',
-        playstyle: 'Long Ball Counter',
-        notes: 'استراتيجية الحصن الخماسي لتدمير فاعلية الأجنحة فائقة السرعة للخصوم.'
-      }
-    };
-  }
-
-  if (q.includes('تعليمات فردية مناسبة') || q.includes('تعليمات فردية') || q.includes('instructions')) {
-    const defaultFix = problemToTacticalFixMap['midfield_lost'];
+  if (q.includes('عايز تعليمات فردية') || q.includes('تعليمات فردية') || q.includes('instructions')) {
     return {
       problem: 'الحيرة في توظيف الخواص الفردية وربطها بالخطة.',
       likelyReason: 'عدم وضع التعليمات للأدوار المتخصصة، مما يجعل المدافع يندفع والمهاجم يظن نفسه مدافعاً.',
@@ -192,7 +146,7 @@ export const getDeterministicCoachResponse = (question: string): SmartCoachRespo
         'اضبط رأس الحربة الخبير على "Counter Target" ليساند الهجوم بشكل حيوي دائماً.'
       ],
       individualInstructions: [
-        'دفاعي (على الارتكاز)',
+        'دفاعي (على الارتكاز DMF)',
         'هدف المرتدة (على رأس الحربة CF)'
       ],
       warning: 'تعيين أكثر من تعليميتين هجوميتين للفريق قد يسبب تشتتاً موضعياً وفجوات بالانتشار.',
@@ -201,6 +155,30 @@ export const getDeterministicCoachResponse = (question: string): SmartCoachRespo
         formation: '4-3-3',
         playstyle: 'Quick Counter',
         notes: 'الخطة المثالية المتزنة للاستفادة الكاملة من أزرار التعليمات الفردية الأربعة باللعبة.'
+      }
+    };
+  }
+
+  if (q.includes('مش عارف أختار أسلوب لعب') || q.includes('أسلوب لعب') || q.includes('playstyle')) {
+    return {
+      problem: 'الحيرة في اختيار أسلوب اللعب الأنسب للمباراة.',
+      likelyReason: 'عدم تماشي أسلوب المدرب واللعب مع رغبتك بالتحكم أو السرعة.',
+      coachDecision: 'البدء بـ مرتدات سريعة (Quick Counter) للمبتدئين، أو استحواذ (Possession Game) لتمريرات آمنة.',
+      recommendedChanges: [
+        'جرّب أسلوب "مرتدات سريعة" إذا كنت تحب الهجوم العمودي التلقائي والضغط العالي.',
+        'جرّب "دفاع ثم هجمة" إذا كنت تترك التحكم التكتيكي للكمبيوتر وتفضل تماسك الدفاع.',
+        'جرّب "استحواذ" إذا كنت تبني اللعب بهدوء وتفضل الأمان البطيء.'
+      ],
+      individualInstructions: [
+        'دفاعي (Defensive) على الارتكاز لحماية قلبي الدفاع.',
+        'تثبيت موقعي (Anchoring) على صانع الألعاب ليظل حلقة وصل ثابتة.'
+      ],
+      warning: 'تغيير أسلوب اللعب يتطلب مدرباً متوافقاً لتجنب غياب الانسجام بالفريق.',
+      saveablePlan: {
+        name: 'Balanced Balanced DNA',
+        formation: '4-4-2',
+        playstyle: 'Quick Counter',
+        notes: 'خطة متوازنة تماماً تمنحك الأفضلية في معظم المباريات بمجهود بدني معقول.'
       }
     };
   }
@@ -256,7 +234,7 @@ export const getSmartCoachResponse = async (
         'دفاعي (على الارتكاز الـ DMF)',
         'هدف المرتدة (على الـ CF للمحافظة على طاقته)'
       ],
-      warning: 'احذر الاستعجال بتغيير التمرير في الثواني الأخيرة للمباراة.'
+      warning: 'احذر الاستعجال بتغيير التمرير في الثناني والأخير للمباراة.'
     };
   }
 };

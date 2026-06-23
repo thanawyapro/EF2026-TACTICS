@@ -188,11 +188,10 @@ export default function App() {
           {[
             { id: 'home', label: language === 'en' ? 'Home' : 'الرئيسية', icon: Home },
             { id: 'build_plan', label: language === 'en' ? 'Build Plan' : 'ابني خطتك', icon: FolderHeart },
-            { id: 'analyze', label: language === 'en' ? 'Analyze Match' : 'حلّل ماتشك', icon: FileText },
             { id: 'counter', label: language === 'en' ? 'Counter Opponent' : 'خطة ضد خصم', icon: Zap },
             { id: 'smart_coach', label: language === 'en' ? 'Smart Coach' : 'مدربك الذكي', icon: Brain, isAi: true },
-            { id: 'plans', label: language === 'en' ? 'Saved Plans' : 'خططي المحفوظة', icon: User },
-            { id: 'account_settings', label: language === 'en' ? 'Account' : 'حسابي والضبط', icon: Settings2 },
+            { id: 'plans', label: language === 'en' ? 'My Plans' : 'خططي', icon: User },
+            { id: 'account_settings', label: language === 'en' ? 'Account' : 'حسابي', icon: Settings2 },
           ].map(navItem => {
             const Icon = navItem.icon;
             const isSelected = activeTab === navItem.id;
@@ -350,7 +349,7 @@ export default function App() {
               {activeTab === 'analyze' && <TacticsAICoachTab />}
               {activeTab === 'counter' && <MetaCounterTab />}
               {activeTab === 'smart_coach' && <SmartCoachPage onNavigate={setActiveTab} />}
-              {activeTab === 'plans' && <QuickProfilesTab />}
+              {activeTab === 'plans' && <QuickProfilesTab onNavigate={setActiveTab} />}
               {activeTab === 'account_settings' && <AccountPage />}
 
               {/* Advanced original views preserved untouched */}

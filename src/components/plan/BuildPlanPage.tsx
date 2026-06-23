@@ -5,7 +5,7 @@ import { useAppStore } from '../../store/useAppStore';
 import { buildPlanDeterministically } from '../../lib/planBuilder';
 import { validatePlan } from '../../lib/tacticValidation';
 import { 
-  Sparkles, Shield, Compass, AlertTriangle, Check, ArrowRight, ArrowLeft, RefreshCw, Save
+  Sparkles, Check, ArrowRight, ArrowLeft, RefreshCw, Save, AlertTriangle, ShieldCheck
 } from 'lucide-react';
 import { TacticalProfileSchema } from '../../types/schemas';
 
@@ -22,29 +22,114 @@ export default function BuildPlanPage({ onNavigate }: BuildPlanPageProps) {
   const [selectedPlaystyle, setSelectedPlaystyle] = useState<string>('');
   const [selectedProblem, setSelectedProblem] = useState<string>('');
   
-  // Advanced settings toggled
   const [showAdvanced, setShowAdvanced] = useState<boolean>(false);
   const [saveSuccess, setSaveSuccess] = useState<boolean>(false);
 
-  // Predefined options
-  const playstyleOptions = [
-    { id: 'Possession Game', nameAr: 'استحواذ', nameEn: 'Possession Game', desc: 'استحواذ وبناء منظم على الأرض' },
-    { id: 'Quick Counter', nameAr: 'مرتدات سريعة', nameEn: 'Quick Counter', desc: 'هجوم عمودي ومرتدات خاطفة' },
-    { id: 'Long Ball Counter', nameAr: 'دفاع ثم هجمة', nameEn: 'Long Ball Counter', desc: 'تراجع وثبات ثم هجوم عميق' },
-    { id: 'Out Wide', nameAr: 'لعب على الأطراف', nameEn: 'Out Wide', desc: 'توسيع الملعب وعرضيات للمهاجم' },
-    { id: 'Long Ball', nameAr: 'كرات طويلة', nameEn: 'Long Ball', desc: 'كرات طويلة مباشرة لرأس الحربة المحطة' },
-    { id: 'unsure', nameAr: 'مش عارف، اختار ليُ', nameEn: 'Not Sure, Choose for me', desc: 'دع المدرب يفحص مشكلتك ويقرر الأفضل' }
+  // Localization Dictionary
+  const dict = {
+    step1Title: {
+      ar: "اختار أسلوبك",
+      en: "Choose Your Playstyle",
+      fr: "Votre style de jeu",
+      es: "Elige tu estilo de juego"
+    },
+    step2Title: {
+      ar: "إيه مشكلتك؟",
+      en: "What is your main issue?",
+      fr: "Quel est votre problème ?",
+      es: "¿Cuál es tu problema?"
+    },
+    step3Title: {
+      ar: "خطتك جاهزة",
+      en: "Your Plan is Ready!",
+      fr: "Votre plan tactique est prêt !",
+      es: "¡Tu plan táctico está listo!"
+    },
+    unsureBtn: {
+      ar: "اختار لي",
+      en: "Choose for me",
+      fr: "Décidez pour moi",
+      es: "Elige por mí"
+    },
+    cardFormation: {
+      ar: "التشكيل",
+      en: "Formation",
+      fr: "Formation",
+      es: "Alineación"
+    },
+    cardPlaystyle: {
+      ar: "أسلوب الفريق",
+      en: "Team Playstyle",
+      fr: "Style d'équipe",
+      es: "Estilo de equipo"
+    },
+    cardDoThis: {
+      ar: "اعمل كده",
+      en: "Do This",
+      fr: "Action de jeu",
+      es: "Qué hacer"
+    },
+    cardWatchOut: {
+      ar: "خلي بالك",
+      en: "Watch Out",
+      fr: "Attention",
+      es: "Cuidado"
+    },
+    advancedToggle: {
+      ar: "تفاصيل متقدمة",
+      en: "Advanced Details",
+      fr: "Détails avancés",
+      es: "Detalles avanzados"
+    },
+    btnSave: {
+      ar: "احفظ الخطة",
+      en: "Save Plan",
+      fr: "Enregistrer la tactique",
+      es: "Guardar táctica"
+    },
+    btnEdit: {
+      ar: "عدّل الاختيارات",
+      en: "Modify Choices",
+      fr: "Modifier les choix",
+      es: "Modificar opciones"
+    },
+    btnNew: {
+      ar: "ابني خطة جديدة",
+      en: "Build New Plan",
+      fr: "Nouveau plan",
+      es: "Nuevo plan"
+    },
+    savedOk: {
+      ar: "تم الحفظ بنجاح! جاري التوجيه...",
+      en: "Plan saved successfully! Redirecting...",
+      fr: "Tactique enregistrée ! Redirection...",
+      es: "¡Táctica guardada con éxito! Redirigiendo..."
+    }
+  };
+
+  const getTranslation = (key: keyof typeof dict) => {
+    return dict[key][language as 'en' | 'ar' | 'fr' | 'es'] || dict[key]['ar'];
+  };
+
+  // eFootball Playstyle Buttons list
+  const playstyles = [
+    { id: 'Possession Game', labelAr: 'استحواذ', labelEn: 'Possession Game' },
+    { id: 'Quick Counter', labelAr: 'مرتدات سريعة', labelEn: 'Quick Counter' },
+    { id: 'Long Ball Counter', labelAr: 'دفاع ثم هجمة', labelEn: 'Long Ball Counter' },
+    { id: 'Out Wide', labelAr: 'لعب على الأطراف', labelEn: 'Out Wide' },
+    { id: 'Long Ball', labelAr: 'كرات طويلة', labelEn: 'Long Ball' },
+    { id: 'unsure', labelAr: getTranslation('unsureBtn'), labelEn: getTranslation('unsureBtn') },
   ];
 
-  const problemOptions = [
-    { id: 'midfield_lost', nameAr: 'بخسر نص الملعب', nameEn: 'Losing midfield space' },
-    { id: 'conceding_counters', nameAr: 'بستقبل مرتدات', nameEn: 'Conceding quick counters' },
-    { id: 'cannot_score', nameAr: 'مش بعرف أوصل للمرمى', nameEn: 'Cannot penetrate default block' },
-    { id: 'weak_wings', nameAr: 'الأطراف ضعيفة', nameEn: 'Flanks are empty and loose' },
-    { id: 'leaky_defense', nameAr: 'الدفاع بيتفتح', nameEn: 'Defense has massive open gaps' },
-    { id: 'isolated_forward', nameAr: 'المهاجم معزول', nameEn: 'Forward feels completely isolated' },
-    { id: 'random_pressing', nameAr: 'الضغط عندي عشوائي', nameEn: 'Pressing feels unorganized' },
-    { id: 'unsure_instructions', nameAr: 'مش عارف أختار تعليمات فردية', nameEn: 'Unsure about individual instructions' }
+  // Common Beginner/Intermediate Issues
+  const problems = [
+    { id: 'midfield_lost', labelAr: 'بخسر الوسط', labelEn: 'Losing midfield space' },
+    { id: 'conceding_counters', labelAr: 'بستقبل مرتدات', labelEn: 'Conceding counters' },
+    { id: 'cannot_score', labelAr: 'مش بوصل للمرمى', labelEn: 'Cannot penetrate default block' },
+    { id: 'weak_wings', labelAr: 'الأطراف ضعيفة', labelEn: 'Flanks feel weak' },
+    { id: 'leaky_defense', labelAr: 'الدفاع بيتفتح', labelEn: 'Defense gets opened up' },
+    { id: 'isolated_forward', labelAr: 'المهاجم معزول', labelEn: ' striker is isolated' },
+    { id: 'random_pressing', labelAr: 'الضغط عندي عشوائي', labelEn: 'Random chaotic pressing' }
   ];
 
   const handleNext = () => {
@@ -65,7 +150,7 @@ export default function BuildPlanPage({ onNavigate }: BuildPlanPageProps) {
     setSaveSuccess(false);
   };
 
-  // Build the plan deterministically
+  // Compile plan and validate
   const plan = step === 3 ? buildPlanDeterministically(selectedPlaystyle, selectedProblem) : null;
   const validation = plan ? validatePlan(plan.formation, plan.playstyle, plan.individualInstructions, plan.individualInstructions) : null;
 
@@ -74,10 +159,10 @@ export default function BuildPlanPage({ onNavigate }: BuildPlanPageProps) {
 
     const payload = {
       id: 'p_wizard_' + Date.now().toString(),
-      name: language === 'en' ? `Wizard: ${plan.playstyle}` : `الخطة المعايرة: ${plan.playstyleAr}`,
+      name: language === 'ar' ? `خطة مدرب: ${plan.playstyleAr}` : `Coach Plan: ${plan.playstyle}`,
       formation: plan.formation,
       playstyle: plan.playstyle,
-      details: language === 'en' ? plan.explanation : plan.explanationAr,
+      details: language === 'ar' ? plan.explanationAr : plan.explanation,
       isCustom: true,
       subTactics: plan.individualInstructions
     };
@@ -93,72 +178,63 @@ export default function BuildPlanPage({ onNavigate }: BuildPlanPageProps) {
   };
 
   return (
-    <div className="font-sans space-y-6 select-none" data-testid="build-plan-wizard">
-      {/* Title block */}
-      <div className="border-b border-border/60 pb-3 flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-black font-orbitron text-white leading-tight">
-            🛡️ {language === 'en' ? 'Build Your Plan' : 'ابني خطتك'}
-          </h2>
-          <p className="text-xs text-gray-400 mt-1">
-            {language === 'en'
-              ? 'Formulate custom tactical layouts in a fast 3-step wizard based on actual game mechanics.'
-              : 'صمم استراتيجيتك الدفاعية والهجومية في ٣ خطوات كفؤة خالية من التعقيد.'}
-          </p>
-        </div>
-        
-        {step < 3 && (
-          <span className="text-[10px] font-black font-orbitron bg-cyan-400/10 text-cyan-400 border border-cyan-400/20 px-3 py-1 rounded-xl">
-            {language === 'en' ? `STEP ${step} OF 2` : `الخطوة ${step} من ٢`}
+    <div className="font-sans space-y-6 max-w-xl mx-auto py-2" data-testid="build-plan-wizard">
+      {/* Wizard Header Status */}
+      {step < 3 && (
+        <div className="flex justify-between items-center bg-slate-900/60 p-4 rounded-2xl border border-border/80">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-full bg-cyan-400/20 text-cyan-400 border border-cyan-400/50 flex items-center justify-center text-[10px] font-black">
+              {step}
+            </div>
+            <span className="text-xs font-bold text-gray-300">
+              {step === 1 ? getTranslation('step1Title') : getTranslation('step2Title')}
+            </span>
+          </div>
+          <span className="text-[10px] font-mono font-bold text-gray-500">
+            {step} / 2
           </span>
-        )}
-      </div>
+        </div>
+      )}
 
       <AnimatePresence mode="wait">
         {step === 1 && (
           <motion.div
             key="step1"
-            initial={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: 10 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
+            exit={{ opacity: 0, x: -10 }}
             className="space-y-4"
           >
-            <div className="bg-slate-950/40 p-4 border border-border/40 rounded-2xl">
-              <h3 className="text-sm font-black text-white uppercase tracking-wider font-orbitron">
-                {language === 'en' ? '1. Choose your preferred playstyle:' : '١. اختار أسلوب لعبك المفضل:'}
-              </h3>
-              <p className="text-xs text-gray-400 mt-1">
-                {language === 'en' ? 'Select how you enjoy pass orchestration or attacks:' : 'حدد كيف تفضل تسيير الهجمات والسيطرة على ريتم خصومك:'}
-              </p>
-            </div>
+            <h2 className="text-xl font-bold text-center text-white font-orbitron py-1">
+              {getTranslation('step1Title')}
+            </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {playstyleOptions.map((opt) => {
-                const isSelected = selectedPlaystyle === opt.id;
+              {playstyles.map((style) => {
+                const isSelected = selectedPlaystyle === style.id;
                 return (
                   <button
-                    key={opt.id}
-                    onClick={() => setSelectedPlaystyle(opt.id)}
-                    className={`p-4 rounded-2xl border text-left flex flex-col justify-between transition-all duration-300 cursor-pointer ${
-                      isSelected 
-                        ? 'bg-[#0f1930] hover:bg-[#0f1930]' 
-                        : 'bg-slate-950/30 hover:bg-slate-950/65'
+                    key={style.id}
+                    onClick={() => {
+                      setSelectedPlaystyle(style.id);
+                      // Faster Flow - auto transition to Step 2 if you click buttons
+                      setTimeout(() => {
+                        setStep(2);
+                      }, 180);
+                    }}
+                    className={`py-4 px-5 rounded-2xl border text-center transition-all duration-300 h-16 flex items-center justify-center relative cursor-pointer font-bold text-sm ${
+                      isSelected
+                        ? 'bg-slate-900 font-extrabold shadow-md'
+                        : 'bg-slate-950/40 hover:bg-slate-900/50 border-border/50'
                     }`}
-                    style={isSelected ? { borderColor: themeAccent } : { borderColor: 'rgba(255,255,255,0.06)' }}
+                    style={isSelected ? { borderColor: themeAccent, color: themeAccent } : {}}
                   >
-                    <div className="flex items-center justify-between w-full h-8">
-                      <span className="text-sm font-black text-white">
-                        {language === 'en' ? opt.nameEn : opt.nameAr}
-                      </span>
-                      {isSelected && (
-                        <div className="w-5 h-5 rounded-full flex items-center justify-center bg-cyan-400 text-[#040712]">
-                          <Check className="w-3 h-3 stroke-[3px]" />
-                        </div>
-                      )}
-                    </div>
-                    <span className="text-[11px] text-gray-400 font-semibold mt-1">
-                      {opt.desc}
-                    </span>
+                    <span>{language === 'ar' ? style.labelAr : style.labelEn}</span>
+                    {isSelected && (
+                      <div className="absolute right-3 w-5 h-5 rounded-full flex items-center justify-center bg-cyan-400 text-slate-950">
+                        <Check className="w-3.5 h-3.5 stroke-[3.5px]" />
+                      </div>
+                    )}
                   </button>
                 );
               })}
@@ -168,10 +244,10 @@ export default function BuildPlanPage({ onNavigate }: BuildPlanPageProps) {
               <button
                 onClick={handleNext}
                 disabled={!selectedPlaystyle}
-                className="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 hover:brightness-110 text-[#040712] text-xs font-black font-orbitron tracking-wider uppercase transition-all duration-300 disabled:opacity-40 cursor-pointer flex items-center gap-2"
-                style={{ backgroundImage: `linear-gradient(to right, ${themeAccent}, #3b82f6)` }}
+                className="px-6 py-3.5 rounded-2xl font-black font-orbitron text-xs uppercase transition-all duration-300 disabled:opacity-30 cursor-pointer flex items-center gap-2 shadow-lg"
+                style={{ backgroundColor: selectedPlaystyle ? themeAccent : '#3b82f640', color: selectedPlaystyle ? '#000' : '#888' }}
               >
-                <span>{language === 'en' ? 'CONTINUE' : 'التالي'}</span>
+                <span>{language === 'ar' ? 'التالي' : 'Next'}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -181,40 +257,39 @@ export default function BuildPlanPage({ onNavigate }: BuildPlanPageProps) {
         {step === 2 && (
           <motion.div
             key="step2"
-            initial={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: 10 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
+            exit={{ opacity: 0, x: -10 }}
             className="space-y-4"
           >
-            <div className="bg-slate-950/40 p-4 border border-border/40 rounded-2xl">
-              <h3 className="text-sm font-black text-white uppercase tracking-wider font-orbitron">
-                {language === 'en' ? '2. What is your main problem during matches?' : '٢. ما هي مشكلتك الأساسية داخل الملعب؟'}
-              </h3>
-              <p className="text-xs text-gray-400 mt-1">
-                {language === 'en' ? 'Determine where leaks typically occur or where control is lost:' : 'حدد مناطق تكرار الفشل التكتيكي أو استقبال الأهداف:'}
-              </p>
-            </div>
+            <h2 className="text-xl font-bold text-center text-white font-orbitron py-1">
+              {getTranslation('step2Title')}
+            </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {problemOptions.map((opt) => {
-                const isSelected = selectedProblem === opt.id;
+              {problems.map((prob) => {
+                const isSelected = selectedProblem === prob.id;
                 return (
                   <button
-                    key={opt.id}
-                    onClick={() => setSelectedProblem(opt.id)}
-                    className={`p-4 rounded-xl border text-left flex items-center justify-between transition-all duration-300 cursor-pointer ${
-                      isSelected 
-                        ? 'bg-[#0f1930] hover:bg-[#0f1930]' 
-                        : 'bg-slate-950/30 hover:bg-slate-950/65'
+                    key={prob.id}
+                    onClick={() => {
+                      setSelectedProblem(prob.id);
+                      // Easy instant generation on step 2 click
+                      setTimeout(() => {
+                        setStep(3);
+                      }, 180);
+                    }}
+                    className={`py-4 px-5 rounded-2xl border text-center transition-all duration-300 h-16 flex items-center justify-center relative cursor-pointer font-bold text-sm ${
+                      isSelected
+                        ? 'bg-slate-900 font-extrabold shadow-md'
+                        : 'bg-slate-950/40 hover:bg-slate-900/50 border-border/50'
                     }`}
-                    style={isSelected ? { borderColor: themeAccent } : { borderColor: 'rgba(255,255,255,0.06)' }}
+                    style={isSelected ? { borderColor: themeAccent, color: themeAccent } : {}}
                   >
-                    <span className="text-xs font-black text-white">
-                      {language === 'en' ? opt.nameEn : opt.nameAr}
-                    </span>
+                    <span>{language === 'ar' ? prob.labelAr : prob.labelEn}</span>
                     {isSelected && (
-                      <div className="w-5 h-5 rounded-full flex items-center justify-center bg-cyan-400 text-[#040712] shrink-0 ml-2">
-                        <Check className="w-3 h-3 stroke-[3px]" />
+                      <div className="absolute right-3 w-5 h-5 rounded-full flex items-center justify-center bg-cyan-400 text-slate-950">
+                        <Check className="w-3.5 h-3.5 stroke-[3.5px]" />
                       </div>
                     )}
                   </button>
@@ -225,19 +300,19 @@ export default function BuildPlanPage({ onNavigate }: BuildPlanPageProps) {
             <div className="flex justify-between pt-4">
               <button
                 onClick={handleBack}
-                className="px-5 py-3 rounded-xl border border-border text-white text-xs font-black font-orbitron tracking-wider uppercase transition hover:bg-slate-900 cursor-pointer flex items-center gap-1.5"
+                className="px-5 py-3.5 rounded-2xl border border-border/60 text-white text-xs font-black font-orbitron uppercase transition hover:bg-slate-900 cursor-pointer flex items-center gap-1.5"
               >
                 <ArrowLeft className="w-4 h-4" />
-                <span>{language === 'en' ? 'BACK' : 'السابق'}</span>
+                <span>{language === 'ar' ? 'السابق' : 'Back'}</span>
               </button>
 
               <button
                 onClick={handleNext}
                 disabled={!selectedProblem}
-                className="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 hover:brightness-110 text-[#040712] text-xs font-black font-orbitron tracking-wider uppercase transition-all duration-300 disabled:opacity-40 cursor-pointer flex items-center gap-2"
-                style={{ backgroundImage: `linear-gradient(to right, ${themeAccent}, #3b82f6)` }}
+                className="px-6 py-3.5 rounded-2xl font-black font-orbitron text-xs uppercase transition-all duration-300 disabled:opacity-30 cursor-pointer flex items-center gap-2 shadow-lg"
+                style={{ backgroundColor: selectedProblem ? themeAccent : '#3b82f640', color: selectedProblem ? '#000' : '#888' }}
               >
-                <span>{language === 'en' ? 'ANALYZE & BUILD' : 'عرض الخطة'}</span>
+                <span>{language === 'ar' ? 'اعرض الخطة' : 'Show Plan'}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -247,147 +322,156 @@ export default function BuildPlanPage({ onNavigate }: BuildPlanPageProps) {
         {step === 3 && plan && (
           <motion.div
             key="step3"
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             className="space-y-5"
           >
-            {/* Main simple tactical outline */}
-            <div className="bg-[#0c1224] border border-[#1b2a4d] rounded-2xl p-5 sm:p-6 space-y-4">
-              <div className="flex items-center gap-2 border-b border-border/40 pb-3">
-                <Sparkles className="w-5 h-5 text-cyan-400 animate-pulse" />
-                <h3 className="text-base sm:text-lg font-black text-white font-orbitron uppercase tracking-wider">
-                  {language === 'en' ? 'Your Tailored Blueprint' : 'الخطة الجاهزة ليك'}
-                </h3>
-              </div>
+            <div className="text-center py-1">
+              <Sparkles className="w-7 h-7 text-cyan-400 mx-auto animate-pulse mb-1.5" />
+              <h2 className="text-lg font-black font-orbitron text-white uppercase tracking-wider">
+                {getTranslation('step3Title')}
+              </h2>
+            </div>
 
-              {/* Recommended Formation and playstyle summary badges */}
-              <div className="grid grid-cols-2 gap-3 select-text">
-                <div className="bg-slate-950/60 p-3.5 rounded-xl border border-border/40 flex flex-col justify-center text-center">
-                  <span className="text-[10px] text-gray-500 font-extrabold uppercase tracking-widest">{language === 'en' ? 'RECOMMENDED FORMATION' : 'التشكيل المقترح'}</span>
-                  <span className="text-xl sm:text-2xl font-black text-cyan-400 font-orbitron mt-0.5">{plan.formation}</span>
-                </div>
-                <div className="bg-slate-950/60 p-3.5 rounded-xl border border-border/40 flex flex-col justify-center text-center">
-                  <span className="text-[10px] text-gray-500 font-extrabold uppercase tracking-widest">{language === 'en' ? 'RECOMMENDED PLAYSTYLE' : 'أسلوب اللعب المقترح'}</span>
-                  <span className="text-base sm:text-lg font-black text-white mt-0.5">{language === 'en' ? plan.playstyle : plan.playstyleAr}</span>
+            {/* Output Display Cards strictly matching: التشكيل, أسلوب الفريق, اعمل كده, خلي بالك */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Card 1: التشكيل */}
+              <div className="bg-slate-900/80 border border-border/70 p-4.5 rounded-2xl space-y-1">
+                <span className="block text-[10px] font-black uppercase text-cyan-400 font-orbitron tracking-widest">
+                  📊 {getTranslation('cardFormation')}
+                </span>
+                <div className="text-3xl font-black font-orbitron text-white py-1">
+                  {plan.formation}
                 </div>
               </div>
 
-              {/* Attacking / Defensive core ideas */}
-              <div className="space-y-3 pt-2">
-                <div className="flex flex-col gap-1 text-xs text-white">
-                  <span className="text-[10px] text-emerald-400 font-extrabold uppercase tracking-wider">💡 {language === 'en' ? 'Attacking Instruction' : 'الشق الهجومي والتحركات'}</span>
-                  <p className="font-semibold text-gray-300 leading-normal bg-slate-950/30 p-3 rounded-xl border border-emerald-500/10">
-                    {language === 'en' ? plan.attackingIdea : plan.attackingIdeaAr}
-                  </p>
-                </div>
-
-                <div className="flex flex-col gap-1 text-xs text-white">
-                  <span className="text-[10px] text-amber-400 font-extrabold uppercase tracking-wider">🛡️ {language === 'en' ? 'Defensive Protection' : 'التأمين والتنظيم الدفاعي'}</span>
-                  <p className="font-semibold text-gray-300 leading-normal bg-slate-950/30 p-3 rounded-xl border border-amber-500/10">
-                    {language === 'en' ? plan.defensiveIdea : plan.defensiveIdeaAr}
-                  </p>
+              {/* Card 2: أسلوب الفريق */}
+              <div className="bg-slate-900/80 border border-border/70 p-4.5 rounded-2xl space-y-1">
+                <span className="block text-[10px] font-black uppercase text-cyan-400 font-orbitron tracking-widest">
+                  ⚔️ {getTranslation('cardPlaystyle')}
+                </span>
+                <div className="text-base font-black text-white py-2.5">
+                  {language === 'ar' ? plan.playstyleAr : plan.playstyle}
                 </div>
               </div>
+            </div>
 
-              {/* Friendly Simple Coach Explanation */}
-              <div className="bg-cyan-500/5 border border-cyan-400/20 p-4 rounded-xl space-y-1">
-                <span className="text-[10px] text-cyan-400 font-black font-orbitron uppercase tracking-widest block">{language === 'en' ? "COACH'S COMMENT" : "تعليق المدرب الكابتن"}</span>
-                <p className="text-xs text-gray-350 leading-relaxed font-semibold">
-                  {language === 'en' ? plan.explanation : plan.explanationAr}
+            {/* Card 3: اعمل كده */}
+            <div className="bg-slate-900/80 border border-border/70 p-5 rounded-2xl space-y-3">
+              <span className="block text-[10px] font-black uppercase text-emerald-400 font-orbitron tracking-widest border-b border-border/30 pb-1.5">
+                💡 {getTranslation('cardDoThis')}
+              </span>
+              <div className="space-y-3.5 text-xs text-gray-300">
+                <div className="space-y-1 leading-relaxed">
+                  <span className="font-extrabold text-[#11b981] block uppercase">{language === 'ar' ? 'الشق الهجومي:' : 'Attacking Idea:'}</span>
+                  <p className="font-semibold text-gray-400">{language === 'ar' ? plan.attackingIdeaAr : plan.attackingIdea}</p>
+                </div>
+                <div className="space-y-1 leading-relaxed">
+                  <span className="font-extrabold text-[#11b981] block uppercase">{language === 'ar' ? 'التنظيم الدفاعي:' : 'Defensive Idea:'}</span>
+                  <p className="font-semibold text-gray-400">{language === 'ar' ? plan.defensiveIdeaAr : plan.defensiveIdea}</p>
+                </div>
+                <div className="pt-2">
+                  <span className="font-extrabold text-cyan-300 block mb-1 uppercase">{language === 'ar' ? 'التعليمات الفردية الفورية:' : 'Individual Instructions:'}</span>
+                  <div className="flex flex-wrap gap-1.5 mt-1">
+                    {(language === 'ar' ? plan.individualInstructionsAr : plan.individualInstructions).map((inst, index) => (
+                      <span key={index} className="bg-slate-950 border border-border/60 text-[10px] font-bold text-gray-300 px-2.5 py-1 rounded-xl">
+                        {inst}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 4: خلي بالك */}
+            <div className="bg-slate-900/80 border border-border/70 p-5 rounded-2xl space-y-2.5">
+              <span className="block text-[10px] font-black uppercase text-amber-500 font-orbitron tracking-widest border-b border-border/30 pb-1.5">
+                ⚠️ {getTranslation('cardWatchOut')}
+              </span>
+              <div className="text-xs text-gray-300 space-y-2 font-semibold">
+                <p className="leading-relaxed">
+                  {language === 'ar' ? plan.whatToAvoidAr : plan.whatToAvoid}
                 </p>
-              </div>
-
-              {/* Progress and switches */}
-              <div className="border-t border-border/40 pt-4 flex flex-col gap-3">
-                <button
-                  onClick={() => setShowAdvanced(!showAdvanced)}
-                  className="text-xs font-black text-gray-400 hover:text-white transition uppercase font-orbitron self-start flex items-center gap-1 cursor-pointer"
-                >
-                  <span>{showAdvanced 
-                    ? (language === 'en' ? '[- Hide Advanced Details]' : '[- إخفاء التفاصيل المتقدمة]')
-                    : (language === 'en' ? '[+ Show Advanced Details]' : '[+ عرض التفاصيل المتقدمة]')}</span>
-                </button>
-
-                {showAdvanced && (
-                  <motion.div 
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    className="space-y-3 bg-slate-950/60 p-4 rounded-xl border border-border/60 overflow-hidden text-xs text-gray-300"
-                  >
-                    <div>
-                      <span className="text-[10px] font-bold text-gray-500 tracking-wider block">INDIVIDUAL INSTRUCTIONS:</span>
-                      <div className="flex flex-wrap gap-1.5 mt-1">
-                        {(language === 'en' ? plan.individualInstructions : plan.individualInstructionsAr).map((inst, idx) => (
-                          <span key={idx} className="bg-slate-900 border border-border px-2 px-2.5 py-1 rounded-md text-[10px] font-black text-cyan-300">{inst}</span>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <span className="text-[10px] font-bold text-gray-500 tracking-wider block">RECOMMENDED ROLES COMBINATIONS:</span>
-                      <p className="font-semibold text-gray-450 mt-1">
-                        {language === 'en' ? plan.roleRecommendations.join(', ') : plan.roleRecommendationsAr.join('، ')}
-                      </p>
-                    </div>
-
-                    <div>
-                      <span className="text-[10px] font-bold text-[#f87171] tracking-wider block">WHAT TO AVOID IN GAMEPLAY:</span>
-                      <p className="font-semibold text-gray-450 mt-0.5">
-                        {language === 'en' ? plan.whatToAvoid : plan.whatToAvoidAr}
-                      </p>
-                    </div>
-
-                    <div>
-                      <span className="text-[10px] font-bold text-gray-500 tracking-wider block">SUB-TACTIC CONVERSION SIGNAL:</span>
-                      <p className="font-semibold text-emerald-450 mt-0.5">
-                        {language === 'en' ? plan.whenToSwitchSubTactic : plan.whenToSwitchSubTacticAr}
-                      </p>
-                    </div>
-
-                    {/* Warnings and validations (Deterministic errors engine) */}
-                    {validation && validation.warnings.length > 0 && (
-                      <div className="bg-yellow-500/5 border border-yellow-500/20 p-3 rounded-lg space-y-1 mt-2">
-                        <span className="text-[9px] font-black uppercase text-yellow-500 tracking-widest flex items-center gap-1">
-                          <AlertTriangle className="w-3 h-3" />
-                          <span>RISK ADVISORY FOR BEGINNERS</span>
-                        </span>
-                        {validation.warnings.map((warn, i) => (
-                          <p key={i} className="text-[11px] text-yellow-300 leading-normal font-semibold">• {warn}</p>
-                        ))}
-                      </div>
-                    )}
-                  </motion.div>
+                {validation && validation.warnings.length > 0 && (
+                  <div className="bg-amber-500/5 text-amber-400 p-3 rounded-xl border border-amber-500/15 leading-normal text-[11px]">
+                    {validation.warnings.map((warn, i) => (
+                      <p key={i}>• {warn}</p>
+                    ))}
+                  </div>
                 )}
               </div>
             </div>
 
-            {/* Buttons control footer */}
-            <div className="flex flex-col sm:flex-row shadow-md gap-3 pt-2">
+            {/* Expander Section: تفاصيل متقدمة */}
+            <div className="border-t border-border/20 pt-3">
               <button
-                onClick={handleReset}
-                className="flex-1 p-3.5 rounded-xl border border-border text-xs font-black font-orbitron uppercase text-white hover:bg-slate-900 cursor-pointer flex items-center justify-center gap-1.5"
+                onClick={() => setShowAdvanced(!showAdvanced)}
+                className="text-xs font-black text-gray-400 hover:text-white transition uppercase font-orbitron select-none cursor-pointer flex items-center justify-center mx-auto gap-1"
               >
-                <RefreshCw className="w-4 h-4" />
-                <span>{language === 'en' ? 'START OVER' : 'إعادة تصميم'}</span>
+                <span>{showAdvanced ? '[- إخفاء التفاصيل المتقدمة]' : `[+ عرض ${getTranslation('advancedToggle')}]`}</span>
               </button>
 
+              {showAdvanced && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  className="bg-slate-950/80 p-4 border border-border/60 rounded-2xl space-y-3.5 mt-3.5 overflow-hidden text-xs text-gray-300"
+                >
+                  <div className="space-y-1">
+                    <span className="block text-[10px] text-gray-500 font-black uppercase">عناصر التشكيل والوظائف المناسبة:</span>
+                    <p className="font-semibold text-gray-400">
+                      {language === 'ar' ? plan.roleRecommendationsAr.join(' / ') : plan.roleRecommendations.join(' / ')}
+                    </p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <span className="block text-[10px] text-gray-500 font-black uppercase">متى تحول التكتيك لفرعي (Sub-Tactic)؟</span>
+                    <p className="font-semibold text-gray-400">
+                      {language === 'ar' ? plan.whenToSwitchSubTacticAr : plan.whenToSwitchSubTactic}
+                    </p>
+                  </div>
+
+                  <div className="bg-cyan-500/5 text-cyan-400/90 p-3 rounded-xl border border-cyan-500/10 text-[11px] leading-relaxed">
+                    💡 {language === 'ar' ? "صمم هذا المعيار ليتوافق مع أحدث حزم فاعلية المرتدات والتمريرات الطويلة داخل اللعبة." : "Tailored to align with real eFootball dynamic game variables."}
+                  </div>
+                </motion.div>
+              )}
+            </div>
+
+            {/* Bottom buttons controls */}
+            <div className="space-y-3 pt-3">
+              {saveSuccess && (
+                <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 p-3.5 rounded-2xl text-center text-xs font-bold font-orbitron leading-none flex items-center justify-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                  <span>{getTranslation('savedOk')}</span>
+                </div>
+              )}
+
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={handleReset}
+                  className="flex-1 p-4 rounded-2xl border border-border/80 hover:bg-slate-900 transition-all font-bold text-xs font-orbitron uppercase text-white flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  <span>{getTranslation('btnNew')}</span>
+                </button>
+
+                <button
+                  onClick={handleSaveTactic}
+                  disabled={saveSuccess}
+                  className="flex-2 p-4 rounded-2xl text-navyBg font-black font-orbitron text-xs uppercase tracking-wider transition-all hover:brightness-110 flex items-center justify-center gap-2 cursor-pointer"
+                  style={{ backgroundColor: themeAccent }}
+                >
+                  <Save className="w-4.5 h-4.5" />
+                  <span>{getTranslation('btnSave')}</span>
+                </button>
+              </div>
+
               <button
-                onClick={handleSaveTactic}
-                disabled={saveSuccess}
-                className="flex-3 p-3.5 rounded-xl text-navyBg font-black font-orbitron uppercase text-xs tracking-wider transition hover:brightness-110 flex items-center justify-center gap-2 cursor-pointer"
-                style={{ backgroundColor: themeAccent }}
+                onClick={() => setStep(1)}
+                className="w-full text-center py-2.5 text-xs text-cyan-400 hover:text-cyan-300 font-bold font-orbitron select-none cursor-pointer"
               >
-                {saveSuccess ? (
-                  <>
-                    <Check className="w-4 h-4" />
-                    <span>{language === 'en' ? 'SAVED SUCCESSFULLY' : 'تم الحفظ بنجاح'}</span>
-                  </>
-                ) : (
-                  <>
-                    <Save className="w-4 h-4" />
-                    <span>{language === 'en' ? 'SAVE TO MY PLANS' : 'حفظ كخطة معتمدة'}</span>
-                  </>
-                )}
+                {getTranslation('btnEdit')}
               </button>
             </div>
           </motion.div>

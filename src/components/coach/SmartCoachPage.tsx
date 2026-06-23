@@ -24,14 +24,13 @@ export default function SmartCoachPage({ onNavigate }: SmartCoachPageProps) {
   const [saved, setSaved] = useState<boolean>(false);
 
   const suggestionChips = [
-    'أنا بخسر من تشكيل معين',
-    'مش عارف أختار أسلوب لعب',
-    'الخطة بتتكسر في الشوط الثاني',
+    'بخسر من 4-3-1-2',
     'المهاجم معزول',
     'الخصم بيضغط عليا',
-    'الخصم بيكسب العمق',
-    'الأطراف عندي ضعيفة',
-    'عايز تعليمات فردية مناسبة'
+    'بستقبل مرتدات',
+    'بخسر الوسط',
+    'عايز تعليمات فردية',
+    'مش عارف أختار أسلوب لعب'
   ];
 
   const handleAsk = async (queryText: string) => {
@@ -211,14 +210,14 @@ export default function SmartCoachPage({ onNavigate }: SmartCoachPageProps) {
               {/* Problem overview and reason */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-slate-950/40 p-4 rounded-xl border border-border/40">
-                  <span className="text-[10px] text-zinc-500 font-black uppercase tracking-wider block">1. {language === 'en' ? 'The Issue:' : 'المشكلة الأساسية:'}</span>
+                  <span className="text-[10px] text-zinc-500 font-black uppercase tracking-wider block">1. {language === 'en' ? 'The Issue:' : 'المشكلة:'}</span>
                   <p className="text-xs sm:text-sm font-bold text-white mt-1 leading-normal leading-relaxed">
                     {response.problem}
                   </p>
                 </div>
                 
                 <div className="bg-slate-950/40 p-4 rounded-xl border border-border/40">
-                  <span className="text-[10px] text-zinc-500 font-black uppercase tracking-wider block">2. {language === 'en' ? 'Likely Reason:' : 'سببها على الأرجح في الميكانكس:'}</span>
+                  <span className="text-[10px] text-zinc-500 font-black uppercase tracking-wider block">2. {language === 'en' ? 'Likely Reason:' : 'السبب غالبًا:'}</span>
                   <p className="text-xs sm:text-sm text-gray-300 font-semibold mt-1 leading-relaxed">
                     {response.likelyReason}
                   </p>
@@ -227,7 +226,7 @@ export default function SmartCoachPage({ onNavigate }: SmartCoachPageProps) {
 
               {/* Core tactical decision */}
               <div className="bg-cyan-500/5 border border-cyan-400/25 p-4 rounded-xl">
-                <span className="text-[10px] text-cyan-400 font-black tracking-widest uppercase block">3. {language === 'en' ? 'TACTICAL DECISION:' : 'القرار التكتيكي الميداني:'}</span>
+                <span className="text-[10px] text-cyan-400 font-black tracking-widest uppercase block">3. {language === 'en' ? 'TACTICAL DECISION:' : 'قرار المدرب:'}</span>
                 <p className="text-xs font-black sm:text-sm text-white mt-1 leading-relaxed">
                   {response.coachDecision}
                 </p>
@@ -235,7 +234,7 @@ export default function SmartCoachPage({ onNavigate }: SmartCoachPageProps) {
 
               {/* Recommended changes array */}
               <div className="space-y-2">
-                <span className="text-[10px] text-emerald-400 font-black tracking-widest uppercase block">4. {language === 'en' ? 'WHAT TO CHANGE IN SQUAD:' : 'غيّر إيه في خطتك فوراً:'}</span>
+                <span className="text-[10px] text-emerald-400 font-black tracking-widest uppercase block">4. {language === 'en' ? 'WHAT TO CHANGE IN SQUAD:' : 'غيّر إيه:'}</span>
                 <div className="space-y-1.5">
                   {response.recommendedChanges.map((change, idx) => (
                     <div key={idx} className="bg-slate-950/45 p-3 rounded-xl border border-emerald-500/10 text-xs text-gray-300 font-semibold leading-normal">
@@ -248,7 +247,7 @@ export default function SmartCoachPage({ onNavigate }: SmartCoachPageProps) {
               {/* Suggested instructions list */}
               {response.individualInstructions && response.individualInstructions.length > 0 && (
                 <div className="space-y-2">
-                  <span className="text-[10px] text-amber-500 font-black tracking-widest uppercase block">5. {language === 'en' ? 'PROPOSED INDIVIDUAL INSTRUCTIONS:' : 'تعليمات فردية مقترحة (Individual Instructions):'}</span>
+                  <span className="text-[10px] text-amber-500 font-black tracking-widest uppercase block">5. {language === 'en' ? 'PROPOSED INDIVIDUAL INSTRUCTIONS:' : 'تعليمات فردية:'}</span>
                   <div className="flex flex-wrap gap-2">
                     {response.individualInstructions.map((inst, idx) => (
                       <span key={idx} className="bg-slate-950 border border-amber-500/20 text-xs font-bold text-amber-300 px-3 py-1.5 rounded-lg">
@@ -264,7 +263,7 @@ export default function SmartCoachPage({ onNavigate }: SmartCoachPageProps) {
                 <div className="bg-rose-500/5 border border-rose-500/20 p-3.5 rounded-xl space-y-1">
                   <span className="text-[9px] text-rose-400 font-black uppercase tracking-widest flex items-center gap-1">
                     <AlertTriangle className="w-3.5 h-3.5" />
-                    <span>6. {language === 'en' ? 'CRITICAL PLAYING WARNING:' : 'تحذير تكتيكي خطير أثناء اللعب:'}</span>
+                    <span>6. {language === 'en' ? 'CRITICAL PLAYING WARNING:' : 'تحذير مهم:'}</span>
                   </span>
                   <p className="text-[11px] text-rose-300 leading-normal font-semibold">
                     {response.warning}

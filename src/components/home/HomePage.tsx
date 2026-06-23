@@ -1,7 +1,7 @@
 // src/components/home/HomePage.tsx
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FileSearch, Sparkles, FolderHeart, ShieldQuestion, Settings, ArrowRight } from 'lucide-react';
+import { Sparkles, Zap, Brain, FolderHeart, Settings, ArrowRight } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 
 interface HomePageProps {
@@ -12,139 +12,200 @@ export default function HomePage({ onNavigate }: HomePageProps) {
   const language = useAppStore(state => state.language);
   const themeAccent = useAppStore(state => state.themeAccent);
 
+  // Internationalized content mappings
+  const content = {
+    title: {
+      ar: "EF26 Tactics",
+      en: "EF26 Tactics",
+      fr: "EF26 Tactics",
+      es: "EF26 Tactics"
+    },
+    subtitle: {
+      ar: "ابني خطتك في eFootball بسهولة",
+      en: "Build your eFootball plan easily",
+      fr: "Créez facilement votre tactique eFootball",
+      es: "Crea tu táctica de eFootball fácilmente"
+    },
+    question: {
+      ar: "عايز تعمل إيه؟",
+      en: "What would you like to do?",
+      fr: "Que voulez-vous faire ?",
+      es: "¿Qué quieres hacer?"
+    },
+    btnBuild: {
+      ar: "ابني خطتك",
+      en: "Build Your Plan",
+      fr: "Bâtir ta tactique",
+      es: "Construir tu plan"
+    },
+    subBuild: {
+      ar: "اختار أسلوبك وخد خطة جاهزة.",
+      en: "Choose your playstyle and get a ready-made plan.",
+      fr: "Choisissez votre style et obtenez un plan complet.",
+      es: "Elige tu estilo y obtén un plan completo."
+    },
+    btnCounter: {
+      ar: "خطة ضد خصم",
+      en: "Counter Opponent",
+      fr: "Contrer l'adversaire",
+      es: "Contrarrestar rival"
+    },
+    subCounter: {
+      ar: "اختار تشكيلة الخصم وخد الحل.",
+      en: "Choose opponent formation and get the antidote.",
+      fr: "Découvrez comment neutraliser le schéma ennemi.",
+      es: "Elige la formación del rival y obtén la solución."
+    },
+    btnCoach: {
+      ar: "مدربك الذكي",
+      en: "Smart Coach",
+      fr: "Entraîneur Intelligent",
+      es: "Entrenador Inteligente"
+    },
+    subCoach: {
+      ar: "اسأل المدرب وخد نصيحة مباشرة.",
+      en: "Ask the coach and get direct advice.",
+      fr: "Discutez avec le coach pour des astuces directes.",
+      es: "Pregunta al entrenador y obtén consejos directos."
+    },
+    btnPlans: {
+      ar: "خططي",
+      en: "My Plans",
+      fr: "Mes Tactiques",
+      es: "Mis Tácticas"
+    },
+    btnAccount: {
+      ar: "حسابي",
+      en: "Account",
+      fr: "Mon Compte",
+      es: "Mi Cuenta"
+    }
+  };
+
+  const current = (key: keyof typeof content) => {
+    return content[key][language as 'en' | 'ar' | 'fr' | 'es'] || content[key]['ar'];
+  };
+
   return (
-    <div className="space-y-6 select-none font-sans" data-testid="home-page-container">
-      {/* Friendly Hero Coach Section */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-slate-900 to-[#0b1329] border border-border/80 p-6 sm:p-8 rounded-3xl shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="space-y-3 z-10 max-w-xl">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-400/10 border border-cyan-400/20 text-cyan-400 text-[10px] font-black font-orbitron uppercase tracking-widest">
-            <Sparkles className="w-3 h-3 animate-spin duration-1000" />
-            <span>{language === 'en' ? 'SIMPLE eFOOTBALL COACH' : 'مدرب إي فوتبول البسيط'}</span>
-          </div>
-          <h2 className="text-2xl sm:text-3xl font-black text-white tracking-wide leading-tight">
-            {language === 'en' ? 'What should I change in my tactics to play better?' : 'أغير إيه في خطتي عشان ألعب أحسن؟'}
-          </h2>
-          <p className="text-xs sm:text-sm text-gray-400 leading-relaxed font-semibold">
-            {language === 'en' 
-              ? 'Get direct, simple guidelines built by competitive players. No complex analytics – just actionable advice.' 
-              : 'احصل على نصائح تكتيكية واضحة ومباشرة مبنية على محرك اللعبة الفعلي. بدون تعقيدات!'}
-          </p>
+    <div className="space-y-8 select-none font-sans py-4" data-testid="home-page-container">
+      {/* Visual Header */}
+      <div className="text-center space-y-2">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-400/10 border border-cyan-400/20 text-cyan-400 text-[10px] font-black font-orbitron uppercase tracking-widest mb-1 shadow-inner select-none">
+          <Sparkles className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+          <span>eFootball™ Tactics Coach</span>
         </div>
+        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white font-orbitron">
+          {current('title')}
+        </h1>
+        <p className="text-sm text-gray-450 font-semibold">
+          {current('subtitle')}
+        </p>
+      </div>
 
-        {/* Quick Wizards Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 z-10 shrink-0">
-          <button
+      <div className="space-y-4">
+        <h2 className="text-base font-black text-center text-gray-300 font-orbitron uppercase tracking-wide">
+          {current('question')}
+        </h2>
+
+        {/* 3 Big Premium Action Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {/* Card 1: Build Your Plan */}
+          <motion.div
+            whileHover={{ y: -4, borderColor: themeAccent }}
             onClick={() => onNavigate('build_plan')}
-            className="px-6 py-3.5 rounded-2xl text-navyBg font-black font-orbitron text-xs tracking-wider uppercase transition-all duration-300 active:scale-95 shadow-lg shadow-cyan-400/10 hover:brightness-110 flex items-center justify-center gap-2 cursor-pointer"
-            style={{ backgroundColor: themeAccent }}
+            className="bg-slate-900/60 hover:bg-slate-900 border border-border/80 p-6 rounded-3xl shadow-lg cursor-pointer transition-all duration-300 flex flex-col justify-between h-56 group relative overflow-hidden"
           >
-            {language === 'en' ? 'BUILD MY PLAN' : 'ابني خطتك'}
-            <ArrowRight className="w-4 h-4" />
-          </button>
-          
-          <button
+            {/* Ambient subtle light shine */}
+            <div className="absolute -top-10 -right-10 w-32 h-32 bg-cyan-500/5 rounded-full blur-2xl pointer-events-none group-hover:bg-cyan-500/10 transition-all duration-300" />
+            <div className="space-y-3 z-10">
+              <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 group-hover:scale-105 transition-all">
+                <FolderHeart className="w-6 h-6" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-lg font-bold text-white group-hover:text-cyan-400 transition-colors">
+                  {current('btnBuild')}
+                </h3>
+                <p className="text-xs text-gray-400 leading-normal font-semibold">
+                  {current('subBuild')}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-1 text-xs font-black text-cyan-400 uppercase font-orbitron mt-2.5">
+              <span>{language === 'ar' ? 'ابدأ الآن' : 'START'}</span>
+              <ArrowRight className="w-4 h-4 text-cyan-400 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </motion.div>
+
+          {/* Card 2: Counter Opponent */}
+          <motion.div
+            whileHover={{ y: -4, borderColor: '#10b981' }}
+            onClick={() => onNavigate('counter')}
+            className="bg-slate-900/60 hover:bg-slate-900 border border-border/80 p-6 rounded-3xl shadow-lg cursor-pointer transition-all duration-300 flex flex-col justify-between h-56 group relative overflow-hidden"
+          >
+            <div className="absolute -top-10 -right-10 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none group-hover:bg-emerald-500/10 transition-all duration-300" />
+            <div className="space-y-3 z-10">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-105 transition-all">
+                <Zap className="w-6 h-6 animate-pulse" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">
+                  {current('btnCounter')}
+                </h3>
+                <p className="text-xs text-gray-400 leading-normal font-semibold">
+                  {current('subCounter')}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-1 text-xs font-black text-emerald-400 uppercase font-orbitron mt-2.5">
+              <span>{language === 'ar' ? 'ابدأ الآن' : 'START'}</span>
+              <ArrowRight className="w-4 h-4 text-emerald-400 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </motion.div>
+
+          {/* Card 3: Smart Coach */}
+          <motion.div
+            whileHover={{ y: -4, borderColor: '#f59e0b' }}
             onClick={() => onNavigate('smart_coach')}
-            className="px-6 py-3.5 rounded-2xl bg-slate-950 border border-border hover:bg-slate-900 transition-all text-xs font-black font-orbitron tracking-wider text-white uppercase flex items-center justify-center gap-2 cursor-pointer"
+            className="bg-slate-900/60 hover:bg-slate-900 border border-border/80 p-6 rounded-3xl shadow-lg cursor-pointer transition-all duration-300 flex flex-col justify-between h-56 group relative overflow-hidden"
           >
-            {language === 'en' ? 'ASK SMART COACH' : 'مدربك الذكي'}
-            <ShieldQuestion className="w-4 h-4 text-cyan-400" />
-          </button>
+            <div className="absolute -top-10 -right-10 w-32 h-32 bg-amber-500/5 rounded-full blur-2xl pointer-events-none group-hover:bg-amber-500/10 transition-all duration-300" />
+            <div className="space-y-3 z-10">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 group-hover:scale-105 transition-all">
+                <Brain className="w-6 h-6" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-lg font-bold text-white group-hover:text-amber-400 transition-colors">
+                  {current('btnCoach')}
+                </h3>
+                <p className="text-xs text-gray-400 leading-normal font-semibold">
+                  {current('subCoach')}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-1 text-xs font-black text-amber-400 uppercase font-orbitron mt-2.5">
+              <span>{language === 'ar' ? 'ابدأ الآن' : 'START'}</span>
+              <ArrowRight className="w-4 h-4 text-amber-400 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </motion.div>
         </div>
       </div>
 
-      {/* The Three Main Promotional Wizard Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        {/* Card 1: Analyze Match */}
-        <motion.div
-          whileHover={{ y: -4, borderColor: themeAccent }}
-          onClick={() => onNavigate('analyze')}
-          className="bg-slate-950/40 hover:bg-[#0b1226]/50 border border-border/80 p-6 rounded-2xl shadow-md cursor-pointer transition-all duration-300 flex flex-col justify-between h-52 group"
-        >
-          <div className="space-y-3">
-            <div className="w-12 h-12 rounded-xl bg-cyan-400/10 flex items-center justify-center text-cyan-400 border border-cyan-400/20 group-hover:scale-105 transition-all">
-              <FileSearch className="w-6 h-6" />
-            </div>
-            <div className="space-y-1">
-              <h3 className="text-base sm:text-lg font-black text-white group-hover:text-cyan-300 transition-colors">
-                {language === 'en' ? 'Analyze Match' : 'حلّل ماتشك'}
-              </h3>
-              <p className="text-xs text-gray-400 leading-normal font-semibold">
-                {language === 'en'
-                  ? 'Write down what happened in your last match and get instant guidelines.'
-                  : 'اكتب اللي حصل في المباراة وخد نصائح مباشرة.'}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-1.5 text-xs font-black text-cyan-450 uppercase font-orbitron">
-            <span>{language === 'en' ? 'GO' : 'دخول'}</span>
-            <ArrowRight className="w-3.5 h-3.5" style={{ color: themeAccent }} />
-          </div>
-        </motion.div>
-
-        {/* Card 2: Counter Opponent */}
-        <motion.div
-          whileHover={{ y: -4, borderColor: themeAccent }}
-          onClick={() => onNavigate('counter')}
-          className="bg-slate-950/40 hover:bg-[#0b1226]/50 border border-border/80 p-6 rounded-2xl shadow-md cursor-pointer transition-all duration-300 flex flex-col justify-between h-52 group"
-        >
-          <div className="space-y-3">
-            <div className="w-12 h-12 rounded-xl bg-teal-400/10 flex items-center justify-center text-teal-400 border border-teal-400/20 group-hover:scale-105 transition-all">
-              <Sparkles className="w-6 h-6" />
-            </div>
-            <div className="space-y-1">
-              <h3 className="text-base sm:text-lg font-black text-white group-hover:text-teal-300 transition-colors">
-                {language === 'en' ? 'Counter Opponent' : 'خطة ضد خصم'}
-              </h3>
-              <p className="text-xs text-gray-400 leading-normal font-semibold">
-                {language === 'en'
-                  ? 'Input opponent formation and style to receive the perfect countering guide.'
-                  : 'اختار تشكيلة الخصم وخد خطة مضادة.'}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-1.5 text-xs font-black text-teal-400 uppercase font-orbitron">
-            <span>{language === 'en' ? 'GO' : 'دخول'}</span>
-            <ArrowRight className="w-3.5 h-3.5 text-teal-400" />
-          </div>
-        </motion.div>
-
-        {/* Card 3: Saved Plans */}
-        <motion.div
-          whileHover={{ y: -4, borderColor: themeAccent }}
+      {/* Small footer buttons */}
+      <div className="flex flex-wrap items-center justify-center gap-3 pt-4 border-t border-border/20">
+        <button
           onClick={() => onNavigate('plans')}
-          className="bg-slate-950/40 hover:bg-[#0b1226]/50 border border-border/80 p-6 rounded-2xl shadow-md cursor-pointer transition-all duration-300 flex flex-col justify-between h-52 group"
+          className="flex items-center gap-2 px-6 py-3 border border-border/70 hover:border-zinc-500 bg-slate-950/40 hover:bg-slate-950 transition text-xs font-black font-orbitron rounded-2xl text-purple-400 cursor-pointer shadow-md select-none"
         >
-          <div className="space-y-3">
-            <div className="w-12 h-12 rounded-xl bg-purple-400/10 flex items-center justify-center text-purple-400 border border-purple-400/20 group-hover:scale-105 transition-all">
-              <FolderHeart className="w-6 h-6" />
-            </div>
-            <div className="space-y-1">
-              <h3 className="text-base sm:text-lg font-black text-white group-hover:text-purple-300 transition-colors">
-                {language === 'en' ? 'Saved Plans' : 'خططي المحفوظة'}
-              </h3>
-              <p className="text-xs text-gray-400 leading-normal font-semibold">
-                {language === 'en'
-                  ? 'Save your custom strategies and retrieve them quickly before matches.'
-                  : 'احفظ أفضل الخطط وارجعلها بسرعة.'}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-1.5 text-xs font-black text-purple-400 uppercase font-orbitron">
-            <span>{language === 'en' ? 'GO' : 'دخول'}</span>
-            <ArrowRight className="w-3.5 h-3.5 text-purple-400" />
-          </div>
-        </motion.div>
-      </div>
+          <FolderHeart className="w-4 h-4 text-purple-400" />
+          <span>{current('btnPlans')}</span>
+        </button>
 
-      {/* Small Account & Settings Footer Link */}
-      <div className="flex justify-end pt-2">
         <button
           onClick={() => onNavigate('account_settings')}
-          className="text-gray-400 hover:text-white transition text-xs font-bold font-orbitron flex items-center gap-1.5 cursor-pointer select-none bg-slate-950/50 hover:bg-slate-950 px-4 py-2 rounded-xl border border-border/60"
+          className="flex items-center gap-2 px-6 py-3 border border-border/70 hover:border-zinc-500 bg-slate-950/40 hover:bg-slate-950 transition text-xs font-black font-orbitron rounded-2xl text-gray-450 cursor-pointer shadow-md select-none"
         >
-          <Settings className="w-3.5 h-3.5" style={{ color: themeAccent }} />
-          <span>{language === 'en' ? 'ACCOUNT & APP SETTINGS' : 'حسابي وإعدادات التطبيق'}</span>
+          <Settings className="w-4 h-4 text-gray-400" />
+          <span>{current('btnAccount')}</span>
         </button>
       </div>
     </div>
