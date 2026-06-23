@@ -59,30 +59,31 @@ export const handler = async (event: any, _context: any): Promise<any> => {
     const { question, currentFormation, currentPlaystyle, problem } = inputValidation.data;
     const apiKey = process.env.GEMINI_API_KEY;
 
-    // Fallback if no API key is specified - return high-quality simulated coach responses
+    // الخطة البديلة المحدثة بنظام TACTICBOSS الاحترافي في حال عدم وجود الـ API Key
     if (!apiKey || apiKey === 'your_gemini_api_key_here' || apiKey.trim() === '') {
       const simulatedResponse = {
-        problem: problem || question || 'عدم استواء خطوط اللعب والتراجع',
-        likelyReason: 'ترك الثغرات الدفاعية خلف أجنحة خط الهجوم السريع وقلة الدعم من لاعبي الوسط.',
-        coachDecision: 'تغيير عاجل ومحكم للهيكل الدفاعي للتصدي لهجمات مرتدات الخصم السريعة.',
+        problem: problem || question || 'ضعف اختراق العمق الدفاعي للخصم وتلقي مرتدات كارثية',
+        likelyReason: 'استخدام خطة هجومية مفرطة تؤدي لتباعد المسافات بين لاعبي الوسط (DMF/CMF) مما يمنح مهاجمي الخصم مساحات شاسعة للانطلاق فور قطع الكرة.',
+        coachDecision: 'تفعيل جدار الحماية التكتيكي الخاص بمحرك TACTICBOSS بإعادة ضبط التوازن وتأمين الارتكاز.',
         recommendedChanges: [
-          'تبديل التشكيل حالاً ليكون 4-2-2-2 لغلق العمق الميداني.',
-          'التحول من الضغط العالي إلى التراجع المنظم التكتيكي.'
+          'تغيير التشكيل فوراً إلى خطة "الـميتا المضادة" 4-2-1-3 أو 4-2-2-2 لتأمين محوري الارتكاز.',
+          'تعديل خطة اللعب الجماعي إلى Long Ball Counter (مرتدات طويلة) لخفض خط الدفاع تلقائياً ومنع ضربك بالكرات الطولية والـ Through Balls.',
+          'سحب أحد أجنحة الهجوم وتحويله للاعب خط وسط مهاجم (AMF) لربط الخطوط وسد ثغرة التمرير.'
         ],
         individualInstructions: [
-          'دفاعي (على كلا الارتكازين لضمان البقاء في الخلف)',
-          'هدف المرتدة (على رأس الحربة CF للراحة)'
+          'التعليمات الفردية 1: تعيين أمر "Defensive" (دفاعي) على كلا لاعبي الارتكاز (DMF) لمنع تقدمهما نهائياً أثناء الهجوم.',
+          'التعليمات الفردية 2: تفعيل أمر "Counter Target" (هدف المرتدة) على المهاجم الصريح (CF) ليوفر دائماً محطة لتفريغ الضغط بدون استهلاك لياقته في العودة للخلف.',
+          'التعليمات الفردية 3: وضع "Anchoring" (التثبيت الموقعي) على الجناح السريع لمنع دخوله للعمق عشوائياً وفتح أطراف الملعب.'
         ],
-        warning: 'لا تستعجل الاندفاع في المرتدات كي لا ينفذ مخزون اللياقة في الشوط الثاني.',
+        warning: '⚠️ تحذير الميتا: تجنب تفعيل الضغط العالي الأوتوماتيكي (Team Press) لأكثر من 3 ثوانٍ متتالية حتى لا يتدمر تنظيم خط دفاعك ومخزون اللياقة البدنية للاعبيك قبل الشوط الثاني.',
         saveablePlan: {
-          name: 'EF26 Defensive Fortress',
-          formation: '4-2-2-2',
+          name: 'BOSS Anti-Meta Counter',
+          formation: '4-2-1-3',
           playstyle: 'Long Ball Counter',
-          notes: 'خطة تكتيكية تم إنشاؤها وتجربتها خصيصاً للتصدي للهجمات المرتدة باللعبة.'
+          notes: 'تكتيك دفاعي هجومي متوازن مستوحى من مستخدمي التصنيف الأول لكسر الخطط الدفاعية المغلقة.'
         }
       };
 
-      // Output Validation via Zod
       const validatedOutput = OutputSchema.parse(simulatedResponse);
 
       return {
@@ -96,46 +97,49 @@ export const handler = async (event: any, _context: any): Promise<any> => {
       };
     }
 
-    // Modern eFootball expert instructions prompt
+    // التوجيهات البرمجية المطورة للذكاء الاصطناعي (Prompt Engineering) بناءً على معايير TACTICBOSS
     const prompt = `
-You are an expert elite-level eFootball 2026 coaching engineer (Smart Coach).
-Your job is to answer the user's tactical dilemma or question within the strict constraints of the eFootball "DNA Engine" (Team Playstyle concepts, Formations, and Individual Instructions rules).
+You are an elite pro-level eFootball 2026 tactical engineer and the core logic generator of the famous "TACTICBOSS" engine.
+Your job is to breakdown the user's tactical dilemma, mistakes, or opponent's behavior and give them a lethal, highly practical elite counter-strategy inside the strict game rules.
 
 Allowed parameters for your choices:
-- Formations must be like "4-3-3", "4-2-2-2", "4-2-1-3", "5-3-2", "3-2-4-1" etc.
-- Playstyles must ONLY be one of: "Possession Game" (استحواذ), "Quick Counter" (مرتدات سريعة), "Long Ball Counter" (كرة طويلة مضادة), "Out Wide" (لعب على الأطراف), "Long Ball" (كرات طويلة).
-- Individual instructions must be one of: "Counter Target" (هدف المرتدة), "Anchoring" (التثبيت الموقعي), "Deep Line" (خط دفاعي عميق), "Defensive" (دفاعي).
+- Formations must be competitive formats like "4-3-3", "4-2-2-2", "4-2-1-3", "4-1-2-3", "5-2-1-2", "3-2-4-1".
+- Playstyles must ONLY be: "Possession Game" (استحواذ), "Quick Counter" (مرتدات سريعة), "Long Ball Counter" (كرة طويلة مضادة), "Out Wide" (لعب على الأطراف), "Long Ball" (كرات طويلة).
+- Individual instructions must strictly be: "Counter Target" (هدف المرتدة), "Anchoring" (التثبيت الموقعي), "Deep Line" (خط دفاعي عميق), "Defensive" (دفاعي).
 
-USER Dilemma:
-- Question: "${question}"
-- Current Formation in use: "${currentFormation}"
-- Current Playstyle in use: "${currentPlaystyle}"
-- Main problem tag: "${problem}"
+USER Dilemma Input:
+- Question or Scenario: "${question}"
+- Current Formation: "${currentFormation}"
+- Current Playstyle: "${currentPlaystyle}"
+- Problem Tag: "${problem}"
 
-You must formulate your helpful response strictly complying with the following layout. Do not write normal conversation text. Do not wrap code blocks in markdown fences. Give pure JSON representation only:
+Act as a strict Pro-Coach. Formulate your JSON response to be deeply analytical yet perfectly simplified for any player to execute instantly on their console/mobile screen.
+
+Return ONLY a pure JSON object conforming to the schema below. No markdown text, no markdown code blocks fence:
 {
-  "problem": "brief Arabic summary of the user issue as stated or deduced",
-  "likelyReason": "clear, simplified Arabic explanation of why this happens in eFootball",
-  "coachDecision": "high-impact Arabic tactical main decision statement",
+  "problem": "Detailed Arabic concise evaluation of the core breakdown in user's layout",
+  "likelyReason": "Advanced but easy-to-understand Arabic tactical reason explaining why the eFootball game engine or player AI behavior exploits this specific weakness",
+  "coachDecision": "A strong corporate/pro-level Arabic tactical decision statement based on TACTICBOSS philosophies",
   "recommendedChanges": [
-    "1st Arabic specific strategic recommendation",
-    "2nd Arabic specific strategic recommendation"
+    "1st Arabic concrete formation/position adjustments with positions names (e.g., تحويل CMF إلى DMF تأميناً للعمق)",
+    "2nd Arabic playstyle configuration adjustments with technical depth",
+    "3rd Arabic tactical tip for pressing or manual switching"
   ],
   "individualInstructions": [
-    "1st specific Arabic individual instruction recommendation, e.g. دفاعي (على الارتكاز DMF)",
-    "2nd specific Arabic individual instruction recommendation, e.g. هدف المرتدة (على رأس الحربة CF)"
+    "Specific Arabic Advanced Individual instruction 1, specifying the player role e.g. دفاعي (على الارتكاز DMF)",
+    "Specific Arabic Advanced Individual instruction 2, specifying the player role e.g. هدف المرتدة (على رأس الحربة CF)",
+    "Specific Arabic Advanced Individual instruction 3, specifying position or tracking instruction"
   ],
-  "warning": "Arabic crucial warning about eFootball momentum, stamina depletion, or trigger errors",
+  "warning": "Critical Arabic advice regarding the eFootball meta trends, script momentum mitigation, stamina conservation, or blind-spots",
   "saveablePlan": {
-    "name": "short descriptive Arabic/English name for this tailored setup",
-    "formation": "the recommended counter formation (e.g., 4-2-2-2 or 5-3-2)",
-    "playstyle": "the recommended Team Playstyle id (one of: Possession Game, Quick Counter, Long Ball Counter, Out Wide, Long Ball)",
-    "notes": "short Arabic operational key advisory note"
+    "name": "Lethal English custom name for this anti-meta tactic (e.g. BOSS Meta Destroyer)",
+    "formation": "the ideal counter formation string",
+    "playstyle": "the precise competitive Team Playstyle string matching the permitted list",
+    "notes": "Secret tactical tip in Arabic on how to deploy this plan effectively during matches"
   }
 }
 `;
 
-    // Note: We use the system-mandated gemini-3.5-flash model
     const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`;
 
     const rawResponse = await fetch(geminiUrl, {
@@ -165,7 +169,7 @@ You must formulate your helpful response strictly complying with the following l
     const cleanedText = responseText.trim().replace(/^```json/, '').replace(/```$/, '').trim();
     const parsedObj = JSON.parse(cleanedText);
 
-    // Output validation using Zod
+    // Validate structure
     const validatedOutput = OutputSchema.parse(parsedObj);
 
     return {
