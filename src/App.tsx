@@ -30,6 +30,7 @@ import EfootballAuditPage from './pages/EfootballAuditPage';
 import HomePage from './components/home/HomePage';
 import BuildPlanPage from './components/plan/BuildPlanPage';
 import SmartCoachPage from './components/coach/SmartCoachPage';
+import ProfessionalToolsPage from './components/tools/ProfessionalToolsPage';
 
 export default function App() {
   const { language, changeLanguage, t, isRtl } = useLanguage();
@@ -251,6 +252,7 @@ export default function App() {
               {activeTab === 'smart_coach' && <SmartCoachPage onNavigate={setActiveTab} />}
               {activeTab === 'plans' && <QuickProfilesTab onNavigate={setActiveTab} />}
               {activeTab === 'account_settings' && <AccountPage />}
+              {activeTab === 'tools' && <ProfessionalToolsPage onNavigate={setActiveTab} />}
 
               {/* Advanced original views preserved untouched */}
               {activeTab === 'dashboard' && <DashboardTab />}

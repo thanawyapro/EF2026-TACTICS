@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Zap, AlertTriangle, ShieldCheck, RefreshCw, Check, ArrowRight, ArrowLeft } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
+import BoardButton from '../plan/sub/BoardButton';
+import TacticalBoard from '../ui/TacticalBoard';
 
 export default function MetaCounterTab() {
   const language = useAppStore(state => state.language);
@@ -12,6 +14,7 @@ export default function MetaCounterTab() {
   const [oppFormation, setOppFormation] = useState<string>('');
   const [oppStyle, setOppStyle] = useState<string>('');
   const [userProblem, setUserProblem] = useState<string>('');
+  const [showBoard, setShowBoard] = useState<boolean>(false);
 
   // Localization Dictionary
   const dict = {
@@ -54,7 +57,7 @@ export default function MetaCounterTab() {
     offLabel: {
       ar: "طريقة ضربه هجومياً",
       en: "Offensive Breakout Instruction",
-      fr: "Comment le battre en attaque",
+      fr: "Comment le beat en attaque",
       es: "Cómo golpearlo en ataque"
     },
     instLabel: {
@@ -81,7 +84,7 @@ export default function MetaCounterTab() {
     return dict[key][language as 'en' | 'ar' | 'fr' | 'es'] || dict[key]['ar'];
   };
 
-  // Predefined Button Choices
+  // Predefined options
   const formations = ['4-3-3', '4-2-1-3', '4-3-1-2', '5-3-2'];
 
   const styles = [
@@ -111,9 +114,9 @@ export default function MetaCounterTab() {
     setOppStyle('');
     setUserProblem('');
     setStep(1);
+    setShowBoard(false);
   };
 
-  // Compile specific static advice based on the 3 parameters
   const generateCounterAdvice = () => {
     let bestCounterFormation = '4-2-2-2';
     let defensiveInstruction = 'قم فورا بتثبيت قلبي الدفاع من دون صعود، وراقب فجوات الارتداد.';
@@ -121,7 +124,6 @@ export default function MetaCounterTab() {
     const individualInstructions: string[] = ['دفاعي ( على الارتكاز )'];
     let warning = 'احذر الاستعجال بالاندفاع الجماعي أمام المهاجمين ذوي السبرينت الناري.';
 
-    // 1. Formation dependent advice
     if (oppFormation === '4-3-3') {
       bestCounterFormation = '4-2-2-2';
       defensiveInstruction = 'العب بوسط ملعب مائل للتضييق، واضبط قلبي دفاعك في تراجع ثابت لمنع انطلاقات الأجنحة.';
@@ -148,7 +150,6 @@ export default function MetaCounterTab() {
       warning = 'العرضيات العالية ممتازة للخصم للتشتيت لتوافر ثلاثة قلوب دفاع ممتازين بالطول في صندوقهم.';
     }
 
-    // 2. Adjustments based on style
     if (oppStyle === 'fast_direct') {
       defensiveInstruction += ' الخصم يلعب باندفاع هجومي سريع ومباشر؛ اضبط دفاعك على خط منخفض فورياً.';
     } else if (oppStyle === 'slow_build') {
@@ -160,7 +161,6 @@ export default function MetaCounterTab() {
       warning = 'تجنب تسديد كرات عشوائية مصطدمة بالأكوام البشرية المتكتلة لديهم.';
     }
 
-    // 3. Adjustments based on problem
     if (userProblem === 'cant_defend') {
       defensiveInstruction += ' أغلق قلبي الدفاع كلياً وعين تعليمات دفاعية صارمة للأظهرة.';
     } else if (userProblem === 'cant_penetrate') {
@@ -183,7 +183,7 @@ export default function MetaCounterTab() {
   const advice = step === 4 ? generateCounterAdvice() : null;
 
   return (
-    <div className="font-sans space-y-6 max-w-xl mx-auto py-2" data-testid="counter-opponent-wizard">
+    <div className="font-sans space-y-6 max-w-xl mx-auto py-2" data-testid="counter-opponent-wizard-page">
       {/* Step header progress bar */}
       {step < 4 && (
         <div className="flex justify-between items-center bg-slate-900/60 p-4 rounded-2xl border border-border/80">
@@ -200,6 +200,24 @@ export default function MetaCounterTab() {
           </span>
         </div>
       )}
+
+      {/* Interactive tactical board triggers */}
+      <div className="flex justify-center">
+        <BoardButton isOpen={showBoard} onClick={() => setShowBoard(!showBoard)} />
+      </div>
+
+      <AnimatePresence mode="wait">
+        {showBoard && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
+            className="p-4 bg-[#030612]/90 border border-cyan-500/15 rounded-3xl"
+          >
+            <TacticalBoard initialFormation={advice?.bestCounterFormation || '4-3-3'} />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence mode="wait">
         {step === 1 && (
@@ -228,7 +246,7 @@ export default function MetaCounterTab() {
                     }}
                     className={`py-4 px-5 rounded-2xl border text-center transition-all duration-300 h-16 flex items-center justify-center relative cursor-pointer font-black text-base font-orbitron ${
                       isSelected
-                        ? 'bg-slate-900 text-cyan-400 shadow-md font-black'
+                        ? 'bg-slate-900 text-cyan-450 border-cyan-450/40 shadow-md font-black'
                         : 'bg-slate-950/40 hover:bg-slate-900/50 border-border/50 text-gray-100'
                     }`}
                     style={isSelected ? { borderColor: themeAccent, color: themeAccent } : {}}
@@ -284,7 +302,7 @@ export default function MetaCounterTab() {
                     }}
                     className={`py-4 px-5 rounded-2xl border text-center transition-all duration-300 h-16 flex items-center justify-center relative cursor-pointer font-bold text-sm ${
                       isSelected
-                        ? 'bg-slate-900 text-cyan-400 shadow-md'
+                        ? 'bg-slate-900 text-cyan-455 border-cyan-455/40 shadow-md'
                         : 'bg-slate-950/40 hover:bg-slate-900/50 border-border/50 text-gray-100'
                     }`}
                     style={isSelected ? { borderColor: themeAccent, color: themeAccent } : {}}
@@ -348,7 +366,7 @@ export default function MetaCounterTab() {
                     }}
                     className={`py-4 px-5 rounded-2xl border text-center transition-all duration-300 h-16 flex items-center justify-center relative cursor-pointer font-bold text-sm ${
                       isSelected
-                        ? 'bg-slate-900 text-cyan-400 shadow-md'
+                        ? 'bg-slate-900 text-cyan-455 border-cyan-455/40 shadow-md'
                         : 'bg-slate-950/40 hover:bg-slate-900/50 border-border/50 text-gray-100'
                     }`}
                     style={isSelected ? { borderColor: themeAccent, color: themeAccent } : {}}
@@ -474,7 +492,7 @@ export default function MetaCounterTab() {
                 onClick={handleReset}
                 className="w-full p-4 rounded-2xl border border-border/80 hover:bg-slate-900 transition-all font-bold text-xs font-orbitron uppercase text-white flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                <RefreshCw className="w-4 h-4 animate-spin-slow" />
+                <RefreshCw className="w-4 h-4" />
                 <span>{getTranslation('btnRestart')}</span>
               </button>
             </div>

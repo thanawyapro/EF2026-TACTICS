@@ -192,13 +192,7 @@ export const getSmartCoachResponse = async (
   currentPlaystyle: string = 'Quick Counter',
   problem: string = ''
 ): Promise<SmartCoachResponse> => {
-  // 1. Try local deterministic logic first with priority
-  const localMatch = getDeterministicCoachResponse(question || problem);
-  if (localMatch) {
-    return localMatch;
-  }
-
-  // 2. Call the server/AI endpoint if it is a complex free-text custom query
+  // 1. Try AI Primary first
   try {
     const response = await fetch('/.netlify/functions/smartCoach', {
       method: 'POST',
@@ -213,28 +207,33 @@ export const getSmartCoachResponse = async (
       })
     });
 
-    if (!response.ok) {
-      throw new Error(`Netlify function returned Status Code: ${response.status}`);
+    if (response.ok) {
+      const data = await response.json();
+      return data as SmartCoachResponse;
     }
-
-    const data = await response.json();
-    return data as SmartCoachResponse;
-  } catch (err: any) {
-    console.error('Smart Agent local/remote routing fallback error:', err);
-    // Dynamic fallback structure conforming to constraints
-    return {
-      problem: problem || question || 'مستعصية تكتيكية مجهولة',
-      likelyReason: 'ارتباك التمركز الدفاعي وتراخي خطوط الارتداد.',
-      coachDecision: 'تطبيق الأمان التكتيكي السريع وإبطاء سرعة التمرير.',
-      recommendedChanges: [
-        'تحويل الخطة فورياً وإصلاح ريتم تكتيك اللعب.',
-        'ضع قلبي الدفاع في حالة المراقبة الشديدة (Tight Marking).'
-      ],
-      individualInstructions: [
-        'دفاعي (على الارتكاز الـ DMF)',
-        'هدف المرتدة (على الـ CF للمحافظة على طاقته)'
-      ],
-      warning: 'احذر الاستعجال بتغيير التمرير في الثناني والأخير للمباراة.'
-    };
+  } catch (err) {
+    console.warn('AI primary consult failed or offline. Reverting to local fallback rules:', err);
   }
+
+  // 2. Local deterministic backup rule engine matches as fallback
+  const localMatch = getDeterministicCoachResponse(question || problem);
+  if (localMatch) {
+    return localMatch;
+  }
+
+  // Dynamic backup if nothing matched
+  return {
+    problem: problem || question || 'تحليل تكتيكي مخصص',
+    likelyReason: 'وجود خلل في ترابط الخطوط الأمامية وضعف في تباعد لاعبي الارتكاز.',
+    coachDecision: 'تطبيق أسلوب لعب متوازن لمرتدات سريعة لضمان تقارب تباعد كتل اللعب.',
+    recommendedChanges: [
+      'تعديل التشكيل فوراً لـ 4-2-2-2 أو 4-3-1-2 لربط العمق.',
+      'تثبيت قلبي الدفاع في تراجع دفاعي منظم.'
+    ],
+    individualInstructions: [
+      'دفاعي (على الارتكاز DMF)',
+      'هدف المرتدة (على رأس الحربة CF)'
+    ],
+    warning: 'احذر الاستعجال بتمرير الكرات البينية الساقطة لتقليل الهجمات المرتدة ضدك.'
+  };
 };
