@@ -103,7 +103,7 @@ Your job is to answer the user's tactical dilemma or question within the strict 
 
 Allowed parameters for your choices:
 - Formations must be like "4-3-3", "4-2-2-2", "4-2-1-3", "5-3-2", "3-2-4-1" etc.
-- Playstyles must ONLY be one of: "Possession Game" (استحواذ), "Quick Counter" (مرتدات سريعة), "Long Ball Counter" (دفاع ثم هجمة), "Out Wide" (لعب على الأطراف), "Long Ball" (كرات طويلة).
+- Playstyles must ONLY be one of: "Possession Game" (استحواذ), "Quick Counter" (مرتدات سريعة), "Long Ball Counter" (كرة طويلة مضادة), "Out Wide" (لعب على الأطراف), "Long Ball" (كرات طويلة).
 - Individual instructions must be one of: "Counter Target" (هدف المرتدة), "Anchoring" (التثبيت الموقعي), "Deep Line" (خط دفاعي عميق), "Defensive" (دفاعي).
 
 USER Dilemma:

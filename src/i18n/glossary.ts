@@ -34,7 +34,7 @@ export const GLOSSARY: Record<string, GlossaryTerm> = {
     es: "Contraataque rápido"
   },
   longBallCounter: {
-    ar: "دفاع ثم هجمة",
+    ar: "كرة طويلة مضادة",
     en: "Long Ball Counter",
     fr: "Contre-attaque de ballons longs",
     es: "Contraataque de balones largos"

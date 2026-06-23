@@ -175,110 +175,10 @@ export default function App() {
       </header>
 
       {/* Primary Layout Area */}
-      <div className="max-w-7xl mx-auto px-4 py-6 w-full flex-grow grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <div className="max-w-4xl mx-auto px-4 py-6 w-full flex-grow pb-28">
         
-        {/* Simplified side menu layout */}
-        <nav className="lg:col-span-3 bg-[#080d1a]/85 border border-border/85 p-3.5 sm:p-5 rounded-2xl shadow-xl space-y-1">
-          <div className="px-2 pb-2.5 border-b border-border/40 mb-3 select-none">
-            <span className="text-[9px] uppercase font-black font-orbitron text-gray-500 tracking-widest">
-              {language === 'en' ? 'NAVIGATION' : 'بوابة تسيير التكتيك'}
-            </span>
-          </div>
-
-          {[
-            { id: 'home', label: language === 'en' ? 'Home' : 'الرئيسية', icon: Home },
-            { id: 'build_plan', label: language === 'en' ? 'Build Plan' : 'ابني خطتك', icon: FolderHeart },
-            { id: 'counter', label: language === 'en' ? 'Counter Opponent' : 'خطة ضد خصم', icon: Zap },
-            { id: 'smart_coach', label: language === 'en' ? 'Smart Coach' : 'مدربك الذكي', icon: Brain, isAi: true },
-            { id: 'plans', label: language === 'en' ? 'My Plans' : 'خططي', icon: User },
-            { id: 'account_settings', label: language === 'en' ? 'Account' : 'حسابي', icon: Settings2 },
-          ].map(navItem => {
-            const Icon = navItem.icon;
-            const isSelected = activeTab === navItem.id;
-            return (
-              <button
-                key={navItem.id}
-                onClick={() => {
-                  setActiveTab(navItem.id);
-                  // Auto close advanced list when entering main mvps
-                  if (!advancedTabs.includes(navItem.id)) {
-                    setShowAdvancedMenu(false);
-                  }
-                }}
-                className={`w-full p-3 rounded-xl hover:text-white transition-all text-xs font-bold font-orbitron flex items-center justify-between cursor-pointer group select-none ${
-                  isSelected 
-                    ? 'bg-slate-900 border-l-4 border-primary pl-3.5' 
-                    : 'text-gray-400 hover:bg-slate-900/35 border-l-4 border-transparent'
-                }`}
-                style={isSelected ? { borderLeftColor: themeAccent, color: themeAccent } : {}}
-              >
-                <div className="flex items-center gap-3">
-                  <Icon className="w-4.5 h-4.5 transition group-hover:scale-110" />
-                  <span>{navItem.label}</span>
-                </div>
-                {navItem.isAi && (
-                  <span className="text-[8.5px] font-black font-orbitron bg-cyan-400/15 border border-cyan-400/20 text-cyan-400 px-1.5 py-0.5 rounded leading-none animate-pulse">
-                    AI
-                  </span>
-                )}
-              </button>
-            );
-          })}
-
-          {/* Elegant Collapsible Folder for original complex items */}
-          <div className="pt-2 border-t border-border/40 mt-3 space-y-1">
-            <button
-              onClick={() => setShowAdvancedMenu(!showAdvancedMenu)}
-              className="w-full p-2.5 rounded-xl hover:bg-slate-900/25 text-gray-500 hover:text-gray-350 transition-colors text-[10.5px] font-bold font-orbitron flex items-center justify-between cursor-pointer"
-            >
-              <div className="flex items-center gap-2">
-                <Hammer className="w-3.5 h-3.5" />
-                <span>{language === 'en' ? 'Advanced Pro Tools' : 'أدوات المحترفين المعقدة'}</span>
-              </div>
-              {showAdvancedMenu ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-            </button>
-
-            <AnimatePresence>
-              {showAdvancedMenu && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="space-y-0.5 pl-2 pr-2 overflow-hidden bg-slate-950/20 rounded-xl"
-                >
-                  {[
-                    { id: 'dashboard', label: t('dashboard'), icon: LayoutGrid },
-                    { id: 'match_report', label: t('match_report'), icon: FileText },
-                    { id: 'sub_tactics', label: t('sub_tactics'), icon: Sliders },
-                    { id: 'custom_formation', label: 'Squad editor', icon: Activity },
-                    { id: 'performance_tracker', label: t('performance_tracker'), icon: TrendingUp },
-                    { id: 'momentum_diagnostic', label: 'Momentum Diagnostic', icon: ShieldAlert },
-                    { id: 'app_settings', label: t('app_settings'), icon: Settings2 },
-                  ].map(advancedItem => {
-                    const Icon = advancedItem.icon;
-                    const isSelected = activeTab === advancedItem.id;
-                    return (
-                      <button
-                        key={advancedItem.id}
-                        onClick={() => setActiveTab(advancedItem.id)}
-                        className={`w-full p-2 rounded-lg hover:text-white transition-all text-[10px] font-bold font-orbitron flex items-center gap-2.5 cursor-pointer ${
-                          isSelected ? 'bg-slate-900 text-cyan-400' : 'text-gray-500 hover:bg-slate-900/10'
-                        }`}
-                        style={isSelected ? { color: themeAccent } : {}}
-                      >
-                        <Icon className="w-3.5 h-3.5 shrink-0" />
-                        <span>{advancedItem.label}</span>
-                      </button>
-                    );
-                  })}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </nav>
-
         {/* Content view portal wrapped in AnimatePresence switches */}
-        <main className="lg:col-span-9 space-y-6">
+        <main className="space-y-6">
           {importingShare && (
             <div className="bg-[#0b0f19]/80 border border-cyan-500/30 p-4.5 rounded-2xl animate-pulse flex items-center gap-3 text-xs font-bold font-orbitron select-none text-cyan-400 bg-surface">
               <Loader2 className="w-5 h-5 animate-spin" style={{ color: themeAccent }} />
@@ -363,6 +263,50 @@ export default function App() {
             </motion.div>
           </AnimatePresence>
         </main>
+      </div>
+
+      {/* Premium Bottom Navigation Bar */}
+      <div className="fixed bottom-0 inset-x-0 bg-slate-950/95 border-t border-border/80 backdrop-blur-lg z-50 py-3 px-3 shadow-2xl">
+        <div className="max-w-xl mx-auto flex items-center justify-around">
+          {[
+            { id: 'home', label: language === 'en' ? 'Home' : 'الرئيسية', icon: Home },
+            { id: 'build_plan', label: language === 'en' ? 'Build Plan' : 'ابني خطتك', icon: FolderHeart },
+            { id: 'counter', label: language === 'en' ? 'Counter' : 'ضد خصم', icon: Zap },
+            { id: 'smart_coach', label: language === 'en' ? 'Coach' : 'مدربك', icon: Brain, isAi: true },
+            { id: 'plans', label: language === 'en' ? 'Plans' : 'خططي', icon: User },
+            { id: 'account_settings', label: language === 'en' ? 'Account' : 'حسابي', icon: Settings2 },
+          ].map((navItem) => {
+            const Icon = navItem.icon;
+            const isSelected = activeTab === navItem.id;
+            return (
+              <button
+                key={navItem.id}
+                onClick={() => setActiveTab(navItem.id)}
+                className={`flex flex-col items-center gap-1 transition-all relative px-3 py-1 rounded-xl cursor-pointer ${
+                  isSelected ? 'text-cyan-400 font-extrabold scale-105' : 'text-gray-400 hover:text-white'
+                }`}
+                style={isSelected ? { color: themeAccent } : {}}
+              >
+                <div className="relative">
+                  <Icon className="w-5 h-5" />
+                  {navItem.isAi && (
+                    <span className="absolute -top-1.5 -right-2 bg-cyan-400 text-[#040712] text-[7px] font-black px-1 py-0.2 rounded-full animate-pulse leading-none">
+                      AI
+                    </span>
+                  )}
+                </div>
+                <span className="text-[10px] tracking-tight">{navItem.label}</span>
+                {isSelected && (
+                  <motion.div
+                    layoutId="activeTabIndicator"
+                    className="absolute -bottom-1.5 w-1.5 h-1.5 rounded-full"
+                    style={{ backgroundColor: themeAccent }}
+                  />
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Background footer label */}

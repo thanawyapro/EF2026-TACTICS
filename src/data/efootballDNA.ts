@@ -41,9 +41,9 @@ export const teamPlaystyles: PlaystyleInfo[] = [
   {
     id: 'Long Ball Counter',
     nameEn: 'Long Ball Counter',
-    nameAr: 'دفاع ثم هجمة',
+    nameAr: 'كرة طويلة مضادة',
     descriptionEn: 'Deep defensive block to choke gaps, then striking quickly into vertical space using direct long runs.',
-    descriptionAr: 'تراجع دفاعي منظم لإغلاق الثغرات، ثم ضرب دفاعات الخصم كرات عمودية سريعة بمجرد افتكاك الكرة.',
+    descriptionAr: 'تراجع دفاعي منظم لإغلاق الثغرات، ثم ضرب دفاعات الخصم بكرات عمودية سريعة بمجرد افتكاك الكرة.',
     strengthsEn: ['Solid compact defense', 'Exploiting high lines', 'Low concession risk'],
     strengthsAr: ['دفاع صلب ومتكتل', 'استغلال تقدم دفاعات الخصم', 'تقليل خطر استقبال الأهداف']
   },
@@ -70,13 +70,18 @@ export const teamPlaystyles: PlaystyleInfo[] = [
 export const commonFormations: string[] = [
   '4-3-3',
   '4-2-1-3',
+  '4-3-1-2',
   '4-2-2-2',
   '4-1-2-3',
+  '4-2-3-1',
   '4-4-2',
+  '4-1-4-1',
   '3-2-4-1',
   '3-4-3',
+  '3-5-2',
   '5-3-2',
-  '5-2-1-2'
+  '5-2-3',
+  '5-4-1'
 ];
 
 export const formationStrengths: Record<string, { en: string[]; ar: string[] }> = {
@@ -115,6 +120,30 @@ export const formationStrengths: Record<string, { en: string[]; ar: string[] }> 
   '5-2-1-2': {
     en: ['Choke interior channels complete', 'AMF links CF run lanes seamlessly', 'High counter security margins'],
     ar: ['سد تام لممرات التمرير البينية', 'صانع الألعاب يغذي المهاجمين بمثالية', 'هامش أمان دفاعي مرتفع جداً']
+  },
+  '4-3-1-2': {
+    en: ['Very strong central midfield possession', 'Short passing combinations inside', 'Saves player stamina'],
+    ar: ['استحواذ قوي جداً في عمق الوسط', 'تبادل تمريرات قصيرة وسريعة', 'يوفر طاقة ومجهود اللاعبين البدني']
+  },
+  '4-2-3-1': {
+    en: ['Excellent defense-to-attack shielding', 'Wings can track back effectively', 'Safe passing networks'],
+    ar: ['درع دفاعي رائع أمام المهاجمين', 'تراجع فعال للأجنحة للمساندة', 'شبكات تمرير آمنة تضمن السيطرة']
+  },
+  '4-1-4-1': {
+    en: ['Fluid transitions from wide channels', 'Highly flexible defensive lines', 'Compact back block spacing'],
+    ar: ['مرونة انتقال سريعة عبر الأجنحة', 'خطوط دفاعية مرنة وسهلة التشكيل', 'تكتل خلفي آمن يمنع الثغرات البينية']
+  },
+  '3-5-2': {
+    en: ['Maximum midfield control and numbers', 'Provides dual-forward pressure', 'Wingbacks dominate play'],
+    ar: ['أكبر كثافة عددية في وسط الملعب', 'ضغط مستمر عبر ثنائي الهجوم الصريح', 'سيطرة كاملة وطولية للاعبي الأطراف']
+  },
+  '5-2-3': {
+    en: ['Maximum wide security', 'Front wingers trigger fast counters', 'Unbreakable central defensive wall'],
+    ar: ['تأمين دفاعي ممتاز للأطراف والعمق', 'أجنحة هجومية تشن مرتدات نارية خاطفة', 'جدار دفاعي صلب يستعصي اختراقه']
+  },
+  '5-4-1': {
+    en: ['Super fortress defensive block', 'Extremely hard to penetrate centrally', 'Perfect for protecting leads'],
+    ar: ['تكتل دفاعي حديدي أشبه بالقلعة حصينة', 'يستعيل اختراقه من العمق أو الأطراف', 'الخيار التكتيكي المثالي لتأمين النصر']
   }
 };
 
@@ -139,9 +168,45 @@ export const formationWeaknesses: Record<string, { en: string[]; ar: string[] }>
     en: ['Vulnerable space between defense and flat midfield', 'Predictable vertical passing lines'],
     ar: ['مساحة مكشوفة بين الدفاع والوسط', 'يسهل توقع مسارات التمرير العمودية']
   },
+  '4-3-1-2': {
+    en: ['Lack of natural wing play', 'Fullbacks must provide width and deplete stamina'],
+    ar: ['غياب تام للأجنحة الهجومية التقليدية', 'يُجبر أظهرة الجنب على الاندفاع حد الاستنزاف']
+  },
+  '4-2-3-1': {
+    en: ['Lone striker can become isolated', 'Requires highly creative AMF to orchestrate'],
+    ar: ['المهاجم الوحيد قد ينعزل أمام المدافعين', 'يحتاج صانع ألعاب خارق لابتكار لغة الهجوم']
+  },
+  '4-1-4-1': {
+    en: ['Slower counter deployment', 'Heavy physical load on single anchor man DMF'],
+    ar: ['بطء تدريجي في تفعيل الهجمات المرتدة', 'حمل بدني هائل وضغط مستمر على لاعب DMF الوحيد']
+  },
+  '4-1-2-3': {
+    en: ['Vulnerable to counter counter-attacks', 'Only one defensive shield in midfield'],
+    ar: ['سهل استهداف وسطك بالمرتدات المعاكسة', 'وجود لاعب ارتكاز وحيد يسهل تجاوزه']
+  },
+  '3-2-4-1': {
+    en: ['Huge space gaps behind wingers', 'Defense must be extremely fast to cover broad edges'],
+    ar: ['مساحات شاسعة مكشوفة خلف لاعبي الجنب', 'يفرض على مدافعي الأطراف سرعة قياسية للتغطية']
+  },
+  '3-4-3': {
+    en: ['Extremely open to side attacks', 'Huge physical strain on wide midfielders'],
+    ar: ['منطقة الأطراف مكشوفة تماماً ومستهدفة', 'تعب عضلي هائل للاعبي خط الوسط الجانبيين']
+  },
+  '3-5-2': {
+    en: ['Side defense completely dependent on LWB/RWB tracking speed', 'Can face central crowd bottlenecks'],
+    ar: ['الأطراف معتمدة كلياً على سرعة ارتداد الأظهرة', 'سهل الوقوع في فخ التكدس وضيق المساحات بالوسط']
+  },
   '5-3-2': {
     en: ['Stretches wingbacks thin', 'Lacks native threat in high wing zones'],
     ar: ['إرهاق بدني شديد لأظهرة الجنب', 'ضعف هجومي في الزوايا المتقدمة للأطراف']
+  },
+  '5-2-3': {
+    en: ['Midfield numbers are easily overwhelmed', 'Wingers can neglect defensive duties'],
+    ar: ['سهولة خسارة معركة الاستحواذ بالوسط لقلة العدد', 'تجاهل الأجنحة المستمر للأدوار والواجبات الدفاعية']
+  },
+  '5-4-1': {
+    en: ['Striker is completely isolated', 'Hard to construct build-up from deep zones on stress'],
+    ar: ['رأس الحربة معزول ومنقطع الصلة بالفريق تماماً', 'صعوبة بالغة في بناء الهجمة وتدرجها تحت الضغط']
   }
 };
 

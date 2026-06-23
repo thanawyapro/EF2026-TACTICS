@@ -115,7 +115,7 @@ export default function BuildPlanPage({ onNavigate }: BuildPlanPageProps) {
   const playstyles = [
     { id: 'Possession Game', labelAr: 'استحواذ', labelEn: 'Possession Game' },
     { id: 'Quick Counter', labelAr: 'مرتدات سريعة', labelEn: 'Quick Counter' },
-    { id: 'Long Ball Counter', labelAr: 'دفاع ثم هجمة', labelEn: 'Long Ball Counter' },
+    { id: 'Long Ball Counter', labelAr: 'كرة طويلة مضادة', labelEn: 'Long Ball Counter' },
     { id: 'Out Wide', labelAr: 'لعب على الأطراف', labelEn: 'Out Wide' },
     { id: 'Long Ball', labelAr: 'كرات طويلة', labelEn: 'Long Ball' },
     { id: 'unsure', labelAr: getTranslation('unsureBtn'), labelEn: getTranslation('unsureBtn') },

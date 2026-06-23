@@ -50,23 +50,16 @@ export function getOrCreateUUID(legacyId: string): string {
 
 export const supabaseSync = {
   /**
-   * Load all user cloud data and update the local store
+   * Load all user cloud data and update the local store (Only Settings + Saved Plans)
    */
   async loadUserCloudData(userId: string) {
     if (!isSupabaseConfigured || !supabase) {
       throw new Error('Supabase client is not configured.');
     }
 
-    // 1. Fetch matches
-    const { data: cloudMatches, error: matchesErr } = await supabase
-      .from('matches')
-      .select('*')
-      .eq('user_id', userId)
-      .order('match_date', { ascending: false });
+    const state = useAppStore.getState();
 
-    if (matchesErr) throw matchesErr;
-
-    // 2. Fetch profiles
+    // 1. Fetch profiles (Saved Plans)
     const { data: cloudProfiles, error: profilesErr } = await supabase
       .from('tactical_profiles')
       .select('*')
@@ -74,15 +67,7 @@ export const supabaseSync = {
 
     if (profilesErr) throw profilesErr;
 
-    // 3. Fetch formations
-    const { data: cloudFormations, error: formationsErr } = await supabase
-      .from('custom_formations')
-      .select('*')
-      .eq('user_id', userId);
-
-    if (formationsErr) throw formationsErr;
-
-    // 4. Fetch settings
+    // 2. Fetch settings
     const { data: cloudSettings, error: settingsErr } = await supabase
       .from('user_settings')
       .select('*')
@@ -90,39 +75,6 @@ export const supabaseSync = {
       .maybeSingle();
 
     if (settingsErr) throw settingsErr;
-
-    // 5. Fetch AI History
-    const { data: cloudAIHistory, error: aiHistErr } = await supabase
-      .from('ai_analysis_history')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
-
-    if (aiHistErr) throw aiHistErr;
-
-    // Map Cloud Matches back to UI schema
-    const localMatches: MatchRecord[] = (cloudMatches || []).map((db) => {
-      const matchObj = {
-        id: db.id,
-        date: db.match_date || new Date().toISOString().split('T')[0],
-        myFormation: db.user_formation,
-        opponentFormation: db.opponent_formation || '4-3-3',
-        myGoals: db.score_for ?? 0,
-        opponentGoals: db.score_against ?? 0,
-        result: (db.result === 'win' ? 'W' : db.result === 'loss' ? 'L' : db.result === 'draw' ? 'D' : db.result || 'D') as 'W' | 'L' | 'D',
-        possession: db.possession ?? 50,
-        myShots: db.shots ?? 10,
-        onTarget: db.shots_on_target ?? 5,
-        oppShots: db.shots ? Math.max(0, db.shots - 2) : 8,
-        oppOnTarget: db.shots_on_target ? Math.max(0, db.shots_on_target - 1) : 4,
-        feltControlLoss: db.main_problem === 'Control Loss',
-        matchType: db.team_name || 'Division Match',
-        notes: db.notes || '',
-      };
-      
-      const parsed = MatchRecordSchema.safeParse(matchObj);
-      return parsed.success ? parsed.data : matchObj;
-    });
 
     // Map Cloud Profiles back to UI schema
     const localProfiles: TacticalProfile[] = (cloudProfiles || []).map((db) => {
@@ -142,33 +94,18 @@ export const supabaseSync = {
       return parsed.success ? parsed.data : profileObj;
     });
 
-    // Map Cloud Formations back to custom coordinates
-    const localCoords: Record<string, PlayerNode[]> = {};
-    (cloudFormations || []).forEach((db) => {
-      if (db.base_formation && Array.isArray(db.players)) {
-        localCoords[db.base_formation] = db.players as PlayerNode[];
-      }
-    });
-
     // Map cloud settings
-    const lang = (cloudSettings?.language === 'ar' ? 'ar' : 'en') as 'en' | 'ar';
+    const lang = (cloudSettings?.language === 'ar' || cloudSettings?.language === 'en' || cloudSettings?.language === 'fr' || cloudSettings?.language === 'es' ? cloudSettings.language : 'ar') as 'en' | 'ar' | 'fr' | 'es';
     const accent = cloudSettings?.settings?.themeAccent || '#00d4ff';
 
-    // Map AI History
-    const localAIHistory = (cloudAIHistory || []).map((db) => ({
-      id: db.id,
-      timestamp: db.created_at,
-      request: db.input_data,
-      response: db.output_data,
-    }));
-
+    // Return loaded settings & saved plans, preserving other local-only state like matches, customCoords and AI history
     return {
-      matches: localMatches,
+      matches: state.matches,
       profiles: localProfiles,
-      customCoords: localCoords,
+      customCoords: state.customCoords,
       language: lang,
       themeAccent: accent,
-      aiHistory: localAIHistory,
+      aiHistory: state.aiHistory,
     };
   },
 
@@ -228,47 +165,19 @@ export const supabaseSync = {
   },
 
   /**
-   * Sync complete Custom Formations block to cloud
+   * Sync complete Custom Formations block to cloud (NOW OFFLINE ONLY)
    */
   async saveFormationToCloud(userId: string, formation: string, coords: PlayerNode[]) {
-    if (!isSupabaseConfigured || !supabase) return;
-
-    // Use a unique compound id based on base formation name to prevent duplicating pitch coordinates
-    const dbId = getOrCreateUUID(`formation_${formation}`);
-    const dbPayload = {
-      id: dbId,
-      user_id: userId,
-      name: `Custom ${formation}`,
-      base_formation: formation,
-      players: coords,
-      pitch_layout: { formation },
-      notes: 'Custom position layout pitch coords',
-      updated_at: new Date().toISOString(),
-    };
-
-    const { error } = await supabase.from('custom_formations').upsert(dbPayload);
-    if (error) console.error('Cloud formation save mismatch:', error);
+    // OFFLINE ONLY per user request
+    return;
   },
 
   /**
-   * Save an AI coach analysis entry to the cloud
+   * Save an AI coach analysis entry to the cloud (NOW OFFLINE ONLY)
    */
   async saveAIAnalysisToCloud(userId: string, aiItem: any) {
-    if (!isSupabaseConfigured || !supabase) return;
-
-    const dbId = getOrCreateUUID(aiItem.id);
-    const dbPayload = {
-      id: dbId,
-      user_id: userId,
-      analysis_type: 'tactics_coach',
-      input_data: aiItem.request,
-      output_data: aiItem.response,
-      model_used: 'gemini-3.5-flash',
-      created_at: aiItem.timestamp || new Date().toISOString(),
-    };
-
-    const { error } = await supabase.from('ai_analysis_history').upsert(dbPayload);
-    if (error) console.error('Cloud AI history save mismatch:', error);
+    // OFFLINE ONLY per user request
+    return;
   },
 
   /**
@@ -276,14 +185,15 @@ export const supabaseSync = {
    */
   async deleteCloudItem(userId: string, table: 'matches' | 'tactical_profiles' | 'custom_formations', localId: string) {
     if (!isSupabaseConfigured || !supabase) return;
+    if (table !== 'tactical_profiles') return; // Only delete profiles from the cloud
 
     const mappedId = getOrCreateUUID(localId);
-    const { error } = await supabase.from(table).delete().eq('id', mappedId).eq('user_id', userId);
-    if (error) console.error(`Failed to delete item from cloud (${table}):`, error);
+    const { error } = await supabase.from('tactical_profiles').delete().eq('id', mappedId).eq('user_id', userId);
+    if (error) console.error(`Failed to delete profile from cloud:`, error);
   },
 
   /**
-   * Sync active Zustand store to Supabase Cloud
+   * Sync active Zustand store to Supabase Cloud (Only Settings + Saved Plans)
    */
   async syncLocalToCloud(userId: string) {
     if (!isSupabaseConfigured || !supabase) return;
@@ -301,30 +211,10 @@ export const supabaseSync = {
     };
     await supabase.from('user_settings').upsert(settingsPayload);
 
-    // 2. Push matches
-    if (state.matches.length > 0) {
-      for (const m of state.matches) {
-        await this.saveMatchToCloud(userId, m);
-      }
-    }
-
-    // 3. Push profiles
+    // 2. Push profiles (Saved Plans)
     if (state.profiles.length > 0) {
       for (const p of state.profiles) {
         await this.saveProfileToCloud(userId, p);
-      }
-    }
-
-    // 4. Push custom positions coordinates
-    const coordKeys = Object.keys(state.customCoords);
-    for (const key of coordKeys) {
-      await this.saveFormationToCloud(userId, key, state.customCoords[key]);
-    }
-
-    // 5. Push AI coach summary histories
-    if (state.aiHistory && state.aiHistory.length > 0) {
-      for (const ai of state.aiHistory) {
-        await this.saveAIAnalysisToCloud(userId, ai);
       }
     }
   },

@@ -42,7 +42,7 @@ export const buildPlanDeterministically = (
     // Determine playstyle based on the problem
     if (userProblemInput === 'conceding_counters' || userProblemInput === 'leaky_defense') {
       playstyle = 'Long Ball Counter';
-      playstyleAr = 'دفاع ثم هجمة';
+      playstyleAr = 'كرة طويلة مضادة';
     } else if (userProblemInput === 'midfield_lost') {
       playstyle = 'Possession Game';
       playstyleAr = 'استحواذ';

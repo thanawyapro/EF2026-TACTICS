@@ -75,7 +75,7 @@ export const getDeterministicCoachResponse = (question: string): SmartCoachRespo
       likelyReason: 'الاحتفاظ المفرط بالكرة بالدفاع وضعف خيارات التمرير الفوري القريب.',
       coachDecision: 'توسيع الملعب بالأطراف أو التحول مؤقتاً للتمرير الطويل لتخطي خط الضغط العالي بالعمق.',
       recommendedChanges: [
-        'استخدم أسلوب "دفاع ثم هجمة" (Long Ball Counter) ليتراجع المدافعون ويفتحوا زوايا تمرير واسعة.',
+        'استخدم أسلوب "كرة طويلة مضادة" (Long Ball Counter) ليتراجع المدافعون ويفتحوا زوايا تمرير واسعة.',
         'مرر الكرة للظهير مباشرة أو شتتها طولياً للمهاجم المحطة.'
       ],
       individualInstructions: [
@@ -95,7 +95,7 @@ export const getDeterministicCoachResponse = (question: string): SmartCoachRespo
     return {
       problem: 'دفاعك يتلقى أهدافاً خاطفة وسريعة بمجرد خسارة الكرة بالهجوم.',
       likelyReason: 'اندفاع أظهرة الجنب لديك (LB/RB) بشكل متزامن هجومياً وتراخي قلبي الدفاع.',
-      coachDecision: 'فرض التأمين الدفاعي على الأظهرة وتفعيل أسلوب "دفاع ثم هجمة" (Long Ball Counter) ليبقى الخط الخلفي ثابتاً في دفاع منخفض.',
+      coachDecision: 'فرض التأمين الدفاعي على الأظهرة وتفعيل أسلوب "كرة طويلة مضادة" (Long Ball Counter) ليبقى الخط الخلفي ثابتاً في دفاع منخفض.',
       recommendedChanges: [
         'حوّل أسلوب اللعب لـ Long Ball Counter لمنع الدفاع من الاندفاع المتقدم.',
         'استخدم مدافعاً بأسلوب تكتيكي Build Up CB لتأمين التحركات.'
@@ -166,7 +166,7 @@ export const getDeterministicCoachResponse = (question: string): SmartCoachRespo
       coachDecision: 'البدء بـ مرتدات سريعة (Quick Counter) للمبتدئين، أو استحواذ (Possession Game) لتمريرات آمنة.',
       recommendedChanges: [
         'جرّب أسلوب "مرتدات سريعة" إذا كنت تحب الهجوم العمودي التلقائي والضغط العالي.',
-        'جرّب "دفاع ثم هجمة" إذا كنت تترك التحكم التكتيكي للكمبيوتر وتفضل تماسك الدفاع.',
+        'جرّب "كرة طويلة مضادة" إذا كنت تترك التحكم التكتيكي للكمبيوتر وتفضل تماسك الدفاع.',
         'جرّب "استحواذ" إذا كنت تبني اللعب بهدوء وتفضل الأمان البطيء.'
       ],
       individualInstructions: [
