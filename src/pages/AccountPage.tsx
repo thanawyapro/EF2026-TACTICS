@@ -1,12 +1,11 @@
-// AccountPage.tsx
-// High fidelity cloud synchronizer and tactical account dashboard for eFootball profiles
-
-import React from 'react';
+// src/pages/AccountPage.tsx
+// High fidelity cloud synchronizer and tactical account settings for eFootball players
+import React, { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
-  CloudLightning, Shield, BadgeCheck, HardDrive, RefreshCcw, 
+  CloudLightning, Shield, BadgeCheck, HardDrive, RefreshCw, 
   UploadCloud, DownloadCloud, LogOut, CheckCircle2, ShieldAlert,
-  Download, Upload, RefreshCw
+  Download, Upload, Trash2, Globe, Sparkles
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useCloudSync } from '../hooks/useCloudSync';
@@ -35,27 +34,32 @@ export default function AccountPage() {
   } = useCloudSync(user?.id);
 
   const themeAccent = useAppStore(state => state.themeAccent);
+  const language = useAppStore(state => state.language);
+  const setLanguage = useAppStore(state => state.setLanguage);
+  const setThemeAccent = useAppStore(state => state.setThemeAccent);
   
   // Local Backup Handlers
   const exportData = useAppStore(state => state.exportData);
   const importData = useAppStore(state => state.importData);
-  const [successMsg, setSuccessMsg] = React.useState('');
-  const [errorMsg, setErrorMsg] = React.useState('');
-  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+  const hardReset = useAppStore(state => state.hardReset);
+
+  const [successMsg, setSuccessMsg] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleExport = () => {
     try {
       const dataStr = exportData();
-      const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+      const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
       
-      const exportFileDefaultName = `ef26_tactics_backup_manual_${new Date().toISOString().split('T')[0]}.json`;
+      const exportFileDefaultName = `ef26_tactics_backup_${new Date().toISOString().split('T')[0]}.json`;
       
       const linkElement = document.createElement('a');
       linkElement.setAttribute('href', dataUri);
       linkElement.setAttribute('download', exportFileDefaultName);
       linkElement.click();
       
-      setSuccessMsg('Successfully downloaded tactical backup payload.');
+      setSuccessMsg(language === 'en' ? 'Successfully downloaded tactical backup file.' : 'تم تحميل ملف النسخة الاحتياطية بنجاح.');
       setTimeout(() => setSuccessMsg(''), 4000);
     } catch (err: any) {
       setErrorMsg('Export crashed: ' + err.message);
@@ -80,7 +84,7 @@ export default function AccountPage() {
           return;
         }
 
-        setSuccessMsg('Backup parsed and loaded into local memory states successfully!');
+        setSuccessMsg(language === 'en' ? 'Backup loaded and verified successfully!' : 'تم تحميل ومراجعة البيانات بنجاح!');
         setTimeout(() => setSuccessMsg(''), 4000);
       } catch (err: any) {
         setErrorMsg('JSON Parse Error: ' + err.message);
@@ -89,249 +93,293 @@ export default function AccountPage() {
     reader.readAsText(file);
   };
 
-  if (!isSupabaseAvailable) {
-    return (
-      <div className="bg-[#080d1a]/90 border border-border/80 rounded-2xl p-6 sm:p-8 space-y-6">
-        <div className="flex items-center gap-3 border-b border-border/40 pb-4">
-          <ShieldAlert className="w-8 h-8 text-amber-500 animate-pulse" />
-          <div>
-            <h2 className="text-lg font-black font-orbitron text-white uppercase tracking-wider">SUPABASE OFFLINE FALLBACK</h2>
-            <p className="text-[10px] text-slate-400">Environment variables are not populated. Running securely in Guest Sandbox mode.</p>
-          </div>
-        </div>
-
-        <div className="bg-amber-500/10 border border-amber-500/25 rounded-xl p-4 flex gap-3 text-xs leading-relaxed text-amber-300">
-          <Shield className="w-5 h-5 flex-shrink-0 text-amber-400" />
-          <div className="space-y-1">
-            <span className="font-bold block text-white">Guest Sandbox Active</span>
-            <p>Your team formations, matches, custom placements coordinates, and AI history are safely written directly to your browser's private local storage space. To sync metadata online, provision `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` variables inside your project configuration.</p>
-          </div>
-        </div>
-
-        {/* Local Backup Tools directly available on settings fallback */}
-        <div className="bg-slate-900/40 border border-border/40 rounded-xl p-5 space-y-4">
-          <div className="select-none">
-            <span className="text-[10px] font-black font-orbitron tracking-widest text-zinc-500 block uppercase">Manual Cold Storage backups</span>
-            <p className="text-[11px] text-zinc-400">Securely export or import JSON config backups to keep schemas protected yourself.</p>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            <button
-              onClick={handleExport}
-              className="flex-1 min-w-[140px] px-4 py-2.5 rounded-xl border border-zinc-700 hover:border-zinc-500 text-xs font-black font-orbitron text-white transition flex items-center justify-center gap-2 bg-[#0a0f1d] hover:bg-slate-900"
-            >
-              <Download className="w-4 h-4" />
-              EXPORT JSON BACKUP
-            </button>
-
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="flex-1 min-w-[140px] px-4 py-2.5 rounded-xl border border-zinc-750 hover:border-zinc-500 text-xs font-black font-orbitron text-white transition flex items-center justify-center gap-2 bg-[#0a0f1d] hover:bg-slate-900"
-            >
-              <Upload className="w-4 h-4" />
-              IMPORT DATA PAYLOAD
-            </button>
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleImport}
-              accept=".json"
-              className="hidden"
-            />
-          </div>
-
-          {(successMsg || errorMsg) && (
-            <div className={`p-3 rounded-xl text-xs font-semibold border ${
-              successMsg ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-rose-500/10 border-rose-500/20 text-rose-400'
-            }`}>
-              {successMsg || errorMsg}
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  if (authLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20 space-y-3">
-        <RefreshCw className="w-8 h-8 text-cyan-400 animate-spin" />
-        <span className="text-xs font-bold font-orbitron text-slate-400 uppercase tracking-widest">Verifying Server Session...</span>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated || !user) {
-    return (
-      <LoginPage 
-        onLogin={login} 
-        onSignUp={signUp} 
-        errorMsg={authError} 
-        loading={authLoading} 
-      />
-    );
-  }
+  const handleWipeData = () => {
+    if (window.confirm(language === 'en' 
+      ? 'CRITICAL Action: Wipe all matches, custom profile listings, and layout coordinates forever?' 
+      : 'تحذير حرج جداً: هل ترغب بالفعل في حذف ومسح كافة البيانات والخطط من جهازك نهائياً؟')) {
+      hardReset();
+      window.location.reload();
+    }
+  };
 
   return (
-    <div className="bg-[#080d1a]/90 border border-border/80 rounded-2xl p-6 sm:p-8 space-y-6">
-      {/* Title Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border/40 pb-5 select-none">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-cyan-400/10 border border-cyan-400/20 text-cyan-400 flex items-center justify-center">
-            <CloudLightning className="w-5 h-5 text-cyan-400" />
-          </div>
-          <div>
-            <h2 className="text-base sm:text-lg font-black font-orbitron text-white uppercase tracking-wider flex items-center gap-1.5">
-              <span>CLOUD DATABASE TIER</span>
-              <span className="text-[8.5px] bg-emerald-400/10 text-emerald-400 border border-emerald-400/25 px-1.5 py-0.5 rounded font-black tracking-widest uppercase font-mono leading-none">ACTIVE</span>
-            </h2>
-            <p className="text-[10px] text-zinc-400">Direct background sync enabled with Postgres RLS layers.</p>
-          </div>
-        </div>
-
-        {/* Storage Tier Badge */}
-        <div style={{ borderColor: themeAccent, color: themeAccent }} className="px-3.5 py-1.5 rounded-full border border-primary/40 bg-slate-900/50 text-[10px] font-black font-orbitron tracking-widest flex items-center gap-2">
-          <BadgeCheck className="w-4 h-4" />
-          <span>CLOUD MODE ON</span>
-        </div>
-      </div>
-
-      {/* Warning Notice mandated: "Your data is stored locally unless you log in and enable cloud sync." */}
-      <div className="p-4 rounded-xl bg-cyan-950/20 border border-cyan-400/20 flex gap-3 text-xs leading-relaxed text-cyan-300">
-        <CheckCircle2 className="w-5 h-5 flex-shrink-0 text-cyan-400 mt-0.5" />
-        <div className="space-y-0.5">
-          <span className="font-bold text-white uppercase tracking-wider text-[10.5px]">AUTOMATED SYNC SAFEGUARD</span>
-          <p className="text-[11px] text-cyan-200">
-            Your data is stored locally in your browser unless you log in and initialize active cloud synchronization. Since your server connection is active, tactical data automatically synchronizes securely.
+    <div className="space-y-6 select-none font-sans" data-testid="unified-settings-page">
+      {/* Title */}
+      <div className="border-b border-border pb-3 flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-black font-orbitron text-white leading-tight">
+            🛠️ {language === 'en' ? 'Account & Settings' : 'حسابي وإعدادات التطبيق'}
+          </h2>
+          <p className="text-xs text-gray-400 mt-1">
+            {language === 'en'
+              ? 'Configure app visuals, back-ups, and toggle cloud integration'
+              : 'تعديل لغة التطبيق، الألوان، تنزيل النسخ الاحتياطية، والربط السحابي.'}
           </p>
         </div>
       </div>
 
-      {/* User Information Block */}
-      <div className="bg-slate-950/50 rounded-xl p-5 border border-border/40 grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
-        <div className="space-y-1 select-none">
-          <span className="text-[9.5px] uppercase font-black font-orbitron text-zinc-500 tracking-wider">ACTIVE LAB PROFILE</span>
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-zinc-800 rounded-full flex items-center justify-center border border-zinc-700 text-white font-black text-xs uppercase">
-              {user.email?.[0] || 'C'}
+      {/* Grid: App Theme settings & Identity */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+        <div className="space-y-6">
+          {/* Visual Preferences */}
+          <div className="bg-slate-950/40 border border-border/80 p-5 rounded-2xl shadow-md space-y-4">
+            <h3 className="text-xs font-black font-orbitron text-white uppercase tracking-widest border-b border-border/40 pb-2 flex items-center gap-2">
+              <Globe className="w-4 h-4 text-cyan-400" />
+              <span>{language === 'en' ? 'APP PREFERENCES' : 'تفضيلات التطبيق'}</span>
+            </h3>
+
+            {/* Language toggle */}
+            <div className="space-y-1.5 text-xs text-gray-300">
+              <span className="block text-[10px] uppercase font-bold text-gray-450 font-orbitron tracking-wider">
+                {language === 'en' ? 'App Language' : 'لغة واجهة التطبيق'}
+              </span>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setLanguage('en')}
+                  className={`flex-1 py-2.5 rounded-xl text-xs font-bold border transition duration-150 cursor-pointer ${
+                    language === 'en' 
+                      ? 'text-navyBg border-primary font-black' 
+                      : 'bg-slate-900 border-border/50 text-gray-400 hover:text-white'
+                  }`}
+                  style={language === 'en' ? { backgroundColor: themeAccent, borderColor: themeAccent } : {}}
+                >
+                  English
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLanguage('ar')}
+                  className={`flex-1 py-2.5 rounded-xl text-xs font-bold border transition duration-150 cursor-pointer ${
+                    language === 'ar' 
+                      ? 'text-navyBg border-primary font-black' 
+                      : 'bg-slate-900 border-border/50 text-gray-400 hover:text-white'
+                  }`}
+                  style={language === 'ar' ? { backgroundColor: themeAccent, borderColor: themeAccent } : {}}
+                >
+                  العربية
+                </button>
+              </div>
             </div>
-            <div>
-              <span className="text-sm font-bold block text-white">{user.user_metadata?.display_name || 'Anonymous Coach'}</span>
-              <span className="text-[10px] text-zinc-400">{user.email}</span>
+
+            {/* Color Accent theme selection */}
+            <div className="space-y-2 text-xs text-gray-300">
+              <span className="block text-[10px] uppercase font-bold text-gray-450 font-orbitron tracking-wider">
+                {language === 'en' ? 'Dashboard Accent Highlight' : 'لون إضاءة التشكيل والتطبيق'}
+              </span>
+              <div className="flex flex-wrap gap-2.5">
+                {[
+                  { name: 'Cyan Glow', val: '#00d4ff', nameAr: 'سيان مشع' },
+                  { name: 'Blue Storm', val: '#3b82f6', nameAr: 'أزرق عاصف' },
+                  { name: 'Cosmic Purple', val: '#a855f7', nameAr: 'بنفسجي كوني' },
+                  { name: 'Emerald Wave', val: '#10b981', nameAr: 'أخضر زمردي' },
+                  { name: 'Amber Burst', val: '#f59e0b', nameAr: 'برتقالي متوهج' }
+                ].map(col => (
+                  <button
+                    key={col.val}
+                    type="button"
+                    onClick={() => setThemeAccent(col.val)}
+                    className="px-3 py-1.5 rounded-xl bg-slate-900 border hover:bg-slate-900/60 text-[11px] font-bold transition flex items-center gap-1.5 cursor-pointer"
+                    style={{ borderColor: themeAccent === col.val ? themeAccent : 'rgba(255,255,255,0.08)' }}
+                  >
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: col.val }} />
+                    <span style={{ color: themeAccent === col.val ? themeAccent : '#d1d5db' }}>
+                      {language === 'en' ? col.name : col.nameAr}
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
+          </div>
+
+          {/* Backup operations */}
+          <div className="bg-slate-950/40 border border-border/80 p-5 rounded-2xl shadow-md space-y-4">
+            <h3 className="text-xs font-black font-orbitron text-white uppercase tracking-widest border-b border-border/40 pb-2 flex items-center gap-2">
+              <HardDrive className="w-4 h-4 text-cyan-400" />
+              <span>{language === 'en' ? 'LOCAL STORAGE BACKUPS' : 'النسخ الاحتياطي اليدوي'}</span>
+            </h3>
+
+            <p className="text-[11px] text-gray-400 leading-normal font-semibold">
+              {language === 'en'
+                ? 'Export or import your saved rosters and match logs directly as a local JSON file backup.'
+                : 'قم بتحميل أو رفع ملف تكتيكي خارجي مفصل لحفظ قائمة تكتيكات المالك محلياً.'}
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-3 pt-1">
+              <button
+                type="button"
+                onClick={handleExport}
+                className="flex-1 px-4 py-2.5 rounded-xl border border-zinc-700 hover:border-zinc-500 text-xs font-black font-orbitron text-white transition flex items-center justify-center gap-2 bg-[#0a0f1d] hover:bg-slate-900 cursor-pointer"
+              >
+                <Download className="w-4 h-4" />
+                <span>{language === 'en' ? 'EXPORT BACKUP' : 'تصدير نسخة'}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="flex-1 px-4 py-2.5 rounded-xl border border-zinc-750 hover:border-zinc-500 text-xs font-black font-orbitron text-white transition flex items-center justify-center gap-2 bg-[#0a0f1d] hover:bg-slate-900 cursor-pointer"
+              >
+                <Upload className="w-4 h-4" />
+                <span>{language === 'en' ? 'IMPORT BACKUP' : 'استيراد نسخة'}</span>
+              </button>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleImport}
+                accept=".json"
+                className="hidden"
+              />
+            </div>
+
+            <div className="border-t border-border/40 pt-3 text-right">
+              <button
+                type="button"
+                onClick={handleWipeData}
+                className="px-3.5 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/15 border border-rose-500/20 text-rose-400 text-[10.5px] font-black font-orbitron tracking-wide flex items-center gap-1.5 transition select-none cursor-pointer"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>{language === 'en' ? 'WIPE ALL LOCAL DATA' : 'مسح البيانات المحلية بالكامل'}</span>
+              </button>
+            </div>
+
+            {(successMsg || errorMsg) && (
+              <div className={`p-3 rounded-xl text-xs font-semibold border ${
+                successMsg ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-rose-500/10 border-rose-500/20 text-rose-400'
+              }`}>
+                {successMsg || errorMsg}
+              </div>
+            )}
           </div>
         </div>
 
-        <div className="space-y-1">
-          <span className="text-[9.5px] uppercase font-black font-orbitron text-zinc-500 tracking-wider block">DATABASE ACTIONS</span>
-          <button
-            onClick={logout}
-            className="px-3.5 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/15 border border-rose-500/20 hover:border-rose-500/30 text-rose-400 text-[10px] font-black font-orbitron tracking-wide flex items-center gap-1.5 transition select-none cursor-pointer"
-          >
-            <LogOut className="w-3.5 h-3.5" />
-            SIGN OUT OF LAB
-          </button>
-        </div>
-      </div>
+        {/* Right Side: Account status (Supabase cloud mode or sandbox guest mode) */}
+        <div className="space-y-6">
+          {!isSupabaseAvailable ? (
+            <div className="bg-[#080d1a]/90 border border-border/80 rounded-2xl p-5 space-y-4">
+              <div className="flex items-center gap-3 border-b border-border/40 pb-3">
+                <ShieldAlert className="w-6 h-6 text-amber-500 animate-pulse" />
+                <div>
+                  <h3 className="text-xs font-black font-orbitron text-white uppercase tracking-wider">
+                    {language === 'en' ? 'SECURE GUEST MODE' : 'وضع الزائر الآمن'}
+                  </h3>
+                  <span className="text-[10px] text-amber-400 font-extrabold block">LOCAL-ONLY STORAGE ACTIVE</span>
+                </div>
+              </div>
 
-      {/* Synchronization Command deck */}
-      <div className="bg-[#050811] rounded-xl border border-border/60 p-5 space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/30 pb-3">
-          <div>
-            <h3 className="text-xs font-black font-orbitron tracking-wider text-white">MANUAL SYNCHRONIZATION OVERRIDES</h3>
-            <p className="text-[10.5px] text-zinc-400">Trigger manual transfer protocols to sync modifications.</p>
-          </div>
-          {lastSyncTime && (
-            <span className="text-[10px] font-mono font-semibold text-zinc-400 bg-zinc-950 px-2 py-1 rounded border border-border/30">
-              L.S.T: {lastSyncTime}
-            </span>
+              <p className="text-xs text-gray-400 leading-normal font-semibold">
+                {language === 'en'
+                  ? 'Your data is securely locked strictly inside your browser local storage database. Provision Supabase configurations to deploy multi-device synchronization.'
+                  : 'بيانات الفريق، المباريات المحللة، وأساليب اللعب مخزنة بشكل آمن داخل متصفحك محلياً فقط.'}
+              </p>
+
+              <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-3 text-[11px] leading-relaxed text-amber-300">
+                ⚠️ {language === 'en' 
+                  ? 'Clearing your browser cache or cookies will wipe local tactics. Keep manual backups exported regularly!' 
+                  : 'تنبيه: مسح ملفات تعريف الارتباط للمتصفح قد يضيع تكتيكاتك. نوصي بتحميل نسخة يدوية باستمرار!'}
+              </div>
+            </div>
+          ) : authLoading ? (
+            <div className="bg-[#080d1a]/90 border border-border/80 rounded-2xl p-12 text-center flex flex-col items-center justify-center space-y-2">
+              <RefreshCw className="w-6 h-6 animate-spin text-cyan-400" />
+              <span className="text-xs font-bold text-gray-450 uppercase font-orbitron">VERIFYING CLOUD PROFILE...</span>
+            </div>
+          ) : !isAuthenticated || !user ? (
+            <LoginPage 
+              onLogin={login} 
+              onSignUp={signUp} 
+              errorMsg={authError} 
+              loading={authLoading} 
+            />
+          ) : (
+            <div className="bg-[#080d1a]/90 border border-border/80 rounded-2xl p-5 space-y-4">
+              {/* Cloud mode on Header */}
+              <div className="flex items-center justify-between border-b border-border/40 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <CloudLightning className="w-5 h-5 text-cyan-400 animate-pulse" />
+                  <div>
+                    <h3 className="text-xs font-black font-orbitron text-white uppercase tracking-wider">
+                      {language === 'en' ? 'SAVE ONLINE (CLOUD SYNC)' : 'حفظ أونلاين (سحابي)'}
+                    </h3>
+                    <span className="text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-400/20 px-1.5 py-0.5 rounded font-black font-mono leading-none">ACTIVE</span>
+                  </div>
+                </div>
+
+                <div style={{ borderColor: themeAccent, color: themeAccent }} className="px-2.5 py-1 rounded-full border border-primary/20 bg-slate-900/50 text-[9px] font-black font-orbitron tracking-wider">
+                  {language === 'en' ? 'CONNECTED' : 'متصل بالخادم'}
+                </div>
+              </div>
+
+              {/* Identity view */}
+              <div className="bg-slate-950/45 rounded-xl p-3 border border-border/40 flex items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-cyan-400/10 border border-cyan-400/20 text-cyan-400 flex items-center justify-center font-black uppercase text-xs">
+                    {user.email?.[0] || 'C'}
+                  </div>
+                  <div>
+                    <span className="font-bold block text-white">{user.user_metadata?.display_name || 'Active Coach'}</span>
+                    <span className="text-[10px] text-slate-400">{user.email}</span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={logout}
+                  className="px-3 py-1.5 rounded-lg border border-rose-500/20 hover:bg-rose-500/10 text-rose-450 font-black font-orbitron text-[10px] uppercase transition cursor-pointer"
+                >
+                  <LogOut className="w-3.5 h-3.5 inline mr-1" />
+                  <span>{language === 'en' ? 'LOG OUT' : 'خروج'}</span>
+                </button>
+              </div>
+
+              {/* Automated Sync Safeguard details */}
+              <div className="p-3.5 rounded-xl bg-cyan-950/25 border border-cyan-400/15 flex gap-2.5 text-xs text-cyan-300">
+                <CheckCircle2 className="w-4.5 h-4.5 flex-shrink-0 text-cyan-400 mt-0.5" />
+                <p className="leading-relaxed">
+                  {language === 'en'
+                    ? 'Your custom tactics are backed up automatically. Use manual triggers to synchronize custom files.'
+                    : 'خططك المسجلة والمحاذاة يتم حفظها ومزامنتها تلقائياً بالخلفية لضمان عدم ضياع التكتيكات.'}
+                </p>
+              </div>
+
+              {/* Sync triggers panels */}
+              <div className="bg-slate-950/80 p-4 rounded-xl border border-border/60 space-y-3">
+                <span className="block text-[10px] font-bold text-gray-500 uppercase tracking-widest font-orbitron">
+                  {language === 'en' ? 'MANUAL FORCE SYNC OVERRIDES:' : 'تجاوزات المزامنة اليدوية القسرية:'}
+                </span>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={performPushSync}
+                    disabled={syncing}
+                    className="p-3 rounded-lg border border-border/80 bg-slate-900 text-center hover:bg-slate-900/60 transition cursor-pointer flex flex-col items-center justify-center gap-1 w-full"
+                  >
+                    <UploadCloud className="w-4.5 h-4.5 text-cyan-400" />
+                    <span className="text-[10px] font-black text-white">{language === 'en' ? 'PUSH TO CLOUD' : 'رفع التعديلات'}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={performPullSync}
+                    disabled={syncing}
+                    className="p-3 rounded-lg border border-border/80 bg-slate-900 text-center hover:bg-slate-900/60 transition cursor-pointer flex flex-col items-center justify-center gap-1 w-full"
+                  >
+                    <DownloadCloud className="w-4.5 h-4.5 text-emerald-400" />
+                    <span className="text-[10px] font-black text-white">{language === 'en' ? 'PULL FROM CLOUD' : 'تنزيل السحابي'}</span>
+                  </button>
+                </div>
+
+                {lastSyncTime && (
+                  <div className="text-center">
+                    <span className="text-[10px] font-mono text-gray-500">
+                      {language === 'en' ? `Last sync: ${lastSyncTime}` : `آخر مزامنة: ${lastSyncTime}`}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
           )}
         </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-          <button
-            onClick={performPushSync}
-            disabled={syncing}
-            className="p-4 rounded-xl border border-zinc-800 hover:border-zinc-700 bg-slate-900/20 text-left hover:bg-slate-900/40 transition select-none cursor-pointer group space-y-1.5"
-          >
-            <div className="flex items-center gap-2">
-              <UploadCloud className="w-5 h-5 text-cyan-400 transition group-hover:translate-y-[-2px]" />
-              <span className="text-xs font-black font-orbitron tracking-wide text-white">UPLOAD TO CLOUD</span>
-            </div>
-            <p className="text-[10px] text-zinc-400 leading-normal">
-              Overwrite remote cloud database tables with current local memory data.
-            </p>
-          </button>
-
-          <button
-            onClick={performPullSync}
-            disabled={syncing}
-            className="p-4 rounded-xl border border-zinc-800 hover:border-zinc-700 bg-slate-900/20 text-left hover:bg-slate-900/40 transition select-none cursor-pointer group space-y-1.5"
-          >
-            <div className="flex items-center gap-2">
-              <DownloadCloud className="w-5 h-5 text-emerald-400 transition group-hover:translate-y-[2px]" />
-              <span className="text-xs font-black font-orbitron tracking-wide text-white">DOWNLOAD FROM CLOUD</span>
-            </div>
-            <p className="text-[10px] text-zinc-400 leading-normal">
-              Download and restore your cloud matches and profiles into local storage memory.
-            </p>
-          </button>
-        </div>
-
-        {syncing && (
-          <div className="flex items-center gap-2 text-xs font-bold font-orbitron text-cyan-400 animate-pulse">
-            <RefreshCw className="w-4 h-4 animate-spin" />
-            <span>COMMITTING SYNC TRANSACTIONS...</span>
-          </div>
-        )}
-
-        {syncError && (
-          <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-semibold flex gap-2">
-            <ShieldAlert className="w-4.5 h-4.5 flex-shrink-0 text-rose-500 mt-0.5" />
-            <span>{syncError}</span>
-          </div>
-        )}
-      </div>
-
-      {/* Fallback cold storage backups (reusing manual handles so users can redundant back up both) */}
-      <div className="bg-slate-900/40 border border-border/40 rounded-xl p-5 space-y-4">
-        <div className="select-none">
-          <span className="text-[10px] font-black font-orbitron tracking-widest text-zinc-500 block uppercase">Manual Cold Storage Backups</span>
-          <p className="text-[11px] text-zinc-400">Export or import manual JSON files as a fallback redundant layer.</p>
-        </div>
-
-        <div className="flex flex-wrap gap-3">
-          <button
-            onClick={handleExport}
-            className="flex-1 min-w-[140px] px-4 py-2.5 rounded-xl border border-zinc-700 hover:border-zinc-500 text-xs font-black font-orbitron text-white transition flex items-center justify-center gap-2 bg-[#0a0f1d] hover:bg-slate-900"
-          >
-            <Download className="w-4 h-4" />
-            EXPORT BACKUP FILE
-          </button>
-
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="flex-1 min-w-[140px] px-4 py-2.5 rounded-xl border border-zinc-750 hover:border-zinc-500 text-xs font-black font-orbitron text-white transition flex items-center justify-center gap-2 bg-[#0a0f1d] hover:bg-slate-900"
-          >
-            <Upload className="w-4 h-4" />
-            IMPORT DATA BACKUP
-          </button>
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleImport}
-            accept=".json"
-            className="hidden"
-          />
-        </div>
-
-        {(successMsg || errorMsg) && (
-          <div className={`p-3 rounded-xl text-xs font-semibold border ${
-            successMsg ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-rose-500/10 border-rose-500/20 text-rose-400'
-          }`}>
-            {successMsg || errorMsg}
-          </div>
-        )}
       </div>
     </div>
   );
