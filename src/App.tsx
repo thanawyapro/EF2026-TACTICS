@@ -4,83 +4,115 @@ import TacticsAICoachTab from './components/tactics/TacticsAICoachTab';
 import MetaCounterTab from './components/tactics/MetaCounterTab';
 
 function App() {
-  // هنا نحدد القسم النشط حالياً، وافتراضياً يبدأ باللوحة التكتيكية
   const [activeTab, setActiveTab] = useState<'board' | 'coach' | 'meta'>('board');
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white flex flex-col font-sans">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950 text-slate-100 flex flex-col font-sans selection:bg-emerald-500/30">
       
-      {/* شريط العنوان العلوي (Header) */}
-      <header className="bg-slate-800 border-b border-slate-700 p-4 sticky top-0 z-50 shadow-md">
+      {/* الهيدر الاحترافي المطوّر بتأثير زجاجي */}
+      <header className="backdrop-blur-md bg-slate-900/80 border-b border-slate-800/80 p-4 sticky top-0 z-50 shadow-lg shadow-black/20">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <h1 className="text-xl font-bold tracking-wider text-emerald-400 flex items-center gap-2">
-            ⚽ EF2026 Tactics
-          </h1>
-          <span className="text-xs bg-slate-700 px-2 py-1 rounded text-slate-300">
-            نسخة الإطلاق التجريبية v1.0
-          </span>
+          <div className="flex items-center gap-3">
+            <div className="bg-gradient-to-tr from-emerald-500 to-green-400 p-2 rounded-xl shadow-md shadow-emerald-500/20">
+              <span className="text-xl block animate-pulse">⚽</span>
+            </div>
+            <div>
+              <h1 className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-emerald-400 to-green-300 bg-clip-text text-transparent">
+                TACTIC BOSS <span className="text-white text-xs font-medium px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 ml-1">EF2026</span>
+              </h1>
+              <p className="text-[10px] text-slate-400 font-medium">نظام التحليل التكتيكي الذكي المتكامل</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping"></span>
+            <span className="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
+              AI PRO ONLINE
+            </span>
+          </div>
         </div>
       </header>
 
-      {/* محتوى القسم المختار (Main Content) */}
-      <main className="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6 pb-24">
-        {activeTab === 'board' && (
-          <div className="bg-slate-800 rounded-xl p-4 shadow-lg border border-slate-700 animate-fadeIn">
-            <h2 className="text-lg font-semibold mb-4 text-emerald-400">اللوحة التكتيكية وتشكيل الفريق</h2>
-            <TacticalBoard />
-          </div>
-        )}
+      {/* منطقة عرض الأدوات الرئيسية المفتوحة */}
+      <main className="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6 pb-28">
+        <div className="transition-all duration-300 ease-in-out">
+          
+          {activeTab === 'board' && (
+            <div className="backdrop-blur-md bg-slate-900/40 rounded-2xl p-5 shadow-xl border border-slate-800/60 transition-all">
+              <div className="flex items-center justify-between mb-5 border-b border-slate-800 pb-3">
+                <div>
+                  <h2 className="text-lg font-bold text-white flex items-center gap-2">📋 اللوحة التكتيكية المتقدمة</h2>
+                  <p className="text-xs text-slate-400 mt-0.5">قم بضبط التشكيلة، تحريك اللاعبين وتعيين مراكز الميتا</p>
+                </div>
+              </div>
+              <TacticalBoard />
+            </div>
+          )}
 
-        {activeTab === 'coach' && (
-          <div className="bg-slate-800 rounded-xl p-4 shadow-lg border border-slate-700 animate-fadeIn">
-            <h2 className="text-lg font-semibold mb-4 text-emerald-400">المدرب الذكي (AI Coach)</h2>
-            <TacticsAICoachTab />
-          </div>
-        )}
+          {activeTab === 'coach' && (
+            <div className="backdrop-blur-md bg-slate-900/40 rounded-2xl p-5 shadow-xl border border-slate-800/60 transition-all">
+              <div className="flex items-center justify-between mb-5 border-b border-slate-800 pb-3">
+                <div>
+                  <h2 className="text-lg font-bold text-white flex items-center gap-2">🤖 مدرب الذكاء الاصطناعي الخبير</h2>
+                  <p className="text-xs text-slate-400 mt-0.5">تحليل تكتيكي فوري واقتراح خطط مضادة بناءً على محرك TACTICBOSS</p>
+                </div>
+              </div>
+              <TacticsAICoachTab />
+            </div>
+          )}
 
-        {activeTab === 'meta' && (
-          <div className="bg-slate-800 rounded-xl p-4 shadow-lg border border-slate-700 animate-fadeIn">
-            <h2 className="text-lg font-semibold mb-4 text-emerald-400">خطط الميتا والحلول المضادة</h2>
-            <MetaCounterTab />
-          </div>
-        )}
+          {activeTab === 'meta' && (
+            <div className="backdrop-blur-md bg-slate-900/40 rounded-2xl p-5 shadow-xl border border-slate-800/60 transition-all">
+              <div className="flex items-center justify-between mb-5 border-b border-slate-800 pb-3">
+                <div>
+                  <h2 className="text-lg font-bold text-white flex items-center gap-2">⚡ دليل الخطط والحلول المضادة</h2>
+                  <p className="text-xs text-slate-400 mt-0.5">استعرض خطط المحترفين الحالية وتعرف على كيفية إبطال مفعولها</p>
+                </div>
+              </div>
+              <MetaCounterTab />
+            </div>
+          )}
+
+        </div>
       </main>
 
-      {/* شريط التحكم السفلي للتنقل بين الأقسام الثلاثة (Bottom Navigation Bar) */}
-      <nav className="bg-slate-800 border-t border-slate-700 fixed bottom-0 left-0 right-0 z-50 shadow-lg">
-        <div className="max-w-md mx-auto flex justify-around p-2">
+      {/* شريط التنقل السفلي الاحترافي - مصمم لتبسيط تجربة المستخدم بالكامل */}
+      <nav className="backdrop-blur-lg bg-slate-950/90 border-t border-slate-800 fixed bottom-0 left-0 right-0 z-50 shadow-2xl shadow-black">
+        <div className="max-w-md mx-auto flex justify-around p-3">
           
-          {/* زر اللوحة التكتيكية */}
           <button
             onClick={() => setActiveTab('board')}
-            className={`flex flex-col items-center gap-1 p-2 rounded-lg w-20 transition-all ${
-              activeTab === 'board' ? 'text-emerald-400 bg-slate-700/50 scale-105' : 'text-slate-400 hover:text-slate-200'
+            className={`flex flex-col items-center gap-1.5 p-2 rounded-xl w-24 transition-all duration-200 ${
+              activeTab === 'board' 
+                ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 shadow-lg shadow-emerald-500/5 font-bold scale-105' 
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'
             }`}
           >
             <span className="text-xl">📋</span>
-            <span className="text-xs font-medium">اللوحة</span>
+            <span className="text-xs tracking-wide">اللوحة</span>
           </button>
 
-          {/* زر المدرب الذكي */}
           <button
             onClick={() => setActiveTab('coach')}
-            className={`flex flex-col items-center gap-1 p-2 rounded-lg w-20 transition-all ${
-              activeTab === 'coach' ? 'text-emerald-400 bg-slate-700/50 scale-105' : 'text-slate-400 hover:text-slate-200'
+            className={`flex flex-col items-center gap-1.5 p-2 rounded-xl w-24 transition-all duration-200 ${
+              activeTab === 'coach' 
+                ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 shadow-lg shadow-emerald-500/5 font-bold scale-105' 
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'
             }`}
           >
             <span className="text-xl">🤖</span>
-            <span className="text-xs font-medium">المدرب الذكي</span>
+            <span className="text-xs tracking-wide">المدرب الذكي</span>
           </button>
 
-          {/* زر خطط الميتا */}
           <button
             onClick={() => setActiveTab('meta')}
-            className={`flex flex-col items-center gap-1 p-2 rounded-lg w-20 transition-all ${
-              activeTab === 'meta' ? 'text-emerald-400 bg-slate-700/50 scale-105' : 'text-slate-400 hover:text-slate-200'
+            className={`flex flex-col items-center gap-1.5 p-2 rounded-xl w-24 transition-all duration-200 ${
+              activeTab === 'meta' 
+                ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 shadow-lg shadow-emerald-500/5 font-bold scale-105' 
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'
             }`}
           >
             <span className="text-xl">⚡</span>
-            <span className="text-xs font-medium">الميتا</span>
+            <span className="text-xs tracking-wide">خطط الميتا</span>
           </button>
 
         </div>
