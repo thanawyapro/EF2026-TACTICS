@@ -11,8 +11,9 @@ interface AppStore {
   customCoords: Record<string, PlayerNode[]>;
   profiles: TacticalProfile[];
   activeProfileId: string;
-  language: 'en' | 'ar';
+  language: 'en' | 'ar' | 'fr' | 'es';
   themeAccent: string;
+  themeId: 'dark-neon' | 'stadium-blue' | 'grass-green' | 'classic-light' | 'amoled-black';
   onboarded: boolean;
   aiHistory: Array<{
     id: string;
@@ -41,8 +42,9 @@ interface AppStore {
   updateProfile: (profile: TacticalProfile) => void;
   deleteProfile: (id: string) => void;
   setActiveProfileId: (id: string) => void;
-  setLanguage: (language: 'en' | 'ar') => void;
+  setLanguage: (language: 'en' | 'ar' | 'fr' | 'es') => void;
   setThemeAccent: (color: string) => void;
+  setThemeId: (themeId: 'dark-neon' | 'stadium-blue' | 'grass-green' | 'classic-light' | 'amoled-black') => void;
   setOnboarded: (val: boolean) => void;
   addAiHistory: (request: any, response: AIResponse) => void;
   clearAiHistory: () => void;
@@ -69,8 +71,16 @@ const loadInitialState = () => {
     customCoords: {} as Record<string, PlayerNode[]>,
     profiles: DEFAULT_PROFILES,
     activeProfileId: '1',
-    language: 'en' as const,
+    language: (() => {
+      try {
+        const browserLang = typeof navigator !== 'undefined' ? navigator.language?.split('-')[0]?.toLowerCase() : 'ar';
+        if (browserLang === 'ar') return 'ar';
+        if (['en', 'fr', 'es'].includes(browserLang)) return browserLang as 'en' | 'fr' | 'es';
+      } catch (e) {}
+      return 'ar';
+    })() as 'en' | 'ar' | 'fr' | 'es',
     themeAccent: '#00d4ff',
+    themeId: 'dark-neon' as const,
     onboarded: false,
     aiHistory: [],
   };
@@ -115,6 +125,7 @@ export const useAppStore = create<AppStore>((set, get) => {
         activeProfileId: newState.activeProfileId ?? state.activeProfileId,
         language: newState.language ?? state.language,
         themeAccent: newState.themeAccent ?? state.themeAccent,
+        themeId: newState.themeId ?? state.themeId,
         aiHistory: newState.aiHistory ?? state.aiHistory,
         onboarded: newState.onboarded !== undefined ? newState.onboarded : state.onboarded,
       };
@@ -193,6 +204,11 @@ export const useAppStore = create<AppStore>((set, get) => {
       syncToStorage({ themeAccent: color });
     },
 
+    setThemeId: (themeId) => {
+      set({ themeId });
+      syncToStorage({ themeId });
+    },
+
     setOnboarded: (val) => {
       set({ onboarded: val });
       syncToStorage({ onboarded: val });
@@ -226,6 +242,7 @@ export const useAppStore = create<AppStore>((set, get) => {
         activeProfileId: state.activeProfileId,
         language: state.language,
         themeAccent: state.themeAccent,
+        themeId: state.themeId,
         aiHistory: state.aiHistory,
         onboarded: state.onboarded,
       };
@@ -254,6 +271,7 @@ export const useAppStore = create<AppStore>((set, get) => {
           activeProfileId: data.activeProfileId,
           language: data.language,
           themeAccent: data.themeAccent,
+          themeId: data.themeId || 'dark-neon',
           aiHistory: data.aiHistory || [],
           onboarded: parsed.onboarded ?? true
         });
@@ -281,8 +299,9 @@ export const useAppStore = create<AppStore>((set, get) => {
         customCoords: {},
         profiles: DEFAULT_PROFILES,
         activeProfileId: '1',
-        language: 'en' as const,
+        language: 'ar' as const,
         themeAccent: '#00d4ff',
+        themeId: 'dark-neon' as const,
         onboarded: false,
         aiHistory: [],
       };

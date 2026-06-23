@@ -77,5 +77,33 @@ export const supabaseAuth = {
     return () => {
       subscription.unsubscribe();
     };
+  },
+
+  /**
+   * Reset password for an email (ForgotPassword flow)
+   */
+  async resetPasswordForEmail(email: string, redirectTo: string) {
+    if (!isSupabaseConfigured || !supabase) {
+      throw new Error('Supabase is not configured. Please use local Guest Mode.');
+    }
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo,
+    });
+    if (error) throw error;
+    return data;
+  },
+
+  /**
+   * Update currently authenticated user's password
+   */
+  async updatePassword(password: string) {
+    if (!isSupabaseConfigured || !supabase) {
+      throw new Error('Supabase is not configured. Please use local Guest Mode.');
+    }
+    const { data, error } = await supabase.auth.updateUser({
+      password
+    });
+    if (error) throw error;
+    return data;
   }
 };

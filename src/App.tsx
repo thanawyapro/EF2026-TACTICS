@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 
 import { useAppStore } from './store/useAppStore';
-import { TRANSLATIONS } from './lib/tactics';
+import { useLanguage } from './hooks/useLanguage';
 
 // Modular Sub-components Imports
 import OnboardingScreen from './components/ui/OnboardingScreen';
@@ -24,6 +24,7 @@ import PerformanceTrackerTab from './components/performance/PerformanceTrackerTa
 import MatchMomentumTab from './components/match/MatchMomentumTab';
 import AppSettingsTab from './components/settings/AppSettingsTab';
 import AccountPage from './pages/AccountPage';
+import EfootballAuditPage from './pages/EfootballAuditPage';
 
 // Simple MVP Custom Wizard components
 import HomePage from './components/home/HomePage';
@@ -31,10 +32,9 @@ import BuildPlanPage from './components/plan/BuildPlanPage';
 import SmartCoachPage from './components/coach/SmartCoachPage';
 
 export default function App() {
-  const language = useAppStore(state => state.language);
+  const { language, changeLanguage, t, isRtl } = useLanguage();
   const themeAccent = useAppStore(state => state.themeAccent);
   const onboarded = useAppStore(state => state.onboarded);
-  const setLanguage = useAppStore(state => state.setLanguage);
 
   // Set default state to 'home' as requested for an ultra-clean simplified first-time view!
   const [activeTab, setActiveTab ] = useState('home');
@@ -95,12 +95,6 @@ export default function App() {
     fetchSharedTactic();
   }, []);
 
-  const t = (key: string): string => {
-    return TRANSLATIONS[language]?.[key] || TRANSLATIONS['en']?.[key] || key;
-  };
-
-  const isRtl = language === 'ar';
-
   // Identify whether current active tab is advanced
   const advancedTabs = [
     'dashboard', 'match_report', 'sub_tactics', 
@@ -108,6 +102,21 @@ export default function App() {
     'momentum_diagnostic', 'app_settings'
   ];
   const isCurrentlyInAdvanced = advancedTabs.includes(activeTab);
+
+  const [isDevAudit, setIsDevAudit] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      if (path === '/dev/efootball-audit' || path.startsWith('/dev/efootball-audit')) {
+        setIsDevAudit(true);
+      }
+    }
+  }, []);
+
+  if (isDevAudit) {
+    return <EfootballAuditPage />;
+  }
 
   return (
     <div className={`min-h-screen flex flex-col font-sans text-white/90 selection:bg-cyan-500/20 ${isRtl ? 'rtl' : 'ltr'}`} style={{ direction: isRtl ? 'rtl' : 'ltr', scrollBehavior: 'smooth' }}>
@@ -143,11 +152,17 @@ export default function App() {
           <div className="flex items-center gap-3">
             {/* Lang switcher */}
             <button 
-              onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}
-              className="p-2 border border-border/70 hover:border-zinc-600 bg-slate-900/50 hover:bg-zinc-900 transition text-[10px] font-bold font-orbitron rounded-xl text-gray-400 hover:text-white flex items-center gap-1.5 cursor-pointer"
+              onClick={() => {
+                const nextLang = 
+                  language === 'ar' ? 'en' :
+                  language === 'en' ? 'fr' :
+                  language === 'fr' ? 'es' : 'ar';
+                changeLanguage(nextLang);
+              }}
+              className="p-2 border border-border/70 hover:border-zinc-500 bg-slate-900/50 hover:bg-zinc-900 transition text-[9px] font-black font-orbitron rounded-xl text-primary flex items-center gap-1.5 cursor-pointer max-w-20"
             >
-              <Globe className="w-3.5 h-3.5" />
-              <span>{language === 'en' ? 'العربية' : 'English'}</span>
+              <Globe className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+              <span className="uppercase">{language}</span>
             </button>
 
             {/* Pulsing indicator node */}
@@ -352,9 +367,14 @@ export default function App() {
       </div>
 
       {/* Background footer label */}
-      <footer className="border-t border-border/40 py-5 bg-[#03050d] text-center select-none mt-auto">
+      <footer className="border-t border-border/40 py-5 bg-[#03050d] text-center select-none mt-auto space-y-1">
         <p className="text-[10px] text-gray-500 font-mono font-bold tracking-wider">
           EF26 TACTICAL LABS DECK • LICENSED PRO PACK v1.0.0 • NOT AFFILIATED WITH KONAMI INC.
+        </p>
+        <p className="text-[9px] font-mono font-bold">
+          <a href="/dev/efootball-audit" className="text-gray-600 hover:text-cyan-400/90 transition-colors">
+            [ Developer Database Audit ]
+          </a>
         </p>
       </footer>
     </div>

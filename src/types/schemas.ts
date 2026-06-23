@@ -51,8 +51,9 @@ export const AppStateSchema = z.object({
   customCoords: z.record(z.string(), z.array(PlayerNodeSchema)).optional().default({}),
   profiles: z.array(TacticalProfileSchema),
   activeProfileId: z.string(),
-  language: z.enum(['en', 'ar']),
+  language: z.enum(['en', 'ar', 'fr', 'es']),
   themeAccent: z.string(),
+  themeId: z.enum(['dark-neon', 'stadium-blue', 'grass-green', 'classic-light', 'amoled-black']).optional().default('dark-neon'),
   aiHistory: z.array(z.object({
     id: z.string(),
     timestamp: z.string(),

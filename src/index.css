@@ -4,8 +4,9 @@
 
 @layer base {
   body {
-    background-color: #040712;
-    background-image: radial-gradient(circle at 50% 10%, #0d1326 0%, #040712 70%);
+    background-color: var(--bg, #040712);
+    color: var(--text, #f8fafc);
+    background-image: radial-gradient(circle at 50% 10%, var(--surface, #0d1326) 0%, var(--bg, #040712) 70%);
     background-attachment: fixed;
   }
 }
@@ -17,8 +18,8 @@
 }
 
 .glow-card:hover {
-  box-shadow: 0 0 15px rgba(0, 212, 255, 0.15), 0 8px 30px rgba(0, 0, 0, 0.55);
-  border-color: rgba(0, 212, 255, 0.35);
+  box-shadow: 0 0 15px var(--border), 0 8px 30px rgba(0, 0, 0, 0.55);
+  border-color: var(--primary);
 }
 
 /* Scrollbar styling */
@@ -28,16 +29,16 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #040712;
+  background: var(--bg, #040712);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1f2a47;
+  background: var(--border, #1f2a47);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #00d4ff;
+  background: var(--primary, #00d4ff);
 }
 
 /* Fade in animation keyframe definitions */
